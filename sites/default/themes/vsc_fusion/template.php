@@ -190,6 +190,13 @@ function vsc_fusion_preprocess_node(&$vars) {
       break;
     case 'video':
      $vars['visual_media'] = $vars['node']->field_visual_media[0]['view'];
+     // adding the video js hack
+     if ($vars['node']->field_video_js[0]['value']){
+     
+     
+     
+        $vars['video_js'] = vsc_fusion_video_js_display($vars['node']);      
+     }
      if ($vars['page']){drupal_set_title(t('"@title" by @name', array('@title' =>  $vars['node']->title, '@name' =>  strip_tags($vars['node']->name))));}
     // vars for teasers
      if($vars['teaser'] == TRUE) {
@@ -326,14 +333,14 @@ function vsc_fusion_return_dimensions($visualNode){
 
 function vsc_fusion_return_visual_bottom($visualNode){
   // '<br/>'. $visualNode['submitted'].
- $artistName = $visualNode['cc']->metadata['creator'];
- $artistProfileLink = $visualNode['name'];//'<a href="users/'.$visualNode['name'].'">'.$artistName.'</a>';
- $statement = '<div id="artist-statement" class="grid12-3 float-left first"><h3 class="block-title">'.$artistName.'\'s '. t('Artist Statement').'</h3>'.views_embed_view('artist_statement').'</div>';
- $sharethis = vsc_fusion_return_sharethis("float-left");
- $art_info = '<div id="picture-info">'.$sharethis.vsc_fusion_return_dimensions($visualNode).'<br/>'.$visualNode['terms'].'</div>';
- $artist_page = '<div id="artist-page-link"><a href="/artist/'. strip_tags($artistProfileLink).'">'.t('Visit the artist page of '). strip_tags($artistProfileLink).'</a></div>';
+ //$artistName = $visualNode['cc']->metadata['creator'];
+ //$artistProfileLink = $visualNode['name'];//'<a href="users/'.$visualNode['name'].'">'.$artistName.'</a>';
+ //$statement = '<div id="artist-statement" class="grid12-3 float-left first"><h3 class="block-title">'.$artistName.'\'s '. t('Artist Statement').'</h3>'.views_embed_view('artist_statement').'</div>';
+ //$sharethis = vsc_fusion_return_sharethis("float-left");
+ //$art_info = '<div id="picture-info">'.$sharethis.vsc_fusion_return_dimensions($visualNode).'<br/>'.$visualNode['terms'].'</div>';
+ //$artist_page = '<div id="artist-page-link"><a href="/artist/'. strip_tags($artistProfileLink).'">'.t('Visit the artist page of '). strip_tags($artistProfileLink).'</a></div>';
  $substance = '<div id="visual-substance" class="grid12-4 float-left"><h3 class="block-title">'. t('About ').'"'.$visualNode['title'].'"</h3>'.$art_info.$visualNode['field_visual_substance'][0]['safe'].'</div>';
- $gallery = '<div id="artist-gallery" class="grid12-4 float-left last">'.$artist_page.'<br/>'.views_embed_view('visual_grids').'</div>';
+ //$gallery = '<div id="artist-gallery" class="grid12-4 float-left last">'.$artist_page.'<br/>'.views_embed_view('visual_grids').'</div>';
  return $substance.$gallery.$statement;
 }
 
@@ -863,3 +870,39 @@ function theme_imagecache_imagelink($presetname, $path, $alt = '', $title = '', 
   $original_image_url = file_create_url($path);
   return l($image, $original_image_url, array('absolute' => FALSE, 'html' => TRUE));
 }*/
+function vsc_fusion_video_js_display($node){
+    // get the values that we need
+    $src          = $node->field_video_js[0]['value'];
+    $poster_image = substr($src ,0,-3) . 'png';
+    $height       = ($node->field_visual_height[0]['value']) ? $node->field_visual_height[0]['value'] :  "896";    
+    $width        = ($node->field_visual_width[0]['value']) ? $node->field_visual_width0[0]['value'] :  "504";
+   
+    // add the js file here
+     $js_file = 'sites/libraries/video-js/video.js';
+     drupal_add_js($js_file);
+     // add the css file here
+     $css_file = path_to_theme() . '/css/video-js.css';
+     drupal_add_css($css_file); 
+     $main_css_file = path_to_theme() . '/css/video-js-main.css';
+     drupal_add_css($main_css_file);
+
+     // package for output
+     $output = '<!-- Begin VideoJS -->';
+     $output .= ' 	<div class="video">';
+     $output .= '		<div class="video-js-box cao-css">';
+     $output .= '			<video id="main-video" class="video-js" width="'.$width.'" height="'.$height.'" controls="controls"  preload="true">';
+     $output .= '				<source src="'.$src.'" type=\'video/mp4;  codecs="avc1.42E01E, mp4a.40.2"\' />';
+     $output .= '';				
+     $output .= '				<!-- Flash Fallback. Use any flash video player here. Make sure to keep the vjs-flash-fallback class. -->';
+     $output .= '				<object id="flash_fallback_1" class="vjs-flash-fallback" width="'.$width.'" height="'.$height.'" style="visibility: visible;" type="application/x-shockwave-flash" data="http://releases.flowplayer.org/swf/flowplayer-3.2.1.swf">';
+     $output .= '					<param name="movie" value="http://releases.flowplayer.org/swf/flowplayer-3.2.1.swf" />';
+     $output .= '					<param name="allowfullscreen" value="true" />';
+     $output .= '					<param name="flashvars" value=\'config={"playlist":["'.$poster_image.'", {"url": "'.$src.'","autoPlay":false,"autoBuffering":true}]}\' />';
+     $output .= '					<!-- Image Fallback. Typically the same as the poster image. -->';
+     $output .= '				</object>';
+     $output .= '			</video>';
+     $output .= '		</div>';
+     $output .= '	</div>';
+     $output .= '	<!-- End VideoJS -->';
+     return $output;
+}

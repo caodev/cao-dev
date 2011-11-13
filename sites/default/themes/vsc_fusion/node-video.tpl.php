@@ -16,9 +16,9 @@
 
   <?php if ($page): ?>
 
-  <div id="artist-declaration"><span class="artist-name"><?php print l($cc->metadata['creator'],'user/'.$uid); ?></span><span class="visual-title">"<?php print $cc->metadata['title']; ?>"</span></div>
   <!--for the content,again we are letting drupal handle just the images-->
   <div id="artist-visual" class="content clearfix"><?php print $visual_media ?></div>
+  <div id="video-js" class="content clearfix"><?php print $video_js ?></div>
   <div id="artist-five-star" class="content clearfix"><?php print $fivestar ?></div>
 
   <div id="visual-bottom" class="clearfix"><?php print $visual_bottom ?></div>

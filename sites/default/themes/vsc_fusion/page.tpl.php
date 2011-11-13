@@ -34,7 +34,7 @@
       <!-- header-group row: width = grid_width -->
       <div id="header-group-wrapper" class="header-group-wrapper full-width">
                 <?php if ($site_name): ?>
-             <span id="site-name"><?php print ($user->uid)? t('!username, welcome back to ', array('!username' => l($user->name, 'user'))) : t('!username to ', array('!username' => l('login', 'user/login'))); ?><a href="<?php print check_url($front_page); ?>" title="<?php print t('Our Home'); ?>"><?php print $site_name; ?></a><?php print ($user->uid)? t(' | !logout', array('!logout' => l('logout','logout'))) :''; ?></span>
+             <span id="site-name"><?php print ($user->uid)? t('!logout', array('!logout' => l('logout','logout'))) : l(t('login'),'user'); ?></span>
           <?php endif; ?>
         <div id="header-group" class="header-group row <?php print $grid_width; ?>">
           <div id="header-group-inner" class="header-group-inner inner clearfix">
@@ -49,19 +49,19 @@
 
       <!-- main row: width = grid_width -->
       <div id="main-wrapper" class="main-wrapper full-width">
-        <div id="main" class="main row <?php print $grid_width; ?>">
+        <div id="main" class="main row <?php //print $grid_width; ?>">
           <div id="main-inner" class="main-inner inner clearfix">
             <?php print theme('grid_row', $sidebar_first, 'sidebar-first', 'nested', $sidebar_first_width); ?>
 
             <!-- main group: width = grid_width - sidebar_first_width -->
-            <div id="main-group" class="main-group row nested <?php print $main_group_width; ?>">
+            <div id="main-group" class="main-group row nested <?php //print $main_group_width; ?>">
               <div id="main-group-inner" class="main-group-inner inner">
                 <?php print theme('grid_row', $preface_bottom, 'preface-bottom', 'nested'); ?>
 
                 <div id="main-content" class="main-content row nested">
                   <div id="main-content-inner" class="main-content-inner inner">
                     <!-- content group: width = grid_width - (sidebar_first_width + sidebar_last_width) -->
-                    <div id="content-group" class="content-group row nested <?php print $content_group_width; ?>">
+                    <div id="content-group" class="content-group row nested <?php //print $content_group_width; ?>">
                       <div id="content-group-inner" class="content-group-inner inner">
                         <?php// print theme('grid_block', $breadcrumb, 'breadcrumbs'); ?>
 

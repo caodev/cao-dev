@@ -1,299 +1,279 @@
-BODY
-{
-	background-color: #000000;
+/*[fmt]1C40-1C0C-E*/
+html {
+    background-color: #FFFFFF;
 }
-#footer UL LI A.active
-{
-	color: #000000;
-	font-weight: bold;
+body {
+    background-color: #000000;
 }
-.main-wrapper
-{
-	background-image: url(../images/bg-main-wrapper-light.png);
-	background-repeat: repeat-x;
-	background-position: bottom center;
-	padding-top: 30px;
-	padding-bottom: 20px;
-	background-color: #FFFFFF;
+#footer-wrapper {
+    background-image: url(../images/bg-main-wrapper-light.png);
+    /*[empty]background-color:;*/
 }
-A, A:link, A:visited
-{
-	color: #B64D00;
+#footer ul li a.active {
+    color: #000000;
+    font-weight: bold;
 }
-#button-link A:link, #button-link A:visited
-{
-	position: relative;
-	background-color: #CCCCCC;
+.main-wrapper {
+    background-image: url(../images/bg-main-wrapper-light.png);
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    padding-top: 30px;
+    padding-bottom: 20px;
+    background-color: #000000;
+    background-image: none;
 }
-#button-link A:hover
-{
-	background-color: #E5E5E5;
+a,
+a:link,
+a:visited {
+    color: #B64D00;
 }
-.profile DT
-{
-	background-color: #CCC;
-	text-align: left;
-	padding: 5px;
-	width: 95%;
-	float: none;
-	margin-bottom: 15px;
-	margin-left: 0px;
+#button-link a:link,
+#button-link a:visited {
+    position: relative;
+    background-color: #CCCCCC;
 }
-TR.even, TR.even TD
-{
-	background-color: #CCCCCC;
-	border-bottom: 1px none #0F0F0F;
+#button-link a:hover {
+    background-color: #E5E5E5;
 }
-TR.odd, TR.odd TD
-{
-	background-color: #A9A9A9;
-	border-bottom: 1px none #121212;
+.profile dt {
+    background-color: #CCC;
+    text-align: left;
+    padding: 5px;
+    width: 95%;
+    float: none;
+    margin-bottom: 15px;
+    margin-left: 0px;
 }
-.header-group-wrapper
-{
-	background-image: url(../images/bg-header-wrapper-light.png);
-	height: 45px;
+tr.even,
+tr.even td {
+    background-color: #CCCCCC;
+    border-bottom: 1px none #0F0F0F;
 }
-.primary-menu-inner UL.sf-menu LI
-{
-	border-right: 1px solid #CCCCCC;
+tr.odd,
+tr.odd td {
+    background-color: #A9A9A9;
+    border-bottom: 1px none #121212;
 }
-#visual-bottom #artist-page-link
-{
-	background-color: #A8A8A8;
+.header-group-wrapper {
+    background-image: url(../images/bg-header-wrapper-light.png);
+    height: 45px;
 }
-.form-item INPUT, .form-item SELECT, .form-item TEXTAREA
-{
-	background-color: #E5E5E5;
-	border: 1px solid #A8A8A8;
-	color: #121212;
-	background-image: none;
-	background-position: 100% 90%;
-	background-repeat: repeat-x;
-	padding: 8px;
-	margin-bottom: 7px;
+.primary-menu-inner ul.sf-menu li {
+    border-right: 1px solid #CCCCCC;
 }
-FIELDSET
-{
-	border: 11px solid #A8A8A8;
+#visual-bottom #artist-page-link {
+    background-color: #A8A8A8;
 }
-.username-check-informer, HTML.js INPUT.form-autocomplete
-{
-	background-color: #E5E5E5;
+.form-item input,
+.form-item select,
+.form-item textarea {
+    background-color: #E5E5E5;
+    border: 1px solid #A8A8A8;
+    color: #121212;
+    background-image: none;
+    background-position: 100% 90%;
+    background-repeat: repeat-x;
+    padding: 8px;
+    margin-bottom: 7px;
 }
-FORM INPUT.form-submit
-{
-	margin: 15px 2px 2px;
-	padding: 10px;
-	background-color: #E5E5E5;
-	border: 1px solid #A9A9A9;
-	color: #555555;
-	cursor: pointer;
+fieldset {
+    border: 11px solid #A8A8A8;
 }
-.calendar-calendar TH
-{
-	color: #555;
-	background-color: #A9A9A9;
-	text-align: center;
-	margin: 0;
+.username-check-informer,
+html.js input.form-autocomplete {
+    background-color: #E5E5E5;
 }
-.calendar-calendar TH A
-{
-	font-weight: bold;
-	color: #FFF;
-	background-color: #CCC;
+form input.form-submit {
+    margin: 15px 2px 2px;
+    padding: 10px;
+    background-color: #E5E5E5;
+    border: 1px solid #A9A9A9;
+    color: #555555;
+    cursor: pointer;
 }
-.calendar-calendar TD
-{
-	width: 12%;
+.calendar-calendar th {
+    color: #555;
+    background-color: #A9A9A9;
+    text-align: center;
+    margin: 0;
+}
+.calendar-calendar th a {
+    font-weight: bold;
+    color: #FFF;
+    background-color: #CCC;
+}
+.calendar-calendar td {
+    width: 12%;
 /*14% is about 1/7 of total table width*/
-	min-width: 12%;
-	border: 1px solid #111;
-	color: #777;
-	text-align: right;
-	vertical-align: top;
-	margin: 0;
-	padding: 0;
+    min-width: 12%;
+    border: 1px solid #111;
+    color: #777;
+    text-align: right;
+    vertical-align: top;
+    margin: 0;
+    padding: 0;
 }
-.calendar-calendar .week
-{
-	clear: both;
-	font-style: normal;
-	color: #555;
-	font-size: 0.8em;
+.calendar-calendar .week {
+    clear: both;
+    font-style: normal;
+    color: #555;
+    font-size: 0.8em;
 }
-.calendar-calendar TH.days
-{
-	color: #CCC;
-	background-color: #224;
-	text-align: center;
-	padding: 1px;
-	margin: 0;
+.calendar-calendar th.days {
+    color: #CCC;
+    background-color: #224;
+    text-align: center;
+    padding: 1px;
+    margin: 0;
 }
-.calendar-calendar DIV.day
-{
-	float: right;
-	text-align: center;
-	padding: 0.125em 0.25em 0;
-	margin: 0;
-	background-color: #090909;
-	border: 1px solid #7F7F7F;
-	border-width: 0 0 1px 1px;
-	clear: both;
-	width: 1.5em;
+.calendar-calendar div.day {
+    float: right;
+    text-align: center;
+    padding: 0.125em 0.25em 0;
+    margin: 0;
+    background-color: #090909;
+    border: 1px solid #7F7F7F;
+    border-width: 0 0 1px 1px;
+    clear: both;
+    width: 1.5em;
 }
-.calendar-calendar DIV.calendar
-{
-	background-color: transparent;
-	border: 1px none #111;
-	text-align: left;
-	margin: 0 0.25em 0.25em 0;
-	width: 96%;
-	float: right;
+.calendar-calendar div.calendar {
+    background-color: transparent;
+    border: 1px none #111;
+    text-align: left;
+    margin: 0 0.25em 0.25em 0;
+    width: 96%;
+    float: right;
 /*needed to keep IE from hiding the floating day number*/
-	clear: both;
+    clear: both;
 }
-.calendar-calendar DIV.title A
-{
-	color: #000;
+.calendar-calendar div.title a {
+    color: #000;
 }
-.calendar-calendar DIV.title A:hover
-{
-	color: #C00;
+.calendar-calendar div.title a:hover {
+    color: #C00;
 }
-TABLE.calendar-legend
-{
-	background-color: #CCC;
-	width: 100%;
-	margin: 0;
-	padding: 0;
+table.calendar-legend {
+    background-color: #CCC;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 }
-.calendar-calendar TD.calendar-agenda-hour
-{
-	font-family: serif;
-	text-align: right;
-	border: none;
-	border-top: 1px dotted #333;
-	padding-top: 0.25em;
-	width: 1%;
+.calendar-calendar td.calendar-agenda-hour {
+    font-family: serif;
+    text-align: right;
+    border: none;
+    border-top: 1px dotted #333;
+    padding-top: 0.25em;
+    width: 1%;
 }
-.calendar-calendar TD.calendar-agenda-items
-{
-	border: 1px dotted #333;
-	text-align: left;
+.calendar-calendar td.calendar-agenda-items {
+    border: 1px dotted #333;
+    text-align: left;
 }
-.calendar-calendar DIV.calendar DIV.inner .calendar-agenda-empty
-{
-	width: 100%;
-	text-align: center;
-	vertical-align: middle;
-	padding: 1em 0;
-	background-color: #FFF;
+.calendar-calendar div.calendar div.inner .calendar-agenda-empty {
+    width: 100%;
+    text-align: center;
+    vertical-align: middle;
+    padding: 1em 0;
+    background-color: #FFF;
 }
-.calendar-calendar DIV.date-nav
-{
-	background-color: #FFF;
-	color: #777;
-	padding: 0.2em;
-	width: auto;
-	border: 1px none #333;
+.calendar-calendar div.date-nav {
+    background-color: #FFF;
+    color: #777;
+    padding: 0.2em;
+    width: auto;
+    border: 1px none #333;
 }
-.calendar-calendar DIV.date-nav A, .calendar-calendar DIV.date-nav H3
-{
-	color: #777;
+.calendar-calendar div.date-nav a,
+.calendar-calendar div.date-nav h3 {
+    color: #777;
 }
-.calendar-calendar .date-heading H3
-{
-	font-size: 18px;
+.calendar-calendar .date-heading h3 {
+    font-size: 18px;
 }
-.calendar-calendar TH.days
-{
-	background-color: #DDD;
-	color: #777;
-	font-weight: bold;
-	border: 1px solid #AAA;
+.calendar-calendar th.days {
+    background-color: #DDD;
+    color: #777;
+    font-weight: bold;
+    border: 1px solid #AAA;
 }
-.calendar-calendar TD.empty
-{
-	background: #DDD;
-	border-color: #AAA;
+.calendar-calendar td.empty {
+    background: #DDD;
+    border-color: #AAA;
 }
-.calendar-calendar TABLE.mini TD.empty
-{
-	background: #222;
-	border-color: #FFF;
+.calendar-calendar table.mini td.empty {
+    background: #222;
+    border-color: #FFF;
 }
-.calendar-calendar TD DIV.day
-{
-	border: 1px none #CCC;
-	border-top: none;
-	border-right: none;
-	margin-bottom: 2px;
+.calendar-calendar td div.day {
+    border: 1px none #CCC;
+    border-top: none;
+    border-right: none;
+    margin-bottom: 2px;
 }
-.calendar-calendar TABLE TR TD.today DIV.day
-{
-	background-color: #414141;
+.calendar-calendar table tr td.today div.day {
+    background-color: #414141;
 }
-.calendar-calendar TD .inner DIV, .calendar-calendar TD .inner DIV A
-{
-	background: #DDD;
+.calendar-calendar td .inner div,
+.calendar-calendar td .inner div a {
+    background: #DDD;
 }
-.calendar-calendar TD .inner DIV.calendar DIV, .calendar-calendar TD .inner DIV.calendar DIV A
-{
-	border: medium inherit transparent;
-	background: transparent;
-	padding: 0 2px;
+.calendar-calendar td .inner div.calendar div,
+.calendar-calendar td .inner div.calendar div a {
+    border: medium solid transparent;
+    background: transparent;
+    padding: 0 2px;
 }
-.calendar-calendar TD .inner DIV.calendar DIV.calendar-more, .calendar-calendar TD .inner DIV.calendar DIV.calendar-more A
-{
-	color: #444;
-	background: #FFF;
-	text-align: right;
+.calendar-calendar td .inner div.calendar div.calendar-more,
+.calendar-calendar td .inner div.calendar div.calendar-more a {
+    color: #444;
+    background: #FFF;
+    text-align: right;
 }
-.calendar-calendar TD .inner .view-field, .calendar-calendar TD .inner .view-field A
-{
-	color: #444;
-	font-weight: normal;
+.calendar-calendar td .inner .view-field,
+.calendar-calendar td .inner .view-field a {
+    color: #444;
+    font-weight: normal;
 }
-.calendar-calendar TD .inner DIV.day A
-{
-	color: #555555;
+.calendar-calendar td .inner div.day a {
+    color: #555555;
 }
-.calendar-calendar TABLE TR TD.today A:link
-{
-	background-color: transparent;
-	color: #FFFFFF;
+.calendar-calendar table tr td.today a:link {
+    background-color: transparent;
+    color: #FFFFFF;
 }
-.calendar-calendar TR TD.today, .calendar-calendar TR.odd TD.today, .calendar-calendar TR.even TD.today
-{
-	background-color: #777777;
-	color: #0D0D0D;
+.calendar-calendar tr td.today,
+.calendar-calendar tr.odd td.today,
+.calendar-calendar tr.even td.today {
+    background-color: #777777;
+    color: #0D0D0D;
 }
-.resizable-textarea .grippie
-{
-	height: 9px;
-	overflow: hidden;
-	border: 1px solid #FFF;
-	border-top-width: 0;
-	cursor: s-resize;
-	margin-bottom: 8px;
-	background-color: #7F7F7F;
+.resizable-textarea .grippie {
+    height: 9px;
+    overflow: hidden;
+    border: 1px solid #FFF;
+    border-top-width: 0;
+    cursor: s-resize;
+    margin-bottom: 8px;
+    background-color: #7F7F7F;
 }
-#content-tabs UL.primary LI A.active:link, #content-tabs UL.primary LI A.active:visited
-{
-	color: #777;
-	padding-bottom: 2px;
-	background-position: 0 -70px;
+#content-tabs ul.primary li a.active:link,
+#content-tabs ul.primary li a.active:visited {
+    color: #777;
+    padding-bottom: 2px;
+    background-position: 0 -70px;
 }
-#content-tabs-inner
-{
-	border-left: 9px solid #E4E4E4;
+#content-tabs-inner {
+    border-left: 9px solid #E4E4E4;
 }
-#content-tabs UL.primary LI A:link, #content-tabs UL.primary LI A:visited, #content-tabs UL.secondary LI A:link, #content-tabs UL.secondary LI A:visited
-{
-	color: #DDD;
+#content-tabs ul.primary li a:link,
+#content-tabs ul.primary li a:visited,
+#content-tabs ul.secondary li a:link,
+#content-tabs ul.secondary li a:visited {
+    color: #DDD;
 }
-#content-tabs UL.primary LI A:hover, #content-tabs UL.primary LI A:focus
-{
-	color: #777;
+#content-tabs ul.primary li a:hover,
+#content-tabs ul.primary li a:focus {
+    color: #777;
 }
