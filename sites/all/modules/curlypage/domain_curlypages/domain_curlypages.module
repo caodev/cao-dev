@@ -1,0 +1,264 @@
+<?php
+// $Id: domain_curlypages.module,v 1.1.2.2.2.1 2010/04/23 16:00:54 manfer Exp $
+
+/**
+ * @file
+ * Provides domain specific visibility settings for curlypages based on user domain access settings
+ * Domain Curlypages does not define any permissions of its own yet it requires user to have
+ * set domain access permission in order to define any domain based visibility settings.
+ *
+ * Acknowledgement: Almost all the code was borrowed from domain blocks module.
+ */
+
+/**
+ * Implementation of hook_help().
+ *
+ * Display help and module information
+ *
+ * @param $path
+ *  Which path of the site we're displaying help
+ * @param $arg
+ *  Array that holds the current path as would be returned from arg() function
+ *
+ * @return
+ *  Help text for the path
+ */
+function domain_curlypages_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case "admin/help#domain_curlypages":
+      $output = '<p>'.  t("Provides domain specific visibility settings for curlypages") .'</p>';
+      break;
+  }
+  return $output;
+}
+
+/**
+ * Save domain curlypage data
+ *
+ * @param int $cpid
+ *  The curlypage unique identifier.
+ * @param array $domain_arr
+ *  Array that contains domains selected on domain visibility form.
+ * @param array $previous_domain_arr
+ *  Array that contains domains previously selected on domain visibility form.
+ *
+ * @return
+ *  No return value.
+ */
+function domain_curlypages_save($cpid, $domain_arr, $previous_domain_arr) {
+
+  // none of the domains are checked
+  if (empty($domain_arr)) {
+
+    // previously some domains were checked
+    if (!empty($previous_domain_arr)) {
+      db_query("DELETE FROM {domain_curlypages} WHERE cpid = %d", array(':cpid' => $cpid));
+      // Curlypage is visible on all domains (domain_site grant)
+      db_query("INSERT INTO {domain_curlypages} (cpid, realm, domain_id) VALUES (%d, '%s', %d)", $cpid, 'domain_site', 0);
+    }
+    elseif (!isset($previous_domain_arr)) {
+      // Curlypage is visible on all domains (domain_site grant)
+      db_query("INSERT INTO {domain_curlypages} (cpid, realm, domain_id) VALUES (%d, '%s', %d)", $cpid, 'domain_site', 0);
+    }
+
+  }
+  else { // some domains are checked
+
+    // previously none was checked
+    if (empty($previous_domain_arr)) {
+      // remove domain_site grant - curlypage visibility is defined by individual domains
+      db_query("DELETE FROM {domain_curlypages} WHERE cpid = %d AND realm = '%s'", array(':cpid' => $cpid, ':realm' => 'domain_site'));
+      // insert all domains selected
+      foreach ($domain_arr as $single_domain_id) {
+        db_query("INSERT INTO {domain_curlypages} (cpid, realm, domain_id) VALUES (%d, '%s', %d)", $cpid, 'domain_id', $single_domain_id);
+      }
+
+    }
+    else {
+
+      // previously some domains were checked and now some domains are checked
+
+      // unset previously checked values now unchecked
+      $domains_to_be_removed = array_diff($previous_domain_arr, $domain_arr);
+      if ($domains_to_be_removed) {
+        $domains_to_be_removed = implode(',', $domains_to_be_removed);
+        db_query("DELETE FROM {domain_curlypages} WHERE cpid = %d AND realm = '%s' AND domain_id IN (%s)", $cpid, 'domain_id', $domains_to_be_removed);
+      }
+
+      // set new values, now checked and previously not checked
+      $domains_to_add = array_diff($domain_arr, $previous_domain_arr);
+      foreach ($domains_to_add as $single_domain_id) {
+        db_query("INSERT INTO {domain_curlypages} (cpid, realm, domain_id) VALUES(%d, '%s', %d)", $cpid, 'domain_id', $single_domain_id);
+      }
+
+    }
+
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_form().
+ */
+function domain_curlypages_curlypage_form(&$form, $form_state) {
+
+  // If the user is a site admin, show the form, otherwise pass it silently.
+  if (user_access('set domain access')) {
+
+    $cpid = $form['cpid']['#value'];
+
+    $form['visibility_settings']['domain_vis_settings'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Domain specific visibility settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#weight' => 0,
+    );
+
+    $previous_curlypage_domains = _domain_curlypages_load($cpid);
+
+    $curlypage_domains = array();
+    if (isset($previous_curlypage_domains)) {
+      foreach ($previous_curlypage_domains as $value) {
+        $value == 0 ? $value = -1 : $value = $value;
+        $curlypage_domains[] = $value;
+      }
+    }
+
+    $options = array();
+    foreach (domain_domains() as $data) {
+      // Cannot pass zero in checkboxes.
+      ($data['domain_id'] == 0) ? $key = -1 : $key = $data['domain_id'];
+      // The domain must be valid.
+      if ($data['valid'] || user_access('administer domains')) {
+        $options[$key] = $data['sitename'];
+      }
+    }
+
+    $form['visibility_settings']['domain_vis_settings']['domain_curlypages'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Display on'),
+      '#options' => $options,
+      '#required' => FALSE,
+      '#description' => t('Limit curlypage display to these affiliates. This curlypage is visible on all domains by default using this theme.'),
+      '#default_value' => $curlypage_domains,
+    );
+
+    $form['visibility_settings']['domain_vis_settings']['previous_domain_curlypages'] = array(
+      '#type' => 'value',
+      '#value' => $previous_curlypage_domains,
+    );
+
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_form_submit().
+ */
+function domain_curlypages_curlypage_form_submit($form, &$form_state) {
+
+  // If the user is a site admin, show the form, otherwise pass it silently.
+  if (user_access('set domain access')) {
+
+    $values = $form_state['values'];
+
+    $enabled_domains = array();
+
+    if (!empty($form_state['values']['domain_curlypages'])) {
+
+      foreach ($form_state['values']['domain_curlypages'] as $single_domain_id => $domain_enabled) {
+
+        if ($domain_enabled) {
+
+          if ($single_domain_id == -1) {
+            $single_domain_id = 0;
+          }
+
+          $enabled_domains[] = $single_domain_id;
+
+        }
+
+      }
+
+    }
+
+    domain_curlypages_save($form_state['values']['cpid'], $enabled_domains, $form_state['values']['previous_domain_curlypages']);
+
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_delete().
+ */
+function domain_curlypages_curlypage_delete($curlypage) {
+
+  db_query("DELETE FROM {domain_curlypages} WHERE cpid = %d", array(':cpid' => $curlypage->cpid));
+
+}
+
+/**
+ * Implements hook_db_rewrite_sql().
+ */
+function domain_curlypages_db_rewrite_sql($query, $primary_table, $primary_key, $args) {
+
+  global $_domain;
+
+  if ($primary_table == 'cp' && $primary_key == 'cpid') {
+    $result['join'] .= " INNER JOIN {domain_curlypages} dcp ON dcp.cpid = $primary_table.cpid ";
+    $result['where'] .= " ((dcp.realm = 'domain_site' AND dcp.domain_id = 0) OR (dcp.realm = 'domain_id' AND dcp.domain_id = ". $_domain['domain_id'] ."))";
+    return $result;
+  }
+
+}
+
+/**
+ * Returns curlypage domain visibility.
+ * NULL if not available, array() if using domain_site grant, keyed array if
+ * using domain_id grant(s).
+ * @param int $cpid
+ */
+function _domain_curlypages_load($cpid) {
+
+  $result = db_query("SELECT domain_id, realm FROM {domain_curlypages} WHERE cpid = %d", array(':cpid' => $cpid));
+
+  while ($row = db_fetch_array($result)) {
+    $curlypage[$row['realm']][] = $row['domain_id'];
+  }
+
+  if (isset($curlypage['domain_site'])) {
+    return array();
+  }
+
+  return $curlypage['domain_id'];
+}
+
+/**
+ * Implements hook_domainupdate().
+ */
+function domain_curlypages_domainupdate($op, $domain, $edit = array()) {
+
+  switch ($op) {
+    case 'delete':
+      // remove records
+      _domain_curlypages_delete($domain);
+    case 'update':
+    case 'insert':
+    default:
+    break;
+  }
+
+}
+
+function _domain_curlypages_delete($domain) {
+  db_query("DELETE FROM {domain_curlypages} WHERE realm = '%s' AND domain_id = %d", array(':realm' => 'domain_id', ':domain_id' => $domain['domain_id']));
+
+  $curlypages = db_query("SELECT DISTINCT cp.cpid FROM {curlypages} cp LEFT JOIN {domain_curlypages} dcp ON cp.cpid = dcp.cpid WHERE cp.status = 1 AND dcp.cpid IS NULL");
+  while ($curlypage = db_fetch_object($curlypages)) {
+    curlypage_curlypage_disable($curlypage->cpid);
+    db_query("INSERT INTO {domain_curlypages} (cpid, realm, domain_id) VALUES (%d, '%s', %d)", $curlypage->cpid, 'domain_site', 0);
+  }
+  cache_clear_all();
+}

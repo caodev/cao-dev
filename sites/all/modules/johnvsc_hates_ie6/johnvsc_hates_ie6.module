@@ -1,0 +1,80 @@
+﻿<?php
+// $Id$
+/**
+* @file
+* TODO: Enter file description here.
+*/
+/**
+* Implementation of hook_menu().
+*/
+function johnvsc_hates_ie6_menu() {
+// This is the minimum information you can provide for a menu item.
+  $items['admin/settings/johnvsc-hates-ie6'] = array('title' => 'IE6 Outdated Notice Settings', 'description' => 'Configure the message text and update paths to dwonload new browsers here!', 'page callback' => 'drupal_get_form', 'page arguments' => array('johnvsc_hates_ie6_admin_settings'), 'access arguments' => array('administer site configuration'), 'type' => MENU_NORMAL_ITEM, 'file' => 'johnvsc_hates_ie6.admin.inc',);
+  return $items;
+}
+/**
+* Implementation of hook_block().
+*/
+function johnvsc_hates_ie6_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list' :
+      $blocks[0]['info'] = t('IE6 Outdated Notice');
+//$blocks[1]['info'] = t('Block 2');
+// OPTIONAL: Add additional block descriptions here, if required.
+      return $blocks;
+/*    case 'configure':
+// OPTIONAL: Enter form elements to add to block configuration screen, if required.
+if ($delta == 0 && user_access('administer module')) {
+$form['module_block_1'] = array();
+}
+if ($delta == 1 && user_access('administer module')) {
+$form['module_block_2'] = array();
+}
+return $form;*/
+/*    case 'save':
+// OPTIONAL: Add code to trigger when block configuration is saved, if required.
+if ($delta == 0) {
+variable_set('module_block_setting_1', $edit['module_block_1']);
+}
+if ($delta == 1) {
+variable_set('module_block_setting_2', $edit['module_block_2']);
+}
+break;*/
+    case 'view' :
+      if ($delta == 0) {
+        $block['subject'] = t('<none>');
+        $block['content'] = johnvsc_hates_ie6_build_notice();
+      }
+      if ($delta == 1) {
+        $block['subject'] = t('Block 2 title');
+        $block['content'] = t('Block 2 content');
+      }
+// OPTIONAL: Enter additional cases for each additional block, if defined.
+      return $block;
+  }
+}
+function johnvsc_hates_ie6_build_notice() {
+  if (substr($_SERVER['HTTP_USER_AGENT'], 25, 8) == "MSIE 6.0") {
+    $module_name = "johnvsc_hates_ie6";
+    $path_to_visual = '/' . drupal_get_path('module', $module_name) . '/images/';
+    $notice = '<div style="margin:20px; border: solid red 1px; background-color:#f5f5f5; color:#888888; text-align:center;">';
+    $notice .= variable_get('johnvsc-ie6-title', '<a href="/admin/settings/johnvsc-hates-ie6">Please save site configurations.</a>');
+    $notice .= variable_get('johnvsc-ie6-message', '<p>The text and links will not work unless you save the configurations on the admin page :(</p>');
+    $explorer_link = variable_get('johnvsc-ie6-ie-link', '');
+    $explorer_markup = '<a href="' . $explorer_link . '" target="blank"><img src="' . $path_to_visual . 'browser_ie.gif" width=100 height=100 alt="" /></a>';
+    $firefox_link = variable_get('johnvsc-ie6-ff-link', '');
+    $firefox_markup = '<a href="' . $firefox_link . '" target="blank"><img src="' . $path_to_visual . 'browser_firefox.gif" width=100 height=100 alt="" /></a>';
+    $opera_link = variable_get('johnvsc-ie6-op-link', '');
+    $opera_markup = '<a href="' . $opera_link . '" target="blank"><img src="' . $path_to_visual . 'browser_opera.gif" width=100 height=100 alt="" /></a>';
+    $safari_link = variable_get('johnvsc-ie6-sa-link', '');
+    $safari_markup = '<a href="' . $safari_link . '" target="blank"><img src="' . $path_to_visual . 'browser_safari.gif" width=100 height=100 alt="" /></a>';
+    $chrome_link = variable_get('johnvsc-ie6-ch-link', '');
+    $chrome_markup = '<a href="' . $chrome_link . '" target="blank"><img src="' . $path_to_visual . 'browser_chrome.gif" width=100 height=100 alt="" /></a></div>';
+    $notice .= $explorer_markup;
+    $notice .= $firefox_markup;
+    $notice .= $opera_markup;
+    $notice .= $safari_markup;
+    $notice .= $chrome_markup;
+    print $notice;
+  }
+}

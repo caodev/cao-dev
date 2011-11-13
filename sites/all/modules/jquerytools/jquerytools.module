@@ -1,0 +1,139 @@
+<?php
+// $Id: jquerytools.module,v 1.1 2009/06/12 01:38:53 robloach Exp $
+
+/**
+ * @file
+ * Provides the jQuery Tools libraries (http://flowplayer.org/tools/).
+ */
+
+/**
+ * Implementation of hook_help().
+ *
+ * Provides some examples from the official site:
+ * http://flowplayer.org/tools/demos/index.html
+ */
+function jquerytools_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#jquerytools':
+      $output = '<p>'. t('<a href="@jquerytools">jQuery Tools</a> is a collection of the most important user-interface components for websites today. It provides tools for the following and some of their examples can be seen below...', array('@jquerytools' => 'http://flowplayer.org/tools/')) .'</p>';
+      $tools = array(t('Expose'), t('Flash Embed'), t('Overlay'), t('Scrollable'), t('Tabs'), t('Tooltip'));
+      $output .= theme('item_list', $tools);
+
+      /**
+       * Vertical Scrollable example
+       * http://flowplayer.org/tools/demos/scrollable/vertical.html
+       */
+      $scrollable = <<<SCROLLABLE
+<!-- root element for scrollable --> 
+<div class="scrollable">
+    <!-- root element for the items --> 
+    <div class="items"> 
+        <div>0</div>  <div>1</div>  <div>2</div>  <div>3</div>  <div>4</div>  
+        <div>5</div>  <div>6</div>  <div>7</div>  <div>8</div>  <div>9</div>  
+        <div>10</div> <div>11</div> <div>12</div> <div>13</div> <div>14</div>  
+    </div>
+</div>
+SCROLLABLE;
+      jquerytools_add('scrollable', 'div.scrollable');
+      drupal_add_css(drupal_get_path('module', 'jquerytools') .'/jquerytools/scrollable-minimal.css');
+
+      /**
+       * Toolbar example
+       * http://flowplayer.org/tools/demos/tooltip/index.html
+       */
+      $tooltip = <<<TOOLTIP
+<!-- trigger element --> 
+<a href="#" id="trigger"> 
+    Move the mouse over this box to see the tooltip in action. 
+</a>
+<!-- tooltip element --> 
+<div class="tooltip"> 
+    <h3>The Tooltip</h3>
+    <p> 
+        <strong>A great tool for designing better layouts and more intuitive user-interfaces.</strong> 
+    </p>
+</div>
+TOOLTIP;
+      jquerytools_add('tooltip', '#trigger');
+      drupal_add_css(drupal_get_path('module', 'jquerytools') .'/jquerytools/tooltip.css');
+
+      /**
+       * Flash Embed example
+       * http://flowplayer.org/tools/demos/flashembed/index.html
+       */
+      $flashembed = '<div id="clock" style="width: 250px; height: 250px;"></div>';
+      jquerytools_add('flashembed', '#clock', 'http://flowplayer.org/swf/clock.swf');
+
+      /**
+       * Tabs example
+       * http://flowplayer.org/tools/demos/tabs/index.html
+       */
+      $output .= <<<TABS
+<h3>Examples</h3>
+<ul class="tabs"> 
+    <li><a href="#tooltip">Tooltip</a></li> 
+    <li><a href="#scrollable">Scrollable</a></li> 
+    <li><a href="#flash">Flash Embed</a></li> 
+</ul>
+<div class="panes"> 
+    <div>$tooltip</div> 
+    <div>$scrollable</div> 
+    <div>$flashembed</div>
+</div>
+TABS;
+      jquerytools_add('tabs', 'ul.tabs', 'div.panes > div');
+      drupal_add_css(drupal_get_path('module', 'jquerytools') .'/jquerytools/tabs.css');
+
+      return $output;
+    break;
+  }
+}
+
+/**
+ * Adds a jQuery Tool to the page.
+ *
+ * See jquerytools_help() for examples of using this function.
+ *
+ * @param $tool
+ *   The jQuery Tool to be added. Available options are:
+ *   - expose
+ *   - flashembed
+ *   - overlay
+ *   - scrollable
+ *   - tabs
+ *   - tooltip
+ * @param $selector
+ *   (optional) The jQuery selector to apply the tool to.
+ * @param $options
+ *   (optional) Any additional options you would like to apply to the tool.
+ *
+ * @see jquerytools_help() 
+ */
+function jquerytools_add($tool, $selector = NULL, $options = NULL) {
+  static $tools;
+
+  // Add the base jQuery Tools Drupal behavior if it hasn't been setup yet.
+  if (!isset($tools)) {
+    drupal_add_js(drupal_get_path('module', 'jquerytools') .'/jquerytools.js');
+    $tools = array();
+  }
+
+  // Add the tool itself to the page.
+  if (!isset($tools[$tool])) {
+    drupal_add_js(drupal_get_path('module', 'jquerytools') .'/jquerytools/tools.'. $tool .'.js');
+    $tools[$tool] = array();
+  }
+
+  // Add the selector effect.
+  if (isset($selector) && !isset($tools[$tool][$selector])) {
+    $settings = array(
+      'jquerytools' => array(
+        $tool => array(
+          $selector => $options,
+        )
+      )
+    );
+    drupal_add_js($settings, 'setting');
+    $tools[$tool][$selector] = TRUE;
+  }
+}

@@ -1,0 +1,389 @@
+<?php
+// $Id: itunes.module,v 1.13 2010/07/16 12:50:25 drewish Exp $
+
+define('ITUNES_EXPLICIT_YES', 1);
+define('ITUNES_EXPLICIT_CLEAN', 2);
+
+/**
+ * @file
+ * Provides an iTunes view style for feeds.
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+function itunes_menu() {
+  $items = array();
+  $items['admin/settings/itunes'] = array(
+    'title' => 'iTunes',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('itunes_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'itunes.admin.inc',
+    'description' => 'Determine which node types can track iTunes information.'
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function itunes_theme() {
+  return array(
+    'itunes_admin_settings' => array(
+      'arguments' => array('form'),
+      'file' => 'itunes.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function itunes_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'itunes') . '/views',
+  );
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function itunes_help($section, $arg) {
+  switch ($section) {
+    case 'admin/settings/itunes':
+      return '<p>'. t("This form allows you to determine which content types need to be have the iTunes feed item data fields added to them.") .'<br />'
+        . t("If the <a href='!filefield-url'>FileField</a> module is installed then you can choose which field to include as an enclosure in RSS feeds.", array('!filefield-url' => url('http://drupal.org/project/filefield'))) .'</p>';
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * We add in extra iTunes specific information to the node edit forms.
+ */
+function itunes_form_alter(&$form, &$form_state, $form_id) {
+  // We only alter the selected node edit forms
+  if (isset($form['#id']) && $form['#id'] == 'node-form') {
+    $types = variable_get('itunes_types', array('audio'));
+    if (isset($form['#node']->type) && in_array($form['#node']->type, $types)) {
+      $node = $form['#node'];
+      $form['itunes'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('iTunes feed information'),
+        '#collapsible' => TRUE,
+        '#group' => 'additional_settings',
+        '#weight' => 0,
+        '#tree' => TRUE,
+      );
+      $form['itunes']['subtitle'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Subtitle'),
+        '#default_value' => isset($node->itunes['subtitle']) ? $node->itunes['subtitle'] : '',
+        '#maxlength' => 255,
+        '#description' => t("The contents of this tag are shown in the Description column in iTunes. The subtitle displays best if it is only a few words long."),
+      );
+      $form['itunes']['summary'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Summary'),
+        '#default_value' => isset($node->itunes['summary']) ? $node->itunes['summary'] : '',
+        '#maxlength' => 4000,
+        '#rows' => 5,
+        '#description' => t('The contents of this tag are shown in a separate window that appears when the "circled i" in the Description column is clicked. It also appears on the iTunes page for your podcast.'),
+      );
+      $form['itunes']['explicit'] = array(
+        '#type' => 'select', '#title' => t('Explicit'),
+        '#options' => array(0 => 'Unspecified', ITUNES_EXPLICIT_YES => 'Yes', ITUNES_EXPLICIT_CLEAN => 'Clean'),
+        '#default_value' => isset($node->itunes['explicit']) ? $node->itunes['explicit'] : 0,
+        '#description' => t('If select "yes", an "explicit" parental advisory graphic will appear next to your podcast artwork on the iTunes Music Store, and in the Name column in iTunes. If you select "clean", the parental advisory type is considered Clean, meaning that no explicit language or adult content is included anywhere in the episode, and a "clean" graphic will appear.'),
+      );
+      $form['itunes']['block'] = array(
+        '#type' => 'checkbox', '#title' => t('Block'),
+        '#default_value' => isset($node->itunes['block']) ? $node->itunes['block'] : 0,
+        '#description' => t('Check this to prevent this episode from appearing in the iTunes Podcast directory. For example, you may want a specific episode blocked from iTunes if its content might cause the feed to be removed from iTunes.'),
+      );
+    }
+  }
+}
+
+/**
+ * Implements hook_content_extra_fields()
+ *
+ * CCK hook to allow moving the iTunes field set around in the node edit form.
+ */
+function itunes_content_extra_fields($type_name) {
+  return array(
+    'itunes' => array(
+      'label' => t('iTunes feed information'),
+      'description' => t('iTunes specific information.'),
+      'weight' => 0,
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function itunes_nodeapi(&$node, $op, $arg) {
+  $types = variable_get('itunes_types', array('audio'));
+  if (in_array($node->type, $types)) {
+    switch ($op) {
+      case 'load':
+        $result = db_query("SELECT * FROM {itunes_item} WHERE vid = %d", $node->vid);
+        if ($result) {
+          return array('itunes' => db_fetch_array($result));
+        }
+        break;
+
+      case 'update':
+        // Delete and insert rather than updating in case the node doesn't have
+        // an existing record.
+        db_query("DELETE FROM {itunes_item} WHERE vid = %d", $node->vid);
+        // INTENTIONALLY NO BREAK HERE.
+      case 'insert':
+        if (!empty($node->itunes)) {
+          $record = array_merge($node->itunes, array('nid' => $node->nid, 'vid' => $node->vid));
+          drupal_write_record('itunes_item', $record);
+        }
+        break;
+
+      case 'delete':
+        db_query("DELETE FROM {itunes_item} WHERE nid = %d", $node->nid);
+        break;
+
+      case 'delete revision':
+        db_query("DELETE FROM {itunes_item} WHERE vid = %d", $node->vid);
+        break;
+
+      case 'rss item':
+        $ret = array();
+
+        // File enclosure.
+        $fields = variable_get('itunes_enclosure_source', array());
+        if (!empty($fields[$node->type])) {
+          // This variable won't be set unless content.module is enabled.
+          $content_types = content_types();
+          $content = $content_types[$node->type];
+          foreach ($content['fields'] as $field_name => $field) {
+            if ($fields[$node->type] == $field_name) {
+              $enclosure_field = $field;
+              break;
+            }
+          }
+          if ($field['type'] == 'filefield') {
+            if (!empty($node->{$fields[$node->type]}[0]['fid'])) {
+              $file = (array) $node->{$fields[$node->type]}[0];
+              $ret[] = array(
+                'key' => 'enclosure',
+                'value' => '',
+                'attributes' => array(
+                  'url' => file_create_url($file['filepath']),
+                  'length' => $file['filesize'],
+                  'type' => $file['filemime'],
+                ),
+              );
+              if (!empty($file['data']['duration'])) {
+                $ret[] = array(
+                  'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+                  'key' => 'itunes:duration',
+                  'value' => (int) $file['data']['duration'],
+                );
+              }
+            }
+          }
+          elseif ($field['type'] == 'emaudio') {
+            if (!empty($node->{$fields[$node->type]}[0]['value'])) {
+              $file = $node->{$fields[$node->type]}[0];
+              $ret[] = array(
+                'key' => 'enclosure',
+                'value' => '',
+                'attributes' => array(
+                  'url' => $file['value'],
+                  'length' => !empty($file['data']['size']) ? $file['data']['size'] : 0,
+                  'type' => !empty($file['data']['mime']) ? $file['data']['mime'] : 'audio/mpeg',
+                ),
+              );
+              if (!empty($file['data']['duration'])) {
+                $ret[] = array(
+                  'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+                  'key' => 'itunes:duration',
+                  'value' => (int) $file['data']['duration'],
+                );
+              }
+            }
+          }
+        }
+
+        // Keyword tags.
+        $vocabs = variable_get('itunes_keyword_source', array());
+        if (!empty($vocabs[$node->type])) {
+          $keywords = array();
+          foreach ($node->taxonomy as $tid => $term) {
+            if ($term->vid == $vocabs[$node->type]) {
+              $keywords[] = $term->name;
+            }
+          }
+          if (!empty($keywords)) {
+            $ret[] = array(
+              'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+              'key' => 'itunes:keywords',
+              'value' => implode(',', array_slice($keywords, 0, 12)),
+            );
+          }
+        }
+
+        // Author.
+        $author_source = variable_get('itunes_author_source', array());
+        if (!empty($author_source[$node->type])) {
+          if ($author_source[$node->type] == 'node_author') {
+            $author = strip_tags(theme('username', $node));
+          }
+          else {
+            $author_field = $node->$author_source[$node->type];
+            if (!empty($author_field[0]['safe'])) {
+              $author = $author_field[0]['view'];
+            }
+            elseif (!empty($author_field[0]['view'])) {
+              foreach ($author_field as $authors) {
+                $authors_view[] = strip_tags(($authors['view']));
+              }
+              $author = implode($authors_view, ', ');
+            }
+          }
+          if ($author) {
+            $ret[] = array(
+              'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+              'key' => 'itunes:author',
+              'value' => $author,
+            );
+          }
+        }
+
+        // Remaining elements.
+        if (!empty($node->itunes)) {
+          $ret[] = array(
+            'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+            'key' => 'itunes:summary',
+            'value' => $node->itunes['summary'],
+          );
+          $ret[] = array(
+            'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+            'key' => 'itunes:subtitle',
+            'value' => $node->itunes['subtitle'],
+          );
+          if ($node->itunes['block']) {
+            $ret[] = array(
+              'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+              'key' => 'itunes:block',
+              'value' => 'yes',
+            );
+          }
+          $ret[] = array(
+            'namespace' => array('xmlns:itunes' => 'http://www.itunes.com/dtds/podcast-1.0.dtd'),
+            'key' => 'itunes:explicit',
+            'value' => itunes_explicit($node->itunes['explicit']),
+          );
+        }
+        return $ret;
+    }
+  }
+}
+
+function itunes_explicit($value) {
+  if ($value == ITUNES_EXPLICIT_YES) {
+    return 'yes';
+  }
+  if ($value == ITUNES_EXPLICIT_CLEAN) {
+    return 'clean';
+  }
+  return 'no';
+}
+
+/**
+ * Get an array with the iTunes podcast categories.
+ *
+ * @see http://www.apple.com/itunes/whatson/podcasts/specs.html#categories
+ */
+function itunes_categories() {
+  return array(
+    'Arts' => array(
+      'Design',
+      'Fashion & Beauty',
+      'Food',
+      'Literature',
+      'Performing Arts',
+      'Visual Arts',
+    ),
+    'Business' => array(
+      'Business News',
+      'Careers',
+      'Investing',
+      'Management & Marketing',
+      'Shopping',
+    ),
+    'Comedy' => array(),
+    'Education' => array(
+      'Education Technology',
+      'Higher Education',
+      'K-12',
+      'Language Courses',
+      'Training',
+    ),
+    'Games & Hobbies' => array(
+      'Automotive',
+      'Aviation',
+      'Hobbies',
+      'Other Games',
+      'Video Games',
+    ),
+    'Government & Organizations' => array(
+      'Local',
+      'National',
+      'Non-Profit',
+      'Regional',
+    ),
+    'Health' => array(
+      'Alternative Health',
+      'Fitness & Nutrition',
+      'Self-Help',
+      'Sexuality',
+    ),
+    'Kids & Family' => array(),
+    'Music' => array(),
+    'News & Politics' => array(),
+    'Religion & Spirituality' => array(
+      'Buddhism',
+      'Christianity',
+      'Hinduism',
+      'Islam',
+      'Judaism',
+      'Other',
+      'Spirituality',
+    ),
+    'Science & Medicine' => array(
+      'Medicine',
+      'Natural Sciences',
+      'Social Sciences',
+    ),
+    'Society & Culture' => array(
+      'History',
+      'Personal Journals',
+      'Philosophy',
+      'Places & Travel',
+    ),
+    'Sports & Recreation' => array(
+      'Amateur',
+      'College & High School',
+      'Outdoor',
+      'Professional',
+    ),
+    'Technology' => array(
+      'Gadgets',
+      'Tech News',
+      'Podcasting',
+      'Software How-To',
+    ),
+    'TV & Film' => array(),
+  );
+}

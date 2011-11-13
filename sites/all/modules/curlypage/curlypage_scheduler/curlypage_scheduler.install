@@ -1,0 +1,122 @@
+<?php
+// $Id: curlypage_scheduler.install,v 1.1.2.4 2010/03/02 17:19:56 manfer Exp $
+
+/**
+ * @file
+ * Install and uninstall schema and functions for the curlypage_scheduler module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function curlypage_scheduler_schema() {
+  return array(
+    'curlypage_scheduler' => array(
+      'description' => 'The main table to hold the curlypage scheduler data.',
+      'fields' => array(
+        'cpschid' => array(
+          'description' => 'Unique curlypage schedule id',
+          'type' => 'serial',
+          'not null' => TRUE,
+        ),
+        'cpid' => array(
+          'description' => 'The foreign key to curlypage.cpid',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'enable_on' => array(
+          'description' => 'The UNIX UTC timestamp when to enable curlypage',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'disable_on' => array(
+          'description' => 'The UNIX UTC timestamp when to disable curlypage',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'repeat_enable' => array(
+          'description' => 'Repeat enabled status. (1 = enabled, 0 = disabled).',
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 0,
+          'size' => 'tiny',
+        ),
+        'repeat_days' => array(
+          'description' => 'Repeat schedule every this configured days.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'repeat_hours' => array(
+          'description' => 'Repeat schedule every this configured hours.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'repeat_until' => array(
+          'description' => 'The UNIX UTC timestamp until the repeat will take place.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+      ),
+      'indexes' => array(
+        'cp_enable_on' => array('enable_on'),
+        'cp_disable_on' => array('disable_on'),
+        'cp_cpid' => array('cpid'),
+      ),
+      'primary key' => array('cpschid'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function curlypage_scheduler_install() {
+  drupal_install_schema('curlypage_scheduler');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function curlypage_scheduler_uninstall() {
+  drupal_uninstall_schema('curlypage_scheduler');
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function curlypage_scheduler_enable() {
+
+  // test if any curlypage have been deleted while curlypage scheduler have been
+  // disabled and delete those rows from curlypage_scheduler
+  $result = db_query('SELECT cpsch.cpid FROM {curlypage_scheduler} cpsch LEFT JOIN {curlypages} cp ON cpsch.cpid = cp.cpid WHERE cp.cpid IS NULL');
+
+  while ($curlypage = db_fetch_object($result)) {
+
+    db_query('DELETE FROM {curlypages_scheduler} WHERE cpid = %d', array(':cpid' => $curlypage->cpid));
+
+  }
+
+}
+
+/**
+ * Implementation of hook_update_N().
+ */
+function curlypage_scheduler_update_6301() {
+  $ret = array();
+  db_add_field($ret, 'curlypage_scheduler', 'repeat_enable', array('type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 0, 'description' => 'Repeat enabled status. (1 = enabled, 0 = disabled).'));
+  db_add_field($ret, 'curlypage_scheduler', 'repeat_days', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'Repeat schedule every this configured days.'));
+  db_add_field($ret, 'curlypage_scheduler', 'repeat_hours', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'Repeat schedule every this configured hours.'));
+  db_add_field($ret, 'curlypage_scheduler', 'repeat_until', array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The UNIX UTC timestamp until the repeat will take place.'));
+  return $ret;
+}

@@ -1,0 +1,14 @@
+; $Id: domain_curlypages.info,v 1.1.2.1 2010/01/10 00:17:04 manfer Exp $
+name = Domain Curlypages
+description = Provides domain specific visibility settings for curlypages using publishing options in domain access module.
+package = Domain Access
+dependencies[] = domain
+dependencies[] = curlypage
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-07-03
+version = "6.x-3.4"
+core = "6.x"
+project = "curlypage"
+datestamp = "1278198013"
+

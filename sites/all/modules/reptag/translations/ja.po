@@ -1,0 +1,489 @@
+# $Id: ja.po,v 1.1 2008/06/04 12:21:07 profix898 Exp $
+# -----------------------------------------------------------------------------
+# Japanese translation of Drupal (reptag.module)
+#
+# Copyright (c) 2006-2007  Drupal Japan  ( http://drupal.jp/ )  /
+#                          Drupal Nippon ( http://drupon.org/ ) /
+#                          Takafumi      ( jp.drupal@imagine **reverse order**)
+#
+# Generated from file:
+#  reptag_admin.inc,v 1.12.2.10 2007/02/26 21:07:36 profix898
+#  reptag.module,v 1.35.2.7 2007/03/03 15:52:01 profix898
+#  reptag_maintenance.inc,v 1.10.2.6 2007/02/19 01:13:01 profix898
+#  reptag_module.inc,v 1.1.2.4 2007/02/27 16:23:10 profix898
+#  reptag.info,v 1.2 2006/12/23 13:15:00 profix898
+#  reptag_ajax.inc,v 1.9.4.2 2007/02/27 01:58:22 profix898
+#
+# -----------------------------------------------------------------------------
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2007-03-12 22:05+0900\n"
+"Last-Translator: Takafumi <jp.drupal@imagine **reverse order**>\n"
+"Language-Team: Drupal Japan / Drupal Nippon\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: reptag_admin.inc:170 reptag.module:60
+#msgid "Modules"
+#msgstr "モジュール"
+
+#: reptag_admin.inc:221 reptag.module:69
+msgid "Roles / Permissions"
+msgstr "ユーザグループ / 権限"
+
+#: reptag_admin.inc:337 reptag.module:78
+msgid "Content Types"
+msgstr "コンテンツタイプ"
+
+#: reptag_admin.inc:836 reptag_maintenance.inc:42
+msgid "Process"
+msgstr "処理"
+
+#: reptag.module:35 reptag.info:0
+msgid "Rep[lacement]Tags"
+msgstr "リプ［レイスメント］タグ"
+
+#: reptag.module:36 reptag.info:0
+msgid "Replace special tags with user-defined content."
+msgstr "特殊タグをユーザが定義した内容で置き換えます。"
+
+#: reptag.module:43
+#msgid "Settings"
+#msgstr "環境設定"
+
+#: reptag.module:53
+msgid "General"
+msgstr "全般"
+
+#: reptag.module:88
+msgid "SiteWide Tags"
+msgstr "サイト全般タグ"
+
+#: reptag.module:97
+msgid "User Tags"
+msgstr "ユーザタグ"
+
+#: reptag.module:107
+msgid "RepTags"
+msgstr "RepTag"
+
+#: reptag.module:116
+msgid "Maintenance"
+msgstr "メンテナンス"
+
+#: reptag.module:292
+#msgid "Preview comment"
+#msgstr "コメントのプレビュー"
+
+#: reptag.module:323
+msgid "Rep[lacement]Tags - Help"
+msgstr "リプ［レイスメント］タグ － ヘルプ"
+
+#: reptag.module:399
+msgid "Additional Rep[lacement]Tags"
+msgstr "追加リプ［レイスメント］タグ"
+
+#: reptag.module:10
+msgid "administer reptag"
+msgstr "RepTagの管理"
+
+#: reptag.module:10
+msgid "manage sitewide reptags"
+msgstr "サイト全般のタグ管理"
+
+#: reptag.module:10
+msgid "manage user reptags"
+msgstr "ユーザのタグ管理"
+
+#: reptag.info:0
+msgid "reptag"
+msgstr "reptag"
+
+#: reptag_admin.inc:11
+msgid "General - Settings"
+msgstr "全般の設定"
+
+#: reptag_admin.inc:17
+msgid "Enable Rep[lacement]Tags"
+msgstr "リプ［レイスメント］タグを有効にする"
+
+#: reptag_admin.inc:23
+msgid "Enable Rep[lacement]Tags in Preview"
+msgstr "リプ［レイスメント］タグをプレビューで有効にする"
+
+#: reptag_admin.inc:29
+msgid "Show 'Rep[lacement]Tags - Help' section on add/edit node pages"
+msgstr "ノードページの追加・編集で「リプ［レイスメント］タグ － ヘルプ」を表示する"
+
+#: reptag_admin.inc:35
+msgid "Privilege SiteWide tags over User tags"
+msgstr "ユーザタグをサイト全般タグより優先させる"
+
+#: reptag_admin.inc:38
+msgid "By default users can override site wide tags with their own tags."
+msgstr "同じタグが定義されている場合、サイト全般タグとユーザタグのどちらを優先的に使用するかを指定してください。 チェックを入れると、デフォルトでユーザタグがサイト全般タグより優先して使用されるようになります。"
+
+#: reptag_admin.inc:44
+msgid "Expert - Settings"
+msgstr "高度な設定"
+
+#: reptag_admin.inc:51
+msgid "Enable Preview - Validation"
+msgstr "プレビューでの検証を有効にする"
+
+#: reptag_admin.inc:54
+msgid "Run html-filter on Preview to find invalid tags."
+msgstr "無効なタグを検出するためにプレビューでHTMLフィルタを実行する場合、ここにチェックを入れてください。"
+
+#: reptag_admin.inc:58
+msgid "Enable Partial PageCache"
+msgstr "部分的なページキャッシュを有効にする"
+
+#: reptag_admin.inc:61
+msgid "<i>(recommended at least for high traffic sites)</i><br />Expand static tags on form submission and cache the result. Only dynamic tags are processed on page view.<br />To disable dynamic tags completely check 'Disable Dynamic Replacements' below."
+msgstr "一部のページキャッシュを有効にする場合、ここにチェックを入れてください。<br /><i>（アクセス数の非常に多いサイトにお勧めします）</i><br />有効にすると、フォーム投稿時に静的なタグを展開し、結果をキャッシュします。 これにより、ページ表示の際には、動的なタグのみが処理されるようになります。 動的なタグを完全に無効にしたい場合は、以下の「動的な置き換えを無効にする」にチェックを入れてください。"
+
+#: reptag_admin.inc:64
+#msgid "none"
+#msgstr "無し"
+
+#: reptag_admin.inc:65
+msgid "permanent"
+msgstr "永続"
+
+#: reptag_admin.inc:68
+#msgid "Minimum cache lifetime"
+#msgstr "キャッシュの更新遅延期間"
+
+#: reptag_admin.inc:71
+msgid "Set the minimum cache lifetime before the cache expires."
+msgstr "キャッシュの更新を行わない期間を指定してください。"
+
+#: reptag_admin.inc:76
+msgid "Disable Dynamic Replacements"
+msgstr "動的な置き換えを無効にする"
+
+#: reptag_admin.inc:79
+msgid "Run reptag on form submission only (disables certain modules, e.g. System, Block, ...).<br />Modules affected by this option are marked 'Static' = 'No'."
+msgstr "動的なタグを完全に無効にしたい場合、ここにチェックを入れてください。 ここにチェックを入れると、RepTag の実行はフォーム投稿時のみになります。 この場合、特定のモジュール（例えば、System や Block）は無効になります。 <br />このオプションによって影響を受けるのは、「静的」が「いいえ」になっているモジュールです。"
+
+#: reptag_admin.inc:85
+msgid "Enable RepTag-Support for comments."
+msgstr "コメントでのRepTagサポートを有効にする"
+
+#: reptag_admin.inc:88
+msgid "Check this option to allow replacement tags (static tags only) for comments."
+msgstr "コメントでのタグ置き換え（静的タグのみ）を有効にしたい場合、ここにチェックを入れてください。"
+
+#: reptag_admin.inc:93
+msgid "Enable RepTag to process node titles"
+msgstr "ノードタイトルでのRepTag処理を有効にする"
+
+#: reptag_admin.inc:96
+msgid "<i>(Node title support is not available for full page rendered nodes!)</i><br />With this option enabled you can select node titles for processing under <a href=\"!content-types-settings\">Content Types</a>."
+msgstr "ノードのタイトルで RepTag を利用したい場合、ここにチェックを入れてください。<br /><i>（ノードタイトルのサポートは、全文表示では利用できません！）</i><br />このオプションが有効化されている場合、<a href=\"!content-types-settings\">コンテンツタイプの設定ページ</a>でノードタイトルが処理対象として選択できるようになります。"
+
+#: reptag_admin.inc:100
+msgid "Enable Debugging"
+msgstr "デバグ情報出力を有効にする"
+
+#: reptag_admin.inc:103
+msgid "Print debug listings (print_r) of module variables."
+msgstr "モジュール変数のリストを画面出力したい場合、ここにチェックを入れてください。"
+
+# 辞書によるとフェイスではなくフェース
+#: reptag_admin.inc:108
+msgid "UserInterface - Settings"
+msgstr "ユーザインターフェースの設定"
+
+#: reptag_admin.inc:115
+msgid "Add sample data to tags tables"
+msgstr "タグテーブルにサンプルデータを追加"
+
+#: reptag_admin.inc:118
+msgid "Adds a row of sample data to site-/user-tags tables."
+msgstr "サイトやユーザタグの定義時にサンプルデータを表示したい場合、ここにチェックを入れてください。"
+
+#: reptag_admin.inc:122
+msgid "Enable Javascript/AJAX - Support"
+msgstr "Javascript/AJAX サポートを有効にする"
+
+#: reptag_admin.inc:125
+msgid "Enable Javascript/AJAX - Support for administration pages."
+msgstr "管理ページで Javascript/AJAX サポートを有効にしたい場合、ここにチェックを入れてください。"
+
+#: reptag_admin.inc:129
+msgid "Use textareas for replacements"
+msgstr "置き換え文字列の入力にテキストエリアを使用する"
+
+#: reptag_admin.inc:132
+msgid "Use resizable textareas instead of textfields for replacements in tags table."
+msgstr "タグテーブルでの置き換え文字列の入力欄を、1行テキストフィールドではなく、サイズ変更可能なテキストエリアにしたい場合、ここにチェックを入れてください。"
+
+#: reptag_admin.inc:137
+msgid "Integration - Settings"
+msgstr "統合の設定"
+
+#: reptag_admin.inc:152
+msgid "Enable Workspace - Integration"
+msgstr "Workspaceとの統合を有効にする"
+
+#: reptag_admin.inc:155
+msgid "Adds a tab to the user's workspace. Available only with 'Workspace' module installed."
+msgstr "Workspace との統合を行うかどうかを指定してください。 チェックを入れると、ユーザの Workspace にタブが追加されます。 ただし、この機能は Workspace モジュールがインストールされている場合にのみ利用できます。"
+
+#: reptag_admin.inc:200
+#msgid "Yes"
+#msgstr "はい"
+
+#: reptag_admin.inc:200
+#msgid "No"
+#msgstr "いいえ"
+
+#: reptag_admin.inc:232
+msgid "Option / Module"
+msgstr "オプション / モジュール"
+
+#: reptag_admin.inc:235
+msgid "Module: !module"
+msgstr "モジュール： !module"
+
+#: reptag_admin.inc:256
+msgid "Plain text replacements only"
+msgstr "プレーンテキストの置き換えのみ"
+
+#: reptag_admin.inc:274
+msgid "Exclude Tags"
+msgstr "除外タグ"
+
+#: reptag_admin.inc:294
+msgid "Append"
+msgstr "追加"
+
+#: reptag_admin.inc:301
+msgid "Remove"
+msgstr "削除"
+
+#: reptag_admin.inc:320;542
+msgid "Add"
+msgstr "追加"
+
+#: reptag_admin.inc:342
+msgid "Choose the content fields to be processed. Reptag can only run on text fields.<br />Unselecting all fields for a content type will disable reptag for that particular type."
+msgstr "処理するコンテンツフィールドを選んでください。 RepTag はテキストフィールドでのみ実行できます。<br />コンテンツタイプの全フィールドを非選択にすると、特定のタイプでの RepTag を無効化できます。"
+
+#: reptag_admin.inc:348
+msgid "You only have the 'Body' field available because <a href=\"!cck\">CCK</a> is not installed."
+msgstr "<a href=\"!cck\">CCK</a> がインストールされていないため、「本文」フィールドのみが利用できます。"
+
+#: reptag_admin.inc:364
+#msgid "Title"
+#msgstr "タイトル"
+
+#: reptag_admin.inc:365;376
+msgid "text"
+msgstr "テキスト"
+
+#: reptag_admin.inc:375
+#msgid "Body"
+#msgstr "本文"
+
+#: reptag_admin.inc:417
+msgid "SiteWide - Rep[lacement]Tags"
+msgstr "サイト全般 - リプ［レイスメント］タグ"
+
+#: reptag_admin.inc:437
+msgid "User - Rep[lacement]Tags"
+msgstr "ユーザ - リプ［レイスメント］タグ"
+
+#: reptag_admin.inc:461
+msgid "<strong>MYTAG</strong>"
+msgstr "<strong>MYTAG</strong>"
+
+# あえて日本語に
+#: reptag_admin.inc:464
+msgid "<strong>Hello, I'm Mr. Repl Text.</strong>"
+msgstr "<strong>こんにちは、置換テキスト太郎です。</strong>"
+
+#: reptag_admin.inc:498
+#msgid "Edit"
+#msgstr "編集"
+
+#: reptag_admin.inc:505
+msgid "Del"
+msgstr "削除"
+
+#: reptag_admin.inc:555;575;630;661;713;853
+#msgid "Save configuration"
+#msgstr "設定の保存"
+
+#: reptag_admin.inc:568;623;650;702;731
+#msgid "The configuration options have been saved."
+#msgstr "オプション設定が保存されました。"
+
+#: reptag_admin.inc:620
+msgid "You dont have neither 'DOMDocument' class nor 'xml_parser_create' function available.<br />(X)HTML-Validation is not possible and will be disabled!"
+msgstr "この環境には、利用可能な 'DOMDocument' クラスと 'xml_parser_create' 関数のどちらもないため、(X)HTMLの検証はできません。<br />この機能は無効にされました！"
+
+#: reptag_admin.inc:639
+msgid "Module '!module' has been disabled!<br />It does not comply with all requirements (e.g. include dependencies, PEAR packages, ...)."
+msgstr "モジュール '!module' は、すべての要件を満たさないため無効にされました！<br />（例えば、依存関係にあるファイルや PEAR パッケージが含まれないなど）"
+
+#: reptag_admin.inc:653;705
+msgid "The cache has been flushed to reflect the new configuration."
+msgstr "新しい設定を反映するためにキャッシュがクリアされました。"
+
+#: reptag_admin.inc:753
+msgid "Tag"
+msgstr "タグ"
+
+#: reptag_admin.inc:753
+msgid "Replacement"
+msgstr "置き換え"
+
+#: reptag_admin.inc:771
+#msgid "Enabled"
+#msgstr "有効"
+
+#: reptag_admin.inc:771
+msgid "Module"
+msgstr "モジュール"
+
+#: reptag_admin.inc:771
+#msgid "Description"
+#msgstr "説明"
+
+#: reptag_admin.inc:771
+msgid "Static"
+msgstr "静的"
+
+#: reptag_admin.inc:771
+#msgid "Weight"
+#msgstr "優先順位"
+
+#: reptag_admin.inc:797
+msgid "<em>Enter tags to exclude seperated by '|', e.g. '$MYTAG$' or '#{BACK}(.*?){/BACK}#s'.</em>"
+msgstr "除外したいタグを '|' で区切って入力してください。 例： '$MYTAG$' や '#{BACK}(.*?){/BACK}#s'"
+
+#: reptag_admin.inc:807
+msgid "Exclude for role"
+msgstr "除外の対象ユーザグループ"
+
+#: reptag_admin.inc:807
+msgid "Tags"
+msgstr "タグ"
+
+#: reptag_admin.inc:820
+msgid "Enter tag to exclude:"
+msgstr "除外するタグの入力："
+
+#: reptag_admin.inc:836
+msgid "Field Label"
+msgstr "フィールドのラベル"
+
+#: reptag_admin.inc:836
+msgid "Type / Widget"
+msgstr "タイプ / 優先順位"
+
+#: reptag_admin.inc:854
+#msgid "Reset to defaults"
+#msgstr "デフォルトに戻す"
+
+#: reptag_ajax.inc:89
+msgid "Error: Tag already exists"
+msgstr "エラー： タグはすでに存在します"
+
+#: reptag_ajax.inc:93;115;142;161
+msgid "Error: Empty field(s)"
+msgstr "エラー： フィールドが空です"
+
+#: reptag_ajax.inc:110;138
+msgid "Error: Tag does not exist"
+msgstr "エラー： タグが存在しません"
+
+#: reptag_ajax.inc:157
+msgid "Error: Tag already in list"
+msgstr "エラー： タグはすでにリストにあります"
+
+#: reptag_ajax.inc:181
+msgid "Error: Invalid selection"
+msgstr "エラー： 無効な選択です"
+
+#: reptag_ajax.inc:193
+msgid "<em>Click to remove.</em>"
+msgstr "<em>クリックすると削除します。</em>"
+
+#: reptag_ajax.inc:194
+msgid "Close"
+msgstr "閉じる"
+
+#: reptag_ajax.inc:228
+msgid "Error: Nothing to list"
+msgstr "エラー： リストに何もありません"
+
+#: reptag_ajax.inc:265
+msgid "Rep[lacement]Tag"
+msgstr "リプ［レイスメント］タグ"
+
+#: reptag_ajax.inc:273
+msgid "Insert"
+msgstr "挿入"
+
+#: reptag_maintenance.inc:11
+msgid "RepTag - Maintenance"
+msgstr "RepTagのメンテナンス"
+
+#: reptag_maintenance.inc:17
+msgid "Regenerate all cached nodes"
+msgstr "全キャッシュノードの再生成"
+
+#: reptag_maintenance.inc:20
+msgid "Use this option to update all cached nodes."
+msgstr "すべてのキャッシュされたノードを更新したい場合は、このオプションを使用してください。"
+
+#: reptag_maintenance.inc:25
+msgid "Flush all cached nodes"
+msgstr "全キャッシュノードをクリア"
+
+#: reptag_maintenance.inc:28
+msgid "Use this option to clear the cache."
+msgstr "キャッシュをクリアしたい場合は、このオプションを使用してください。"
+
+#: reptag_maintenance.inc:34
+msgid "Switch Drupal to 'offline mode' for operation"
+msgstr "作業のためにDrupalを「オフラインモード」に切り替える"
+
+#: reptag_maintenance.inc:43
+msgid "per step"
+msgstr "/ ステップ"
+
+#: reptag_maintenance.inc:49;50;51;52
+msgid "!n nodes"
+msgstr "!n ノード"
+
+#: reptag_maintenance.inc:56;93
+msgid "Perform"
+msgstr "実行"
+
+#: reptag_maintenance.inc:82
+msgid "More than one option selected."
+msgstr "複数のオプションを選択しました。"
+
+#: reptag_maintenance.inc:85
+msgid "No option selected."
+msgstr "オプションが選択されていません。"
+
+#: reptag_maintenance.inc:108;177
+msgid "Maintenance operation successfully comleted."
+msgstr "メンテナンス作業は正常に完了しました。"
+
+#: reptag_maintenance.inc:160
+msgid "Regenerating cached nodes ..."
+msgstr "キャッシュノードの再生成中 ..."
+
+#: reptag_maintenance.inc:164
+msgid "Running maintenance ..."
+msgstr "メンテナンスの実行中 ..."
+

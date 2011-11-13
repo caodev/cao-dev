@@ -1,0 +1,252 @@
+<?php
+function taggly_help($path, $arg) {
+  switch ($path) {
+   case 'admin/help#taggly':
+      return t('Taggly Module');
+  }
+}
+function taggly_init() {
+	drupal_add_js(drupal_get_path('module','taggly').'/swfobject.js');
+	
+	
+}
+function taggly_theme() {
+  return array(
+    'taggly_contents' => array(
+      'arguments' => array(),
+    )
+  );
+}
+function taggly_menu() {
+  $items = array();
+
+  $items['admin/settings/taggly'] = array(
+    'title' => 'Taggly',
+    'description' => 'Define how Taggly looks and functions.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('taggly_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+  );
+ return $items; 
+}  
+
+function taggly_settings()
+{
+      $result_parameter=db_query("SELECT * FROM {tagcloud}");
+      while($row_parameter=db_fetch_array($result_parameter))
+      {
+      	$background=$row_parameter['background'];
+      	$foreground=$row_parameter['foreground'];
+      	$vid=$row_parameter['vocab_id'];
+      	$height=$row_parameter['height'];
+      	$width=$row_parameter['width'];
+      		if($row_parameter['wmode'])
+      			$wmode=1;
+      		else 
+      			$wmode=0;
+      }	
+	$form['background'] = array(
+	    '#type' => 'textfield',
+	  	'#title' => t('Background Color'),
+	    '#size' => 30,
+	    '#maxlength' => 20,
+	    '#default_value' => $background,
+	    '#description' => t('Choose the background color of the Embedded Flash without #'),
+  	);
+  	$form['transparent'] = array(
+		  '#type' => 'checkbox',
+		  '#title' => t('Enable transparent.'),
+		  '#return_value' => 1,
+		  '#default_value' => $wmode,
+  	);
+  	$form['foreground'] = array(
+	    '#type' => 'textfield',
+	  	'#title' => t('Text Color'),
+	    '#default_value' => $foreground,
+	    '#size' => 30,
+	    '#maxlength' => 20,
+	    '#description' => t('Enter color for the text in the cloud. Recommended to have it contrasting to the Background.'),
+  	);
+  	  	$form['height'] = array(
+	    '#type' => 'textfield',
+	  	'#title' => t('Height'),
+	    '#default_value' =>  $height,
+	    '#size' => 30,
+	    '#maxlength' => 20,
+	    '#description' => t('Enter height in "px" of the Embedded Flash'),
+  	);
+  	  	$form['width'] = array(
+	    '#type' => 'textfield',
+	  	'#title' => t('Width'),
+	    '#default_value' => $width,
+	    '#size' => 30,
+	    '#maxlength' => 20,
+	    '#description' => t('Enter width in "px" of the Embedded Flash'),
+  	);
+
+  	//$vocabularies = taxonomy_get_vocabularies();
+  	
+$vocab=taxonomy_get_vocabularies();
+$count=0;
+foreach ($vocab as $items)
+{
+	$vocabsarray[$items->vid]=$items->name;
+	$count++;
+}
+
+  	$form['vocabname'] = array(
+	    '#type' => 'select',
+	    '#title' => t('Choose Vocabulary'),
+  		'#default_value' => $vid,
+	    '#options' => $vocabsarray,
+	    '#description' => t('Choose the Vocabulary from which Terms need to be retrieved.'),
+  	); 
+  	 $form['add'] = array(
+	  '#type' => 'submit',
+	  '#title' => t('Update'),
+	  '#value' => t('Update settings'),
+	);
+
+if($count>0) {
+	return $form;  	
+	}
+else
+{
+$nullform['novacab'] = array(
+
+	'#value' => '<div class="message error">This module requires at least one vocabulary defined before configuration. </div>',
+
+	);
+	return $nullform;
+	
+}	
+
+}
+function taggly_settings_validate($form, &$form_state) {
+	$background = $form_state['values']['background'];
+	$foreground = $form_state['values']['foreground'];
+	$vid= $form_state['values']['vocabname'];
+	$height=$form_state['values']['height'];
+	$width=$form_state['values']['width'];
+
+	if(strpos($background,'#')>-1){
+		form_set_error('','# not allowed.');
+	}
+	if(strlen($background)>6){
+		form_set_error('','Lenth of the HexColor should not exceed 6 characters.');
+	}
+	
+	if(strpos($foreground,'#')>-1){
+		form_set_error('','# not allowed.');
+	}
+	if(strlen($foreground)>6){
+		form_set_error('','Lenth of the HexColor should not exceed 6 characters.');
+	}
+	if($height <10 || $width <10){
+		form_set_error('','The Width and Height cannot be less than 10');
+	}
+	
+	
+	
+}
+
+function taggly_settings_submit($form, &$form_state)
+{
+	$background = $form_state['values']['background'];
+	$foreground = $form_state['values']['foreground'];
+	$vid= $form_state['values']['vocabname'];
+	$height=$form_state['values']['height'];
+	$width=$form_state['values']['width'];
+	
+	if($form_state['values']['transparent'])
+		$wmode='transparent';
+	else 
+		$wmode='';
+	
+	drupal_set_message($transparent);
+	
+	if($background!='')
+		db_query("UPDATE {tagcloud} SET wmode = '%s', width = '%s', height ='%s' ,background = '%s'",$wmode,$width,$height,$background);
+	if($foreground!='')
+		db_query("UPDATE {tagcloud} SET wmode = '%s', width = '%s', height ='%s' ,foreground = '%s'",$wmode,$width,$height,$foreground);
+	if($vid!='')
+		db_query("UPDATE {tagcloud} SET wmode = '%s', width = '%s', height ='%s' ,vocab_id = %d",$wmode,$width,$height,$vid);
+		
+}
+
+function taggly_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks[0] = array(
+        'info'       => t('Taggly'),
+      	'pages'	=>'',
+      );
+      return $blocks;
+    case 'configure':
+      $form = array();
+
+      return $form;
+	
+    case 'view': default:
+       switch ($delta) {
+        case 0:
+           $block['subject'] = t('Tag Cloud');
+           $block['content'] = theme('taggly_contents');
+          break;
+
+      }
+      return $block;
+  }
+}
+
+function theme_taggly_contents() {
+
+	  $base=base_path();
+      
+      //parameters for swf
+      $result_parameter=db_query('SELECT * FROM {tagcloud}');
+      while($row_parameter=db_fetch_array($result_parameter))
+      {
+      	$background=$row_parameter['background'];
+      	$foreground=$row_parameter['foreground'];
+      	$vid=$row_parameter['vocab_id'];
+		$height=$row_parameter['height'];
+      	$width=$row_parameter['width'];
+      	$wmode=$row_parameter['wmode'];
+      }
+      //
+      
+      if($vid)
+      {
+      $tags .= '<root>';
+      	$terms=taxonomy_get_tree($vid);
+		$base=base_path();
+		foreach ($terms as $term)
+		{
+				$tags .= "<content name='".$term->name."' url='". $base ."taxonomy/term/".$term->tid ."' />";
+		}
+		$tags .= '</root>';
+	      
+	      $tagcloudUrl=drupal_get_path('module','taggly');
+
+	      $flashVars="bgcolor=0x$background&fontcolor=0x$foreground&tagglycontent=$tags";
+	      
+	      $content .=	'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" width="508" height="209" id="taggly" align="middle">
+    <param name="allowScriptAccess" value="sameDomain" />
+	<param name="allowScriptAccess" value="sameDomain" />
+	<param name="allowFullScreen" value="false" />
+    <param name="flashvars" value="bgcolor=0xffffff&fontcolor=0x000000" />		
+	<param name="movie" value="taggly.swf" /><param name="quality" value="high" />
+    <param name="scale" value="showall" /><param name="bgcolor" value="#ffffff" />
+    <param name="menu" value="false" />
+    	
+		<embed src="'.$base.$tagcloudUrl.'/taggly.swf" menu="false" flashvars="'.$flashVars.'" quality="high" scale="showall" bgcolor="'. $background .'" wmode="'.$wmode.'" width="'.$width.'" height="'.$height.'" name="taggly" align="middle" allowScriptAccess="sameDomain" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+	</object>';
+	return $content;
+
+      }
+    else 
+    return null;
+}
+

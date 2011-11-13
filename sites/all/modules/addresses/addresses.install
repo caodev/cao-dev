@@ -1,0 +1,33 @@
+<?php
+/**
+ * @author Bruno Massa
+ * @file
+ * Installation / uninstallation routines.
+ */
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function addresses_uninstall() {
+  module_load_include('inc', 'addresses');
+
+  // Delete variables
+  variable_del('addresses_country_list');
+
+  $countries = _addresses_country_get();
+  foreach (array_keys($countries) as $country) {
+    variable_del('addresses_format_'. $country);
+  }
+  variable_del('addresses_format_default');
+}
+
+/**
+ * Implementation of hook_update_N().
+ */
+function addresses_update_6106() {
+  // Clear address format's as tokens have changed
+  $ret[] = update_sql("DELETE FROM {variable} WHERE name LIKE 'addresses_format_%'");
+  return $ret;
+}
+
+// vim: ts=2 sw=2 et syntax=php

@@ -1,0 +1,16 @@
+dl.adr {
+  margin: 0 0 1em;
+}
+
+dl.adr dt {
+  display: none;
+}
+
+dl.adr dd {
+  margin: 0;
+}
+
+dl.adr dd.city,
+dl.adr dd.region {
+  display: inline;
+}

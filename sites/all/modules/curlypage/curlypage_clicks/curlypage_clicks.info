@@ -1,0 +1,14 @@
+; $Id: curlypage_clicks.info,v 1.1.2.1 2010/01/15 00:30:57 manfer Exp $
+name = Curlypage clicks
+description = Adds clicks track to curlypages.
+package = Curlypage
+core = 6.x
+dependencies[] = curlypage
+files[] = curlypage_clicks.module
+files[] = curlypage_clicks.install
+; Information added by drupal.org packaging script on 2010-07-03
+version = "6.x-3.4"
+core = "6.x"
+project = "curlypage"
+datestamp = "1278198013"
+

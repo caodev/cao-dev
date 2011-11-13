@@ -1,0 +1,299 @@
+BODY
+{
+	background-color: #000000;
+}
+#footer UL LI A.active
+{
+	color: #000000;
+	font-weight: bold;
+}
+.main-wrapper
+{
+	background-image: url(../images/bg-main-wrapper-light.png);
+	background-repeat: repeat-x;
+	background-position: bottom center;
+	padding-top: 30px;
+	padding-bottom: 20px;
+	background-color: #FFFFFF;
+}
+A, A:link, A:visited
+{
+	color: #B64D00;
+}
+#button-link A:link, #button-link A:visited
+{
+	position: relative;
+	background-color: #CCCCCC;
+}
+#button-link A:hover
+{
+	background-color: #E5E5E5;
+}
+.profile DT
+{
+	background-color: #CCC;
+	text-align: left;
+	padding: 5px;
+	width: 95%;
+	float: none;
+	margin-bottom: 15px;
+	margin-left: 0px;
+}
+TR.even, TR.even TD
+{
+	background-color: #CCCCCC;
+	border-bottom: 1px none #0F0F0F;
+}
+TR.odd, TR.odd TD
+{
+	background-color: #A9A9A9;
+	border-bottom: 1px none #121212;
+}
+.header-group-wrapper
+{
+	background-image: url(../images/bg-header-wrapper-light.png);
+	height: 45px;
+}
+.primary-menu-inner UL.sf-menu LI
+{
+	border-right: 1px solid #CCCCCC;
+}
+#visual-bottom #artist-page-link
+{
+	background-color: #A8A8A8;
+}
+.form-item INPUT, .form-item SELECT, .form-item TEXTAREA
+{
+	background-color: #E5E5E5;
+	border: 1px solid #A8A8A8;
+	color: #121212;
+	background-image: none;
+	background-position: 100% 90%;
+	background-repeat: repeat-x;
+	padding: 8px;
+	margin-bottom: 7px;
+}
+FIELDSET
+{
+	border: 11px solid #A8A8A8;
+}
+.username-check-informer, HTML.js INPUT.form-autocomplete
+{
+	background-color: #E5E5E5;
+}
+FORM INPUT.form-submit
+{
+	margin: 15px 2px 2px;
+	padding: 10px;
+	background-color: #E5E5E5;
+	border: 1px solid #A9A9A9;
+	color: #555555;
+	cursor: pointer;
+}
+.calendar-calendar TH
+{
+	color: #555;
+	background-color: #A9A9A9;
+	text-align: center;
+	margin: 0;
+}
+.calendar-calendar TH A
+{
+	font-weight: bold;
+	color: #FFF;
+	background-color: #CCC;
+}
+.calendar-calendar TD
+{
+	width: 12%;
+/*14% is about 1/7 of total table width*/
+	min-width: 12%;
+	border: 1px solid #111;
+	color: #777;
+	text-align: right;
+	vertical-align: top;
+	margin: 0;
+	padding: 0;
+}
+.calendar-calendar .week
+{
+	clear: both;
+	font-style: normal;
+	color: #555;
+	font-size: 0.8em;
+}
+.calendar-calendar TH.days
+{
+	color: #CCC;
+	background-color: #224;
+	text-align: center;
+	padding: 1px;
+	margin: 0;
+}
+.calendar-calendar DIV.day
+{
+	float: right;
+	text-align: center;
+	padding: 0.125em 0.25em 0;
+	margin: 0;
+	background-color: #090909;
+	border: 1px solid #7F7F7F;
+	border-width: 0 0 1px 1px;
+	clear: both;
+	width: 1.5em;
+}
+.calendar-calendar DIV.calendar
+{
+	background-color: transparent;
+	border: 1px none #111;
+	text-align: left;
+	margin: 0 0.25em 0.25em 0;
+	width: 96%;
+	float: right;
+/*needed to keep IE from hiding the floating day number*/
+	clear: both;
+}
+.calendar-calendar DIV.title A
+{
+	color: #000;
+}
+.calendar-calendar DIV.title A:hover
+{
+	color: #C00;
+}
+TABLE.calendar-legend
+{
+	background-color: #CCC;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+.calendar-calendar TD.calendar-agenda-hour
+{
+	font-family: serif;
+	text-align: right;
+	border: none;
+	border-top: 1px dotted #333;
+	padding-top: 0.25em;
+	width: 1%;
+}
+.calendar-calendar TD.calendar-agenda-items
+{
+	border: 1px dotted #333;
+	text-align: left;
+}
+.calendar-calendar DIV.calendar DIV.inner .calendar-agenda-empty
+{
+	width: 100%;
+	text-align: center;
+	vertical-align: middle;
+	padding: 1em 0;
+	background-color: #FFF;
+}
+.calendar-calendar DIV.date-nav
+{
+	background-color: #FFF;
+	color: #777;
+	padding: 0.2em;
+	width: auto;
+	border: 1px none #333;
+}
+.calendar-calendar DIV.date-nav A, .calendar-calendar DIV.date-nav H3
+{
+	color: #777;
+}
+.calendar-calendar .date-heading H3
+{
+	font-size: 18px;
+}
+.calendar-calendar TH.days
+{
+	background-color: #DDD;
+	color: #777;
+	font-weight: bold;
+	border: 1px solid #AAA;
+}
+.calendar-calendar TD.empty
+{
+	background: #DDD;
+	border-color: #AAA;
+}
+.calendar-calendar TABLE.mini TD.empty
+{
+	background: #222;
+	border-color: #FFF;
+}
+.calendar-calendar TD DIV.day
+{
+	border: 1px none #CCC;
+	border-top: none;
+	border-right: none;
+	margin-bottom: 2px;
+}
+.calendar-calendar TABLE TR TD.today DIV.day
+{
+	background-color: #414141;
+}
+.calendar-calendar TD .inner DIV, .calendar-calendar TD .inner DIV A
+{
+	background: #DDD;
+}
+.calendar-calendar TD .inner DIV.calendar DIV, .calendar-calendar TD .inner DIV.calendar DIV A
+{
+	border: medium inherit transparent;
+	background: transparent;
+	padding: 0 2px;
+}
+.calendar-calendar TD .inner DIV.calendar DIV.calendar-more, .calendar-calendar TD .inner DIV.calendar DIV.calendar-more A
+{
+	color: #444;
+	background: #FFF;
+	text-align: right;
+}
+.calendar-calendar TD .inner .view-field, .calendar-calendar TD .inner .view-field A
+{
+	color: #444;
+	font-weight: normal;
+}
+.calendar-calendar TD .inner DIV.day A
+{
+	color: #555555;
+}
+.calendar-calendar TABLE TR TD.today A:link
+{
+	background-color: transparent;
+	color: #FFFFFF;
+}
+.calendar-calendar TR TD.today, .calendar-calendar TR.odd TD.today, .calendar-calendar TR.even TD.today
+{
+	background-color: #777777;
+	color: #0D0D0D;
+}
+.resizable-textarea .grippie
+{
+	height: 9px;
+	overflow: hidden;
+	border: 1px solid #FFF;
+	border-top-width: 0;
+	cursor: s-resize;
+	margin-bottom: 8px;
+	background-color: #7F7F7F;
+}
+#content-tabs UL.primary LI A.active:link, #content-tabs UL.primary LI A.active:visited
+{
+	color: #777;
+	padding-bottom: 2px;
+	background-position: 0 -70px;
+}
+#content-tabs-inner
+{
+	border-left: 9px solid #E4E4E4;
+}
+#content-tabs UL.primary LI A:link, #content-tabs UL.primary LI A:visited, #content-tabs UL.secondary LI A:link, #content-tabs UL.secondary LI A:visited
+{
+	color: #DDD;
+}
+#content-tabs UL.primary LI A:hover, #content-tabs UL.primary LI A:focus
+{
+	color: #777;
+}

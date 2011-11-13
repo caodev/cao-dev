@@ -1,0 +1,443 @@
+<?php
+// $Id: curlypage_clicks.module,v 1.1.2.6.2.3 2010/06/17 10:23:31 manfer Exp $
+/**
+ * @file
+ * Adds a clicks statistics system to curlypage module.
+ *
+ */
+
+/**
+ * Implements hook_menu.
+ */
+function curlypage_clicks_menu() {
+  $items['admin/build/curlypage/clicks'] = array(
+    'title' => 'Clicks',
+    'page callback' => 'curlypage_clicks_list',
+    'access arguments' => array('administer curlypages'),
+    'type' => MENU_LOCAL_TASK,
+    'description' => 'Display clicks count of curlypages',
+  );
+  $items['admin/build/curlypage/%curlypage/clicks'] = array(
+    'title' => 'Detail clicks log for this curlypage',
+    'page callback' => 'curlypage_clicks_detail_list',
+    'page arguments' => array(3),
+    'access arguments' => array('administer curlypages'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/curlypage/%curlypage/resetclicks'] = array(
+    'title' => 'Reset clicks',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('curlypage_clicks_reset', 3),
+    'access arguments' => array('administer curlypages'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['admin/build/curlypage/clicks/%curlypage_click/delete'] = array(
+    'title' => 'Delete click',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('curlypage_clicks_delete_click', 4),
+    'access arguments' => array('administer curlypages'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Loading one, more or all clicks.
+ */
+function curlypage_click_load($cpclid = NULL) {
+  static $curlypage_clicks;
+
+  if (!is_array($curlypage_clicks)) {
+
+    if (is_numeric($cpclid)) {
+      $curlypage_click = db_fetch_object(db_query("SELECT * FROM {curlypage_clicks_detail} WHERE cpclid = %d", array(':cpclid' => $cpclid)));
+      return $curlypage_click;
+
+    }
+    else {
+      $result = db_query("SELECT * FROM {curlypage_clicks_detail}");
+      $curlypage_clicks = array();
+
+      while ($curlypage_click = db_fetch_object($result)) {
+        $curlypage_clicks[$curlypage_click->cpclid] = $curlypage_click;
+      }
+    }
+  }
+
+  if (is_array($curlypage_clicks)) {
+
+    if (is_numeric($cpclid)) {
+      return $curlypage_clicks[$cpclid];
+    }
+    elseif (is_array($cpclid)) {
+      return array_intersect_key($curlypage_clicks, array_flip($cpclid));
+    }
+    else {
+      return $curlypage_clicks;
+    }
+  }
+}
+
+/**
+ * Implements hook_curlypage_click().
+ */
+function curlypage_clicks_curlypage_click($curlypage) {
+
+  // Adds one to clicks count if clicks track is enabled for this curlypage
+  db_query("UPDATE {curlypage_clicks} SET clicks = clicks + 1 WHERE cpid = %d AND enabled = %d", array(':cpid' => $curlypage->cpid, ':enabled' => 1));
+
+  // If the clicks have been updated means clicks track was enabled
+  // so we track the click
+  if (db_affected_rows()) {
+
+    global $user;
+
+    $click->cpid = $curlypage->cpid;
+    $click->uid = $user->uid;
+    $click->link = $curlypage->link;
+    $click->timestamp = $_SERVER['REQUEST_TIME'];
+    drupal_write_record('curlypage_clicks_detail', $click);
+
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_view().
+ */
+function curlypage_clicks_curlypage_view($curlypage, $status) {
+
+  switch ($status) {
+    case 'close':
+      db_query("UPDATE {curlypage_clicks} SET views_close = views_close + 1 WHERE cpid = %d AND enabled = %d", array(':cpid' => $curlypage->cpid, ':enabled' => 1));
+      break;
+    case 'open':
+      db_query("UPDATE {curlypage_clicks} SET views_open = views_open + 1 WHERE cpid = %d AND enabled = %d", array(':cpid' => $curlypage->cpid, ':enabled' => 1));
+      break;
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_form().
+ */
+function curlypage_clicks_curlypage_form(&$form, $form_state) {
+
+  $current_curlypage_id = $form['cpid']['#value'];
+
+  if ($current_curlypage_id) {
+    $result = db_fetch_object(db_query("SELECT enabled, max_views_close, max_views_open FROM {curlypage_clicks} WHERE cpid = %d", array(':cpid' => $current_curlypage_id)));
+    $clicks_enabled = $result->enabled;
+    $max_views_close = $result->max_views_close;
+    $max_views_open = $result->max_views_open;
+  }
+  else {
+    $clicks_enabled = 0;
+    $max_views_close = 0;
+    $max_views_open = 0;
+  }
+
+   // Linking Settings.
+  $form['details']['tracking_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Tracking Settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  // Clicks Enable ( true | false ).
+  $form['details']['tracking_settings']['clicks_enabled'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Track clicks'),
+    '#default_value' => $clicks_enabled,
+    '#description' => t('Check to enable track clicks for this curlypage.'),
+  );
+
+  $form['details']['tracking_settings']['max_views_close'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Max close views'),
+    '#description' => t('Max number of close views before this curlypage is disabled. Set it to 0 if you don\'t want this curlypage disabled when a specific number of close views are reached.'),
+    '#required' => TRUE,
+    '#default_value' => $max_views_close,
+    '#maxlength' => 5,
+    '#size' => 8,
+  );
+
+  $form['details']['tracking_settings']['max_views_open'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Max open views'),
+    '#description' => t('Max number of open views before this curlypage is disabled. Set it to 0 if you don\'t want this curlypage disabled when a specific number of open views are reached.'),
+    '#required' => TRUE,
+    '#default_value' => $max_views_open,
+    '#maxlength' => 5,
+    '#size' => 8,
+  );
+
+}
+
+/**
+ * Implements hook_curlypage_form_validate().
+ */
+function curlypage_clicks_curlypage_form_validate($form, &$form_state) {
+
+  // Max close views validation
+  if (!is_numeric($form_state['values']['max_views_close']) || $form_state['values']['max_views_close'] < 0) {
+    form_set_error('max_views_close', t('Max close views must be a number between 0 and 99999'));
+  }
+
+  // Max open views validation
+  if (!is_numeric($form_state['values']['max_views_open']) || $form_state['values']['max_views_open'] < 0) {
+    form_set_error('max_views_open', t('Max open views must be a number between 0 and 99999'));
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_form_submit().
+ */
+function curlypage_clicks_curlypage_form_submit($form, &$form_state) {
+
+  $clicks->cpid = $form_state['values']['cpid'];
+  $clicks->enabled = $form_state['values']['clicks_enabled'];
+  $clicks->max_views_close = $form_state['values']['max_views_close'];
+  $clicks->max_views_open = $form_state['values']['max_views_open'];
+
+  $clicks_exists = db_result(db_query("SELECT cpid FROM {curlypage_clicks} WHERE cpid = %d", array(':cpid' => $clicks->cpid)));
+
+  if ($clicks_exists) {
+    drupal_write_record('curlypage_clicks', $clicks, 'cpid');
+  }
+  else {
+    drupal_write_record('curlypage_clicks', $clicks);
+  }
+
+}
+
+/**
+ * Implements hook_curlypage_delete();
+ *
+ * If a curlypage is deleted, delete all click statistics of that curlypage
+ */
+function curlypage_clicks_curlypage_delete($curlypage) {
+
+  db_query('DELETE FROM {curlypage_clicks} WHERE cpid = %d', array(':cpid' => $curlypage->cpid));
+  db_query('DELETE FROM {curlypage_clicks_detail} WHERE cpid = %d', array(':cpid' => $curlypage->cpid));
+
+}
+
+/**
+ * Display statistics of curlypages clicks.
+ */
+function curlypage_clicks_list() {
+
+  $header = array(
+    array('data' => t('Curlypage'), 'field' => 'cp.name'),
+    array('data' => t('Link'), 'field' => 'cp.link'),
+    array('data' => t('Click Track Enabled')),
+    array('data' => t('Clicks'), 'field' => 'cpcl.clicks'),
+    array('data' => t('Close Views'), 'field' => 'cpcl.views_close'),
+    array('data' => t('Open Views'), 'field' => 'cpcl.views_open'),
+    array('data' => t('Click through')),
+    array('data' => t('Operations'), 'colspan' => '2'),
+  );
+
+  // Default ordering
+  if (!isset($_GET['order']) && !isset($_GET['sort'])) {
+    $_GET['order'] = t('Curlypage');
+    $_GET['sort'] = 'ASC';
+  }
+
+  $sql = 'SELECT cp.cpid, cp.name, cp.link, cpcl.enabled, cpcl.clicks, cpcl.views_close, cpcl.views_open FROM {curlypages} cp INNER JOIN {curlypage_clicks} cpcl ON cp.cpid = cpcl.cpid'. tablesort_sql($header);
+
+  $result = pager_query($sql, 20, 0);
+
+  while ($curlypage = db_fetch_object($result)) {
+
+    $clickthrough_close = $curlypage->views_close ? round($curlypage->clicks/$curlypage->views_close, 2) .'%' : '0%';
+    $clickthrough_open = $curlypage->views_open ? round($curlypage->clicks/$curlypage->views_open, 2) .'%' : '0%';
+    $clickthrough = $clickthrough_close .'/'. $clickthrough_open;
+
+    $rows[] = array(
+      ($curlypage->name ? l($curlypage->name, "admin/build/curlypage/". $curlypage->cpid ."/edit") : '&nbsp;'),
+      ($curlypage->link ? check_plain($curlypage->link) : '&nbsp;'),
+      ($curlypage->enabled ? 'enabled' : 'disabled'),
+      ($curlypage->clicks ? $curlypage->clicks : 0),
+      ($curlypage->views_close ? $curlypage->views_close : 0),
+      ($curlypage->views_open ? $curlypage->views_open : 0),
+      $clickthrough,
+      l(t('reset'), 'admin/build/curlypage/'. $curlypage->cpid .'/resetclicks'),
+      l(t('view details'), 'admin/build/curlypage/'. $curlypage->cpid .'/clicks'),
+    );
+
+  }
+
+  if (count($rows)) {
+
+    $pager = theme('pager', NULL, 20, 0);
+    if ($pager) {
+      $rows[] = array(array('data' => $pager, 'colspan' => 6));
+    }
+
+    print theme('page', theme('table', $header, $rows));
+
+  }
+  else {
+
+    print theme('page', t('There are no clicks.'));
+
+  }
+
+}
+
+/**
+ * Display clicks on a specific curlypage.
+ */
+function curlypage_clicks_detail_list($curlypage) {
+
+  $header = array(
+    array('data' => t('User'), 'field' => 'u.name'),
+    array('data' => t('Time'), 'field' => 'cpcldt.timestamp'),
+    array('data' => t('Link'), 'field' => 'cpcldt.link'),
+    array('data' => t('Curlypage')),
+    array('data' => t('Operations')),
+  );
+
+  // Default ordering
+  if (!isset($_GET['order']) && !isset($_GET['sort'])) {
+    $_GET['order'] = t('Time');
+    $_GET['sort'] = 'ASC';
+  }
+
+  $sql = 'SELECT u.uid, u.name, cpcldt.cpclid, cpcldt.link, cpcldt.timestamp FROM {users} u INNER JOIN {curlypage_clicks_detail} cpcldt ON u.uid = cpcldt.uid WHERE cpcldt.cpid = '. $curlypage->cpid . tablesort_sql($header);
+
+  $result = pager_query($sql, 20, 0);
+
+  while ($click = db_fetch_object($result)) {
+
+    $rows[] = array(
+      ($click->name ? l($click->name, "user/". $click->uid) : 'anonymous'),
+      ($click->timestamp ? format_date($click->timestamp, 'small') : 0),
+      ($click->link ? check_plain($click->link) : '&nbsp;'),
+      ($curlypage->name ? l($curlypage->name, "admin/build/curlypage/". $curlypage->cpid ."/edit") : '&nbsp;'),
+      l(t('delete'), 'admin/build/curlypage/clicks/'. $click->cpclid .'/delete'),
+    );
+
+  }
+
+  if (count($rows)) {
+
+    $pager = theme('pager', NULL, 20, 0);
+    if ($pager) {
+      $rows[] = array(array('data' => $pager, 'colspan' => 6));
+    }
+
+    print theme('page', theme('table', $header, $rows));
+
+  }
+  else {
+
+    print theme('page', t('There are no clicks.'));
+
+  }
+
+}
+
+/**
+ * Menu callback; confirm reset clicks count for a curlypage.
+ */
+function curlypage_clicks_reset($form_state, $curlypage) {
+  $form['curlypage'] = array('#type' => 'hidden', '#value' => serialize($curlypage));
+  $params = array('%name' => $curlypage->name);
+  return confirm_form($form, t('Are you sure you want to reset clicks count for curlypage %name?', $params), 'admin/build/curlypage/clicks', NULL, t('Reset'), t('Cancel'));
+}
+
+function curlypage_clicks_reset_submit($form, &$form_state) {
+  $curlypage = unserialize($form_state['values']['curlypage']);
+
+  // delete all click tracks for the curlypage
+  db_query('DELETE FROM {curlypage_clicks_detail} WHERE cpid = %d', array(':cpid' => $curlypage->cpid));
+  // reset clicks count to 0 for the curlypage
+  $updated_clicks->cpid = $curlypage->cpid;
+  $updated_clicks->clicks = 0;
+  $updated_clicks->views_open = 0;
+  $updated_clicks->views_close = 0;
+  drupal_write_record('curlypage_clicks', $updated_clicks, 'cpid');
+
+  drupal_set_message(t('The curlypage %name clicks count has been reseted.', array('%name' => $curlypage->name)));
+  $form_state['redirect'] = 'admin/build/curlypage/clicks';
+  return;
+}
+
+
+/**
+ * Menu callback; confirm delete click track.
+ */
+function curlypage_clicks_delete_click($form_state, $curlypage_click) {
+  $form['curlypage_click'] = array('#type' => 'hidden', '#value' => serialize($curlypage_click));
+  return confirm_form($form, t('Are you sure you want to delete click?'), 'admin/build/curlypage/'. $curlypage_click->cpid .'/clicks', NULL, t('Delete'), t('Cancel'));
+}
+
+function curlypage_clicks_delete_click_submit($form, &$form_state) {
+  $curlypage_click = unserialize($form_state['values']['curlypage_click']);
+
+  // delete click
+  db_query('DELETE FROM {curlypage_clicks_detail} WHERE cpclid = %d', array(':cpclid' => $curlypage_click->cpclid));
+  // update clicks count
+  db_query('UPDATE {curlypage_clicks} SET clicks = clicks - 1 WHERE cpid = %d', array(':cpid' => $curlypage_click->cpid));
+
+  drupal_set_message(t('The click has been deleted.'));
+  $form_state['redirect'] = 'admin/build/curlypage/'. $curlypage_click->cpid .'/clicks';
+  return;
+}
+
+/**
+ * Implements hook_curlypage_parameters
+ */
+function curlypage_clicks_curlypage_parameters(&$curlypages) {
+
+  // Add tracking parameter to each curlypage.
+  $result = db_query('SELECT cpid, enabled FROM {curlypage_clicks}');
+  while ($curlypage = db_fetch_object($result)) {
+    $curlypages[$curlypage->cpid]->tracking = $curlypage->enabled;
+  }
+
+}
+
+/**
+ * Implements hook_cron().
+ */
+function curlypage_clicks_cron() {
+
+  $clear_cache = FALSE;
+
+  $curlypages = array();
+
+  // get all views count and max views values from DB
+  $result = db_query("SELECT * FROM {curlypage_clicks} cpc JOIN {curlypages} cp ON cpc.cpid = cp.cpid WHERE cp.status = %d AND cpc.enabled = %d", 1, 1);
+  while ($curlypage = db_fetch_object($result)) {
+    $curlypages[] = $curlypage;
+  }
+
+  // each record contains a curlypage views values
+  foreach ($curlypages as $curlypage) {
+
+    if ($curlypage->max_views_close && ($curlypage->views_close > $curlypage->max_views_close)) {
+      curlypage_curlypage_disable($curlypage->cpid);
+      $clear_cache = TRUE;
+      continue;
+    }
+
+    if ($curlypage->max_views_open && ($curlypage->views_open > $curlypage->max_views_open)) {
+      curlypage_curlypage_disable($curlypage->cpid);
+      $clear_cache = TRUE;
+      continue;
+    }
+
+  }
+
+  if ($clear_cache) {
+    // clear the cache so an anonymous poster can see the curlypage being enabled or disabled
+    cache_clear_all();
+  }
+
+}

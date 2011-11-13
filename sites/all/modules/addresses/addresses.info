@@ -1,0 +1,12 @@
+core            = "6.x"
+dependencies[]  = token
+description     = "You can associate a geographic location with content and users."
+name            = "Addresses"
+package         = "Addresses"
+
+; Information added by drupal.org packaging script on 2011-09-09
+version = "6.x-1.12"
+core = "6.x"
+project = "addresses"
+datestamp = "1315609600"
+

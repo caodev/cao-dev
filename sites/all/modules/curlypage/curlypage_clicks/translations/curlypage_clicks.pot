@@ -1,0 +1,169 @@
+# $Id: curlypage_clicks.pot,v 1.1.2.3.2.1 2010/06/01 15:57:45 manfer Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  curlypage_clicks.module,v 1.1.2.6.2.1 2010/04/23 16:00:54 manfer
+#  curlypage_clicks.info,v 1.1.2.1 2010/01/15 00:30:57 manfer
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-06-01 16:52+0200\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: curlypage_clicks.module:143
+msgid "Tracking Settings"
+msgstr ""
+
+#: curlypage_clicks.module:151
+msgid "Track clicks"
+msgstr ""
+
+#: curlypage_clicks.module:153
+msgid "Check to enable track clicks for this curlypage."
+msgstr ""
+
+#: curlypage_clicks.module:158
+msgid "Max close views"
+msgstr ""
+
+#: curlypage_clicks.module:159
+msgid "Max number of close views before this curlypage is disabled. Set it to 0 if you don't want this curlypage disabled when a specific number of close views are reached."
+msgstr ""
+
+#: curlypage_clicks.module:168
+msgid "Max open views"
+msgstr ""
+
+#: curlypage_clicks.module:169
+msgid "Max number of open views before this curlypage is disabled. Set it to 0 if you don't want this curlypage disabled when a specific number of open views are reached."
+msgstr ""
+
+#: curlypage_clicks.module:185
+msgid "Link must be enabled to do tracking. Enable it on URL Settings or disable tracking."
+msgstr ""
+
+#: curlypage_clicks.module:190
+msgid "Max close views must be a number between 0 and 99999"
+msgstr ""
+
+#: curlypage_clicks.module:195
+msgid "Max open views must be a number between 0 and 99999"
+msgstr ""
+
+#: curlypage_clicks.module:239;251;306 curlypage_clicks.info:0
+msgid "Curlypage"
+msgstr ""
+
+#: curlypage_clicks.module:240;305
+msgid "Link"
+msgstr ""
+
+#: curlypage_clicks.module:241
+msgid "Click Track Enabled"
+msgstr ""
+
+#: curlypage_clicks.module:242;14
+msgid "Clicks"
+msgstr ""
+
+#: curlypage_clicks.module:243
+msgid "Close Views"
+msgstr ""
+
+#: curlypage_clicks.module:244
+msgid "Open Views"
+msgstr ""
+
+#: curlypage_clicks.module:245
+msgid "Click through"
+msgstr ""
+
+#: curlypage_clicks.module:246;307
+msgid "Operations"
+msgstr ""
+
+#: curlypage_clicks.module:273
+msgid "reset"
+msgstr ""
+
+#: curlypage_clicks.module:274
+msgid "view details"
+msgstr ""
+
+#: curlypage_clicks.module:291;344
+msgid "There are no clicks."
+msgstr ""
+
+#: curlypage_clicks.module:303
+msgid "User"
+msgstr ""
+
+#: curlypage_clicks.module:304;312
+msgid "Time"
+msgstr ""
+
+#: curlypage_clicks.module:327
+msgid "delete"
+msgstr ""
+
+#: curlypage_clicks.module:356
+msgid "Are you sure you want to reset clicks count for curlypage %name?"
+msgstr ""
+
+#: curlypage_clicks.module:356
+msgid "Reset"
+msgstr ""
+
+#: curlypage_clicks.module:356;382
+msgid "Cancel"
+msgstr ""
+
+#: curlypage_clicks.module:371
+msgid "The curlypage %name clicks count has been reseted."
+msgstr ""
+
+#: curlypage_clicks.module:382
+msgid "Are you sure you want to delete click?"
+msgstr ""
+
+#: curlypage_clicks.module:382
+msgid "Delete"
+msgstr ""
+
+#: curlypage_clicks.module:393
+msgid "The click has been deleted."
+msgstr ""
+
+#: curlypage_clicks.module:18
+msgid "Display clicks count of curlypages"
+msgstr ""
+
+#: curlypage_clicks.module:21
+msgid "Detail clicks log for this curlypage"
+msgstr ""
+
+#: curlypage_clicks.module:28
+msgid "Reset clicks"
+msgstr ""
+
+#: curlypage_clicks.module:35
+msgid "Delete click"
+msgstr ""
+
+#: curlypage_clicks.info:0
+msgid "Curlypage clicks"
+msgstr ""
+
+#: curlypage_clicks.info:0
+msgid "Adds clicks track to curlypages."
+msgstr ""
+

@@ -1,0 +1,18 @@
+; $Id: taggly.info,v 1.1.2.1 2009/02/10 10:12:27 navdeepraj Exp $
+name = Taggly
+description = Taggly allows you to display your site's Taxonomy Terms using a Flash movie that rotates them in 3D. It works just like a regular tags cloud, but is more visually exciting.
+package = "Taxonomy"
+core = 6.x
+; Information added by drupal.org packaging script on 2008-12-11
+version = "6.x-1.2"
+core = "6.x"
+project = "taggly"
+datestamp = "1229000445"
+
+
+; Information added by drupal.org packaging script on 2009-02-10
+version = "6.x-1.0"
+core = "6.x"
+project = "taxonomycloud"
+datestamp = "1234261259"
+

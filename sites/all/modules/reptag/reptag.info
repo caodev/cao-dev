@@ -1,0 +1,12 @@
+; $Id: reptag.info,v 1.3 2008/06/04 12:21:06 profix898 Exp $
+
+name = Rep[lacement]Tags
+description = Replace special tags with user-defined content.
+core = 6.x
+
+; Information added by drupal.org packaging script on 2009-05-20
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "reptag"
+datestamp = "1242822502"
+

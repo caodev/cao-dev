@@ -1,0 +1,931 @@
+# $Id: es.po,v 1.1.2.2.2.3 2010/06/23 18:52:57 manfer Exp $
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  curlypage.admin.inc,v 1.1.2.4.2.7 2010/06/17 10:23:31 manfer
+#  curlypage.info,v 1.2.2.1 2010/01/07 21:48:07 manfer
+#  curlypage.module,v 1.2.2.8.2.8 2010/06/17 10:23:31 manfer
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-06-23 20:51+0200\n"
+"PO-Revision-Date: 2010-06-23 20:51+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: curlypage.admin.inc:49
+msgid "clone"
+msgstr "clonar"
+
+#: curlypage.admin.inc:52
+msgid "edit"
+msgstr "editar"
+
+#: curlypage.admin.inc:55
+msgid "delete"
+msgstr "eliminar"
+
+#: curlypage.admin.inc:61
+msgid "Save configuration"
+msgstr "Guardar la configuración"
+
+#: curlypage.admin.inc:66
+msgid "There are no curlypages yet. <a href=\"!Add_new\">Add</a> a curlypage first."
+msgstr ""
+"No hay curlypages todavía. <a href=\"!Add_new\">Añada</a> un "
+"curlypage."
+
+#: curlypage.admin.inc:78 curlypage.info:0;0
+msgid "Curlypage"
+msgstr "Curlypage"
+
+#: curlypage.admin.inc:79;220 curlypage.module:594
+msgid "Group"
+msgstr "Grupo"
+
+#: curlypage.admin.inc:80
+msgid "Link"
+msgstr "Enlace"
+
+#: curlypage.admin.inc:81
+msgid "Position"
+msgstr "Posición"
+
+#: curlypage.admin.inc:82;718
+msgid "Enabled"
+msgstr "Activado"
+
+#: curlypage.admin.inc:83
+msgid "Weight"
+msgstr "Peso"
+
+#: curlypage.admin.inc:84
+msgid "Operations"
+msgstr "Operaciones"
+
+#: curlypage.admin.inc:191
+msgid "Curlypage info"
+msgstr "Información del curlypage"
+
+#: curlypage.admin.inc:198
+msgid "Enable curlypage"
+msgstr "Activar curlypage"
+
+#: curlypage.admin.inc:200
+msgid "If this setting is enabled, the current curlypage is shown on the configured pages (you can edit visibility settings below)."
+msgstr ""
+"Si esta opción está activada, este curlypage se mostrará en las "
+"páginas en las que esté configurado (puede configurar las opciones "
+"de visibilidad más abajo)."
+
+#: curlypage.admin.inc:211
+msgid "Curlypage name"
+msgstr "Nombre del curlypage"
+
+#: curlypage.admin.inc:221
+msgid "The group this curlypage belongs to."
+msgstr "El grupo al que pertenece este curlypage."
+
+#: curlypage.admin.inc:231
+msgid "Curlypage details"
+msgstr "Detalles del curlypage"
+
+#: curlypage.admin.inc:240
+msgid "Position Settings"
+msgstr "Configuración de posición"
+
+#: curlypage.admin.inc:248
+msgid "Corner"
+msgstr "Esquina"
+
+#: curlypage.admin.inc:249
+msgid "In what corner the ad will be displayed."
+msgstr "En que esquina se mostrará esta publicidad"
+
+#: curlypage.admin.inc:273
+msgid "Position Model"
+msgstr "Modelo de Posicionamiento"
+
+#: curlypage.admin.inc:274
+msgid "The CSS Position model you would prefer to use."
+msgstr "El modelo de posicionamiento CSS que prefiere usar."
+
+#: curlypage.admin.inc:295
+msgid "Wait Icon Settings"
+msgstr "Configuración de icono de espera"
+
+#: curlypage.admin.inc:302
+msgid "Enable wait icon"
+msgstr "Activar icono de espera"
+
+#: curlypage.admin.inc:304
+msgid "If this setting is enabled, a wait icon will be displayed while curlypage is loading."
+msgstr ""
+"Si activa esta casilla, un icono de espera se mostrará mientras el "
+"curlypage se está cargando."
+
+#: curlypage.admin.inc:310
+msgid "Wait Icon Width"
+msgstr "Ancho de icono de espera"
+
+#: curlypage.admin.inc:321
+msgid "Wait Icon Height"
+msgstr "Altura de icono de espera"
+
+#: curlypage.admin.inc:333;343
+msgid "Wait icon"
+msgstr "Icono de espera"
+
+#: curlypage.admin.inc:350
+msgid "Upload an image to show while curlypage is loading (most common an animated GIF, Wait Icon Width x Wait Icon Height pixels)."
+msgstr ""
+"Cargue una imagen para mostrar mientras se carga el curlypage "
+"(preferiblemente un GIF animado de tamaño Ancho icono de espera x "
+"Altura icono de espera pixels)."
+
+#: curlypage.admin.inc:360
+msgid "Style Settings"
+msgstr "Configuración de estilo"
+
+#: curlypage.admin.inc:368
+msgid "Flag Style"
+msgstr "Estilo de la publicidad cerrada"
+
+#: curlypage.admin.inc:377
+msgid "Peel Style"
+msgstr "Estilo de la publicidad abierta"
+
+#: curlypage.admin.inc:388
+msgid "Size Settings"
+msgstr "Configuración de tamaño"
+
+#: curlypage.admin.inc:391
+msgid "Design sizes are 100x100px and 500x500px for flag and peel respectively. If you decide to use a custom size try to use logical values. For example it makes not sense to use a larger size for the flag than for the peel. For a further explanation refer to <a href=\"!curlypage_size_manual\">howto on home page</a>."
+msgstr ""
+"Los tamaños del diseño original son 100x100px y 500x500px para la "
+"publicidad cerrada y abierta respectivamente. Si usted decide usar un "
+"tamaño personalizado trate de usar valores lógicos. Por ejemplo, no "
+"tiene sentido usar un tamaño de publicidad cerrada mayor que el de la "
+"publicidad abierta. Para una explicación más detallada visite el <a "
+"href=\"!curlypage_size_manual\">howto en curlypage website</a>."
+
+#: curlypage.admin.inc:397
+msgid "Flag Width"
+msgstr "Ancho de la publicidad cerrada"
+
+#: curlypage.admin.inc:408
+msgid "Flag Height"
+msgstr "Altura de la publicidad cerrada"
+
+#: curlypage.admin.inc:419
+msgid "Peel Width"
+msgstr "Ancho de la publicidad abierta"
+
+#: curlypage.admin.inc:430
+msgid "Peel Height"
+msgstr "Altura de la publicidad abierta"
+
+#: curlypage.admin.inc:443
+msgid "Image Settings"
+msgstr "Configuración de imágenes"
+
+#: curlypage.admin.inc:452;462
+msgid "Unpeeled image"
+msgstr "Imagen con publicidad cerrada"
+
+#: curlypage.admin.inc:469
+msgid "Upload an image or flash movie to show when the ad is not peeled (JPG, GIF, PNG or SWF, Flag Width x Flag Height pixels)."
+msgstr ""
+"Cargue una imagen o película flash para mostrar cuando la publicidad "
+"se encuentre cerrada (JPG, GIF, PNG o SWF,  Ancho publicidad cerrada x "
+"Altura publicidad cerrada pixels)."
+
+#: curlypage.admin.inc:478;488
+msgid "Peeled image"
+msgstr "Imagen con publicidad abierta"
+
+#: curlypage.admin.inc:495
+msgid "Upload an image or flash movie to show when the ad is peeled (JPG, GIF, PNG or SWF, Peel Width x Peel Height pixels)."
+msgstr ""
+"Cargue una imagen o película flash para mostrar cuando la publicidad "
+"se encuentre abierta (JPG, GIF, PNG o SWF, Ancho publicidad abierta x "
+"Altura publicidad abierta pixels)."
+
+#: curlypage.admin.inc:503
+msgid "Back mirror"
+msgstr "Imagen reflejada"
+
+#: curlypage.admin.inc:505
+msgid "Mirror the ad on the back of the peeled page."
+msgstr "Reflejar la imagen en la parte de atrás de la hoja."
+
+#: curlypage.admin.inc:511
+msgid "In Transition"
+msgstr "Transicción de entrada"
+
+#: curlypage.admin.inc:512
+msgid "In Transition for the curlypage."
+msgstr "Transicción que se mostrará al cargar el curlypage."
+
+#: curlypage.admin.inc:521
+msgid "Transition Duration"
+msgstr "Duración de la transicción."
+
+#: curlypage.admin.inc:522
+msgid "Duration of in transition. (1-9)"
+msgstr "Duración de la transicción. (1-9)"
+
+#: curlypage.admin.inc:532
+msgid "Back color style"
+msgstr "Estilo del color del lado posterior"
+
+#: curlypage.admin.inc:533
+msgid "Choose a flat or gradient color for the back of the peel."
+msgstr "Elija un color plano o degradado para la parte posterior de la hoja."
+
+#: curlypage.admin.inc:542
+msgid "Back color"
+msgstr "Color de lado posterior"
+
+#: curlypage.admin.inc:543
+msgid "This color will be used on the back of peel."
+msgstr "Color que se mostrará en la parte de atrás de la hoja."
+
+#: curlypage.admin.inc:552;559
+msgid "Custom Color"
+msgstr "Color Personalizado"
+
+#: curlypage.admin.inc:598
+msgid "Sound Settings"
+msgstr "Configuración de sonidos"
+
+#: curlypage.admin.inc:607;616
+msgid "Onload Sound"
+msgstr "Sonido al cargar la publicidad"
+
+#: curlypage.admin.inc:624;658;692
+msgid "Delete sound"
+msgstr "Borrar sonido"
+
+#: curlypage.admin.inc:626
+msgid "Check this box if you want to remove load sound."
+msgstr ""
+"Marque esta casilla si quiere eliminar el sonido al cargar la "
+"publicidad."
+
+#: curlypage.admin.inc:632
+msgid "Upload an mp3 file to play when the ad is loaded."
+msgstr "Cargue un fichero mp3 que sonará cuando se cargue la publicidad."
+
+#: curlypage.admin.inc:641;650
+msgid "Open Peel Sound"
+msgstr "Sonido al abrir la publicidad"
+
+#: curlypage.admin.inc:660
+msgid "Check this box if you want to remove open sound."
+msgstr ""
+"Marque esta casilla si quiere eliminar el sonido al abrir la "
+"publicidad."
+
+#: curlypage.admin.inc:666
+msgid "Upload an mp3 file to play when the peel is opened."
+msgstr "Cargue un fichero mp3 que sonará cuando se abra la publicidad."
+
+#: curlypage.admin.inc:675;684
+msgid "Close Peel Sound"
+msgstr "Sonido al cerrar la publicidad"
+
+#: curlypage.admin.inc:694
+msgid "Check this box if you want to remove close sound."
+msgstr ""
+"Marque esta casilla si quiere eliminar el sonido al cerrar la "
+"publicidad."
+
+#: curlypage.admin.inc:700
+msgid "Upload an mp3 file to play when the peel is closed."
+msgstr "Cargue un fichero mp3 que sonará cuando se cierre la publicidad."
+
+#: curlypage.admin.inc:710
+msgid "URL Settings"
+msgstr "Configuración de enlace"
+
+#: curlypage.admin.inc:720
+msgid "Enable or disable the link."
+msgstr "Active o desactive el enlace."
+
+#: curlypage.admin.inc:726
+msgid "URL"
+msgstr "URL"
+
+#: curlypage.admin.inc:727
+msgid "URL to go when user click on the ad."
+msgstr "URL que se abrirá cuando el usuario pulse sobre la publicidad."
+
+#: curlypage.admin.inc:736
+msgid "URL target"
+msgstr "Destino de URL"
+
+#: curlypage.admin.inc:737
+msgid "Where to open the URL."
+msgstr "Donde abrir la URL"
+
+#: curlypage.admin.inc:748
+msgid "Motion Settings"
+msgstr "Configuraciones de movimiento"
+
+#: curlypage.admin.inc:756
+msgid "Open Onclick"
+msgstr "Abrir Onclick"
+
+#: curlypage.admin.inc:758
+msgid "Curlypage opens with a mouse over by default. If you check this box it will open on click."
+msgstr ""
+"El Curlypage se abre por defecto cuando el puntero del ratón se pone "
+"encima de él. Si marca esta casilla se abrirá mediante un click."
+
+#: curlypage.admin.inc:764
+msgid "Flag motion speed"
+msgstr "Velocidad de bandera"
+
+#: curlypage.admin.inc:765
+msgid "Speed for flag motion. (1-9)"
+msgstr "Velocidad del movimiento bandera. (1-9)"
+
+#: curlypage.admin.inc:775
+msgid "Peel motion speed"
+msgstr "Velocidad de apertura"
+
+#: curlypage.admin.inc:776
+msgid "Speed for peel motion. (1-9)"
+msgstr "Velocidad del movimiento de apertura. (1-9)"
+
+#: curlypage.admin.inc:786
+msgid "Automatically peel on load"
+msgstr "Apertura automática al cargar"
+
+#: curlypage.admin.inc:787
+msgid "Unpeel automatically when the page loads after configured seconds. 0 means no automatically open."
+msgstr ""
+"Abrir la publicidad automáticamente al cargar la página "
+"transcurridos los segundos aquí especificados. 0 para que no se "
+"produzca apertura automática."
+
+#: curlypage.admin.inc:798
+msgid "Automatically unpeel"
+msgstr "Cierre automático"
+
+#: curlypage.admin.inc:799
+msgid "Automatically close after unpeeling after configured seconds. 0 means no automatically unpeel."
+msgstr ""
+"Cerrar la publicidad automáticamente trascurridos los segundos aquí "
+"especificados. 0 para que no se produzca cierre automático."
+
+#: curlypage.admin.inc:812
+msgid "Close Button Settings"
+msgstr "Configuración de botón de cierre"
+
+#: curlypage.admin.inc:820
+msgid "Close Button"
+msgstr "Botón de cierre"
+
+#: curlypage.admin.inc:822
+msgid "Show a close button on open peel. If this is enabled the peel will not close on mouse out. Users must click button to close peel."
+msgstr ""
+"Mostrar un botón de cierre cuando la publicidad está abierta. Si "
+"está activada esta opción la publicidad no se cerrará al "
+"abandonarla con el ratón. El usuario debe pulsar el botón para "
+"cerrar la publicidad."
+
+#: curlypage.admin.inc:828
+msgid "Close Button Text"
+msgstr "Texto en botón de cierre"
+
+#: curlypage.admin.inc:829
+msgid "Text on clickable close button."
+msgstr "Texto que se mostrará en el botón de cierre."
+
+#: curlypage.admin.inc:839
+msgid "Close Button Color"
+msgstr "Color del botón de cierre"
+
+#: curlypage.admin.inc:878
+msgid "Curlypage Time Settings"
+msgstr "Configuración de tiempos"
+
+#: curlypage.admin.inc:884
+msgid "Delay"
+msgstr "Retraso"
+
+#: curlypage.admin.inc:885
+msgid "Delay seconds before the curlypage is shown."
+msgstr "Retraso en segundos antes de que el curlypage se muestre."
+
+#: curlypage.admin.inc:894
+msgid "Time Slot"
+msgstr "Tiempo de exposición"
+
+#: curlypage.admin.inc:895
+msgid "Amoung of time in seconds to show this curlypage. Set it to 0 if you want the curlypage to be shown forever."
+msgstr ""
+"Cantidad de tiempo en segundos que se mostrará este curlypage. "
+"Configúrelo en 0 si quiere que el curlypage se muestre "
+"indefinidamente."
+
+#: curlypage.admin.inc:904
+msgid "Repeat"
+msgstr "Repetir"
+
+#: curlypage.admin.inc:905
+msgid "For grouped curlypages you can configure how many times this curlypage would be repeated. Set it to 0 if you want the curlypage to be repeated forever."
+msgstr ""
+"Para los curlypages que pertenecen a un mismo grupo usted puede "
+"configurar cuantas veces se repetirá el visionado de este curlypage. "
+"Configúrelo a 0 si desea que el curlypage se repita indefinidamente."
+
+#: curlypage.admin.inc:916
+msgid "Curlypage visibility settings"
+msgstr "Opciones de visibilidad del curlypage"
+
+#: curlypage.admin.inc:926
+msgid "Language specific visibility settings"
+msgstr "Opciones de visibilidad según idioma"
+
+#: curlypage.admin.inc:938
+msgid "Show curlypage for specific languages"
+msgstr "Mostrar curlypage en los idiomas seleccionados"
+
+#: curlypage.admin.inc:941
+msgid "Show the curlypage only for the selected language(s). If you select no languages, the curlypage will be visible for all languages."
+msgstr ""
+"Mostrar el curlypage solamente para el/los idioma/s seleccionado/s. Si "
+"no seleccionas ningún idioma, el curlypage se mostrará en todos los "
+"idiomas."
+
+#: curlypage.admin.inc:958
+msgid "Role specific visibility settings"
+msgstr "Opciones de visibilidad específicas por rol"
+
+#: curlypage.admin.inc:964
+msgid "Show curlypage for specific roles"
+msgstr "Mostrar curlypage para los roles seleccionados"
+
+#: curlypage.admin.inc:970
+msgid "Roles"
+msgstr "Roles"
+
+#: curlypage.admin.inc:973
+msgid "Select the role(s) you want to include or exclude. If you select no roles, the curlypage will be visible to all users."
+msgstr ""
+"Seleccione el/los rol/roles que quiere incluir o excluir. Si no "
+"selecciona ningún rol, el curlypage se mostrará a todos los "
+"usuarios."
+
+#: curlypage.admin.inc:989
+msgid "Content types specific visibility settings"
+msgstr "Opciones de visibilidad específicas por tipo de contenido"
+
+#: curlypage.admin.inc:995
+msgid "Content types"
+msgstr "Tipos de contenido"
+
+#: curlypage.admin.inc:998
+msgid "Select the content type(s) where you want to include this curlypage. If you select no types, the curlypage will be visible on all content types."
+msgstr ""
+"Marque los tipos de contenido en los que usted desea incluir este "
+"curlypage. Si no selecciona ningún tipo, el curlypage será visible "
+"en todos los tipos de contenido."
+
+#: curlypage.admin.inc:1004
+msgid "Page specific visibility settings"
+msgstr "Opciones de visibilidad específicas por página"
+
+#: curlypage.admin.inc:1023
+msgid "Show on every page except the listed pages."
+msgstr "Mostrar en todas las páginas excepto las de esta lista."
+
+#: curlypage.admin.inc:1024
+msgid "Show on only the listed pages."
+msgstr "Mostrar sólamente en las páginas de esta lista."
+
+#: curlypage.admin.inc:1026
+msgid "Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page."
+msgstr ""
+"Especifique una página por línea en forma de rutas de Drupal. El "
+"carácter '*' es un comodín. Ejemplos de rutas: %blog para la página "
+"de blogs y %blog-wildcard para todos los blogs personales. %front es "
+"la página inicial."
+
+#: curlypage.admin.inc:1029
+msgid "Show if the following PHP code returns <code>TRUE</code> (PHP-mode, experts only)."
+msgstr ""
+"Mostrar si el siguiente código PHP devuelve el valor "
+"<code>TRUE</code> (modo PHP, sólo para expertos)."
+
+#: curlypage.admin.inc:1030
+msgid "If the PHP-mode is chosen, enter PHP code between %php. Note that executing incorrect PHP-code can break your Drupal site."
+msgstr ""
+"Si se ha elegido el modo PHP, escriba el código PHP entre %php.  "
+"Tenga en cuenta que ejecutar código PHP incorrecto puede arruinar su "
+"sitio Drupal."
+
+#: curlypage.admin.inc:1034
+msgid "Show curlypage on specific pages"
+msgstr "Mostrar curlypage en las páginas especificas"
+
+#: curlypage.admin.inc:1040
+msgid "Pages"
+msgstr "Páginas"
+
+#: curlypage.admin.inc:1057
+msgid "Save"
+msgstr "Guardar"
+
+#: curlypage.admin.inc:1063;1494
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: curlypage.admin.inc:1088
+msgid "Uploaded file must be an image. JPEG, PNG or GIF"
+msgstr "El archivo cargado debe ser una imagen. JPG, PNG o GIF."
+
+#: curlypage.admin.inc:1104
+msgid "Wait icon upload failed. Please try again."
+msgstr ""
+"La carga del icono de espera ha fallado. Por favor inténtelo de "
+"nuevo."
+
+#: curlypage.admin.inc:1112;1148;1186
+msgid "The path is not correct."
+msgstr "La ruta no es correcta."
+
+#: curlypage.admin.inc:1126
+msgid "Uploaded file must be an image or flash movie. JPEG, PNG, GIF or SWF"
+msgstr ""
+"El archivo cargado debe ser una imagen o una película flash. JPG, "
+"PNG, GIF o SWF."
+
+#: curlypage.admin.inc:1140
+msgid "Media upload failed. Please try again."
+msgstr ""
+"La carga del archivo multimedia ha fallado. Por favor inténtelo de "
+"nuevo."
+
+#: curlypage.admin.inc:1164
+msgid "Uploaded sound must be a MP3 file."
+msgstr "El sonido cargado debe ser un fichero MP3."
+
+#: curlypage.admin.inc:1178
+msgid "Sound upload failed. Please try again."
+msgstr "La carga del sonido ha fallado. Por favor inténtelo de nuevo."
+
+#: curlypage.admin.inc:1207
+msgid "Wait Icon Width must be a number greater than 10"
+msgstr "El ancho del icono de espera debe ser un número mayor que 10"
+
+#: curlypage.admin.inc:1210
+msgid "Wait Icon Height must be a number greater than 10"
+msgstr "La altura del icono de espera debe ser un número mayor que 10"
+
+#: curlypage.admin.inc:1213
+msgid "Flag Width must be a number greater than 10"
+msgstr "El ancho de la publicidad cerrada debe ser un número mayor que 10"
+
+#: curlypage.admin.inc:1216
+msgid "Flag Height must be a number greater than 10"
+msgstr "La altura de la publicidad cerrada debe ser un número mayor que 10"
+
+#: curlypage.admin.inc:1219
+msgid "Peel Width must be a number greater than 50"
+msgstr "El ancho de la publicidad abierta debe ser un número mayor que 50"
+
+#: curlypage.admin.inc:1222
+msgid "Peel Height must be a number greater than 50"
+msgstr "La altura de la publicidad abierta debe ser un número mayor que 50"
+
+#: curlypage.admin.inc:1227
+msgid "Transition duration must be a number between 1 and 9"
+msgstr ""
+"La duración de la transicción debe ser un número comprendido entre "
+"1 y 9."
+
+#: curlypage.admin.inc:1239
+msgid "Flag motion speed must be a number between 1 and 9"
+msgstr ""
+"La velocidad del movimiento de bandera debe ser un número comprendido "
+"entre 1 y 9."
+
+#: curlypage.admin.inc:1244
+msgid "Peel motion speed must be a number between 1 and 9"
+msgstr ""
+"La velocidad del movimiento de apertura debe ser un número "
+"comprendido entre 1 y 9."
+
+#: curlypage.admin.inc:1249
+msgid "Automatically peel onload seconds must be a number between 0 and 999"
+msgstr ""
+"Los segundos para la apertura automática deben ser un número "
+"comprendido entre 0 y 999."
+
+#: curlypage.admin.inc:1254
+msgid "Automatically peel onclose seconds must be a number between 0 and 999"
+msgstr ""
+"Los segundos para el cierre automático deben ser un número "
+"comprendido entre 0 y 999."
+
+#: curlypage.admin.inc:1266
+msgid "Only lowercase letters and spaces are allowed for text on close button. It must start with a lowercase letter too."
+msgstr ""
+"Solo se permiten letras minúsculas y espacios en el texto para el "
+"botón de cierre. Además debe comenzar por una letra minúscula."
+
+#: curlypage.admin.inc:1271
+msgid "Delay seconds must be a number between 0 and 999"
+msgstr "Los segundos de retraso deben ser un número entre 0 y 999"
+
+#: curlypage.admin.inc:1276
+msgid "TimeSlot seconds must be a number between 0 and 999"
+msgstr "Los segundos de exposición deben ser un número entre 0 y 999"
+
+#: curlypage.admin.inc:1281
+msgid "Repeat must be a number between 0 and 9"
+msgstr "El número de repeticiones debe ser un número entre 0 y 9"
+
+#: curlypage.admin.inc:1441
+msgid "The curlypage %name has been saved."
+msgstr "El curlypage %name ha sido guardado."
+
+#: curlypage.admin.inc:1494
+msgid "Are you sure you want to delete the curlypage %name?"
+msgstr "Estás seguro que quieres borrar el curlypage %name?"
+
+#: curlypage.admin.inc:1494
+msgid "Delete"
+msgstr "Eliminar"
+
+#: curlypage.admin.inc:1513
+msgid "The curlypage %name has been removed."
+msgstr "El curlypage %name ha sido borrado."
+
+#: curlypage.admin.inc:1524
+msgid "Check this box if you want to be able to configure the media paths directly instead of using the upload fields."
+msgstr ""
+"Marque esta casilla si quiere tener la posibilidad de configurar las "
+"rutas a los archivos multimedia directamente en vez de usar los campos "
+"incorporados para realizar el upload."
+
+#: curlypage.admin.inc:1525
+msgid "Use absolute paths. Example: sites/default/files/curlypage/small.jpg"
+msgstr ""
+"Utilize rutas absolutas. Ejemplo: "
+"sites/default/files/curlypage/small.jpg"
+
+#: curlypage.admin.inc:1529
+msgid "Allow media paths"
+msgstr "Permitir configurar rutas"
+
+#: curlypage.admin.inc:1534
+msgid "Curlypage swf files are published with flash player 9 compatibility."
+msgstr ""
+"Los archivos swf que conforman curlypage se publican con "
+"compatibilidad para la versión 9 del flash player."
+
+#: curlypage.admin.inc:1535
+msgid "So you can only use flash 9 swf files on your curlypages."
+msgstr ""
+"Por tanto solo puede usar archivos swf compatibles con la versión 9 "
+"de flash en sus curlypages."
+
+#: curlypage.admin.inc:1536
+msgid "Check this box if you want to use flash 10 swf files on your curlypages."
+msgstr ""
+"Marque esta casilla si desea utilizar archivos swf solo compatibles "
+"con la versión 10 de flash en sus curlypages."
+
+#: curlypage.admin.inc:1540
+msgid "Use version 10 swfs"
+msgstr "Use swfs versión 10"
+
+#: curlypage.admin.inc:1547
+msgid "swfobject settings"
+msgstr "Configuración de swfobject"
+
+#: curlypage.admin.inc:1552
+msgid "Use internal swfobject"
+msgstr "Usar swfobject interno"
+
+#: curlypage.admin.inc:1554
+msgid "Check this if you want to use a version of swfobject from your server. Configure the path to the file below."
+msgstr ""
+"Marque esta casilla si quiere usar una versión de swfobject "
+"almacenada en su servidor. Configure más abajo la ruta al archivo."
+
+#: curlypage.admin.inc:1560
+msgid "Path"
+msgstr "Ruta"
+
+#: curlypage.admin.inc:1564
+msgid "Path to swfobject.js file on your server."
+msgstr "Ruta al archivo swfobject.js en su servidor."
+
+#: curlypage.admin.inc:1576
+msgid "The file is not on that path."
+msgstr "El archivo no se encuentra en esa ruta."
+
+#: curlypage.module:21;29 curlypage.info:0
+msgid "Add a peel away ad (magic corner, peelad) to your website."
+msgstr "Añade publicidad (esquina mágica, peelad) a tu website."
+
+#: curlypage.module:23
+msgid "For a complete help visit the "
+msgstr "Para obtener una ayuda más extensa visite el "
+
+#: curlypage.module:24
+msgid "howto"
+msgstr ""
+
+#: curlypage.module:25
+msgid " on curlypage homepage."
+msgstr " en la página principal del módulo curlypage."
+
+#: curlypage.module:32
+msgid "Curlypages are peelads which are shown at a 'corner' of your pages. Create new curlypages on the <a href=\"!add_new\">add curlypage page</a> or edit existing curlypages by clicking the <em>edit</em> link next to each one."
+msgstr ""
+"Curlypages son hojas de publicidad que se muestran en una esquina de "
+"sus páginas. Cree nuevos curlypages en la <a "
+"href=\"!add_new\">página para añadir curlypages</a> o configure los "
+"existentes pulsando el enlace <em>editar</em> al lado de cada uno de "
+"ellos."
+
+#: curlypage.module:523;524;525;530;531;532
+msgid "Style"
+msgstr "Modelo"
+
+#: curlypage.module:537
+msgid "Top left"
+msgstr "Esquina superior izquierda"
+
+#: curlypage.module:538
+msgid "Top right"
+msgstr "Esquina superior derecha"
+
+#: curlypage.module:539
+msgid "Bottom left"
+msgstr "Esquina inferior izquierda"
+
+#: curlypage.module:540
+msgid "Bottom right"
+msgstr "Esquina inferior derecha"
+
+#: curlypage.module:545
+msgid "absolute"
+msgstr "absolute"
+
+#: curlypage.module:546
+msgid "fixed"
+msgstr "fixed"
+
+#: curlypage.module:551
+msgid "(disabled)"
+msgstr "(desactivado)"
+
+#: curlypage.module:552
+msgid "Blinds"
+msgstr "Persianas"
+
+#: curlypage.module:553
+msgid "Fade"
+msgstr "Fade"
+
+#: curlypage.module:554
+msgid "Fly"
+msgstr "Vuelo"
+
+#: curlypage.module:555
+msgid "Iris"
+msgstr "Iris"
+
+#: curlypage.module:556
+msgid "Photo"
+msgstr "Foto"
+
+#: curlypage.module:557
+msgid "Rotate"
+msgstr "Rotación"
+
+#: curlypage.module:558
+msgid "Squeeze"
+msgstr "Rebotar"
+
+#: curlypage.module:559
+msgid "Wipe"
+msgstr "Aparición"
+
+#: curlypage.module:560
+msgid "PixelDissolve"
+msgstr "Disolución de Pixels"
+
+#: curlypage.module:561
+msgid "Zoom"
+msgstr "Zoom"
+
+#: curlypage.module:566
+msgid "Golden"
+msgstr "Dorado"
+
+#: curlypage.module:567
+msgid "Silver"
+msgstr "Plateado"
+
+#: curlypage.module:568
+msgid "Custom"
+msgstr "Personalizado"
+
+#: curlypage.module:573
+msgid "Flat"
+msgstr "Plano"
+
+#: curlypage.module:574
+msgid "Gradient"
+msgstr "Degradado"
+
+#: curlypage.module:579
+msgid "Same window"
+msgstr "Misma ventana"
+
+#: curlypage.module:580
+msgid "New window"
+msgstr "Nueva ventana"
+
+#: curlypage.module:585
+msgid "Show for each selected role."
+msgstr "Mostrar a los roles seleccionados."
+
+#: curlypage.module:586
+msgid "Show except for the selected roles."
+msgstr "Mostrar excepto a los roles seleccionados."
+
+#: curlypage.module:591
+msgid "None"
+msgstr "Ninguno"
+
+#: curlypage.module:242
+msgid "administer curlypages"
+msgstr "administrar curlypages"
+
+#: curlypage.module:242
+msgid "use PHP for curlypage visibility"
+msgstr "usar PHP para controlar la visibilidad de los curlypages"
+
+#: curlypage.module:251
+msgid "Curlypages"
+msgstr "Curlypages"
+
+#: curlypage.module:252
+msgid "Edit curlypages, how they look and where they appear on the site."
+msgstr ""
+"Configure los curlypages, su apariencia y donde aparecen en el "
+"website."
+
+#: curlypage.module:259
+msgid "List"
+msgstr "Lista"
+
+#: curlypage.module:264
+msgid "Add curlypage"
+msgstr "Añadir curlypage"
+
+#: curlypage.module:272
+msgid "Edit curlypage"
+msgstr "Configurar curlypage"
+
+#: curlypage.module:280
+msgid "Clone curlypage"
+msgstr "Clonar curlypage"
+
+#: curlypage.module:288
+msgid "Delete curlypage"
+msgstr "Borrar curlypage"
+
+#: curlypage.module:296
+msgid "Clicked"
+msgstr ""
+
+#: curlypage.module:303
+msgid "Viewed"
+msgstr ""
+
+#: curlypage.module:310
+msgid "Settings"
+msgstr "Opciones"
+
+#: curlypage.module:311
+msgid "Curlypage global settings"
+msgstr "Configuraciones globales de Curlypage"
+

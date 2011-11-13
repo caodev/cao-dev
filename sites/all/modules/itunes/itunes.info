@@ -1,0 +1,13 @@
+; $Id: itunes.info,v 1.1 2008/12/24 19:30:27 drewish Exp $
+name = iTunes
+description = An iTunes specific RSS plugin for views feeds.
+core = 6.x
+dependencies[] = views
+dependencies[] = views_ui
+
+; Information added by drupal.org packaging script on 2010-09-13
+version = "6.x-1.7"
+core = "6.x"
+project = "itunes"
+datestamp = "1284405709"
+

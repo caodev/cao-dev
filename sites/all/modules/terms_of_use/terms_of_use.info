@@ -1,0 +1,9 @@
+name = Terms of Use
+description = Adds terms of Use to the registration page.
+core = 6.x
+; Information added by drupal.org packaging script on 2011-05-27
+version = "6.x-1.13"
+core = "6.x"
+project = "terms_of_use"
+datestamp = "1306504016"
+

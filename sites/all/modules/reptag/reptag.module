@@ -1,0 +1,514 @@
+<?php
+// $Id: reptag.module,v 1.39.2.7 2009/04/23 03:51:07 dman Exp $
+
+/**
+ * @file
+ * Main Drupal module file for Replacement Tags
+ *  
+ * Rep[lacement]Tags allows you to define tags and replace them with user-
+ * defined text.
+ */
+
+define('REPTAG_LOCALE_STRICT',    0);
+define('REPTAG_LOCALE_FALLBACK',  1);
+
+require_once(drupal_get_path('module', 'reptag') .'/reptag_process.inc');
+
+/**
+ * Implementation of hook_theme()
+ */
+function reptag_theme() {
+  $theme_functions = array(
+    'reptag_table' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'reptag_table_multi' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'reptag_dialog' => array(
+      'template' => 'reptag-dialog',
+      'file' => 'reptag_admin_table.inc',
+      'arguments' => array('content' => NULL, 'title' => t('Rep[lacement]Tags Dialog')),
+    ),
+    // Even tags need to declare their themes
+    'reptag_node_embed' => array(
+      'file' => 'tags/node.tags.inc',
+      'arguments' => array('node' => NULL),
+    ),
+  );
+  
+  // Register theme functions of enabled .tags modules
+  $modules = _reptag_module_list(FALSE, TRUE);
+  foreach ($modules as $module => $details) {
+    if ($theme = _reptag_module_invoke($modules[$module], 'theme')) {
+      $theme_functions += $theme;
+    }
+  }
+  
+  return $theme_functions;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function reptag_perm() {
+  return array('administer reptag', 'manage sitewide reptags', 'manage user reptags');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function reptag_menu() {
+  $items = array();
+  //
+  $items['admin/settings/reptag'] = array(
+    'title' => 'Rep[lacement]Tags',
+    'description' => 'Replace special tags with user-defined content.',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'reptag_admin'
+  );
+  $items['admin/settings/reptag/admin'] = array(
+    'title' => 'Settings',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_reptag_admin_general_form'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
+  );
+  // Second level tabs
+  $items['admin/settings/reptag/admin/general'] = array(
+    'title' => 'General',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
+  );
+  $items['admin/settings/reptag/admin/modules'] = array(
+    'title' => 'Modules',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_reptag_admin_modules_form'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1
+  );
+  $items['admin/settings/reptag/admin/permission'] = array(
+    'title' => 'Roles / Permissions',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_reptag_admin_roles_form'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2
+  );
+  $items['admin/settings/reptag/admin/content'] = array(
+    'title' => 'Content Types',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_reptag_admin_content_form'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3
+  );
+  //
+  $items['admin/settings/reptag/site'] = array(
+    'title' => 'SiteWide Tags',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('manage sitewide reptags')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_reptag_admin_site_form'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1
+  );
+  $items['admin/settings/reptag/user'] = array(
+    'title' => 'User Tags',
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('manage user reptags')),
+    'file' => 'reptag_admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_reptag_admin_user_form'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2
+  );
+  //
+  $items['admin/settings/reptag/ajax/%/%'] = array(
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag', 'manage sitewide reptags', 'manage user reptags')),
+    'file' => 'reptag_callback.inc',
+    'page callback' => '_reptag_callback',
+    'page arguments' => array(4, 5),
+    'type' => MENU_CALLBACK
+  );
+  $items['admin/settings/reptag/nojs/%/%'] = $items['admin/settings/reptag/ajax/%/%'];
+  $items['admin/settings/reptag/nojs/%/%']['page arguments'][] = TRUE;
+  //
+  if (module_exists('workspace') && variable_get('reptag_workspace', 0)) {
+    $items['workspace/%user/reptag'] = array(
+      'title' => 'RepTags',
+      'access callback' => 'reptag_admin_access',
+      'access arguments' => array(array('manage user reptags')),
+      'file' => 'reptag_admin.inc',
+      'page callback' => 'reptag_workspace',
+      'type' => MENU_LOCAL_TASK,
+      'weight' => 35,
+    );
+  }
+  //
+  $items['reptag/autocomplete/%'] = array(
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag', 'manage sitewide reptags', 'manage user reptags')),
+    'page callback' => '_reptag_autocomplete',
+    'page arguments' => array(2, FALSE),
+    'type' => MENU_CALLBACK
+  );
+  $items['reptag/autocomplete_all/%'] = array(
+    'access callback' => 'reptag_admin_access',
+    'access arguments' => array(array('administer reptag', 'manage sitewide reptags', 'manage user reptags')),
+    'page callback' => '_reptag_autocomplete',
+    'page arguments' => array(2, TRUE),
+    'type' => MENU_CALLBACK
+  );
+  
+  return $items;
+}
+
+/**
+ * Function reptag_admin_access().
+ */
+function reptag_admin_access($perms) {
+  foreach ($perms as $perm) {
+    if (!user_access($perm)) {
+      return FALSE;
+    }
+  }
+
+  return count($perms);
+}
+
+/**
+ * Function reptag_admin().
+ */
+function reptag_admin() {
+  if (user_access('administer reptag')) {
+    $form = '_reptag_admin_general_form';
+  }
+  elseif (user_access('manage sitewide reptags')) {
+    $form = '_reptag_admin_site_form';
+  }
+  elseif (user_access('manage user reptags')) {
+    $form = '_reptag_admin_user_form';
+  }
+  
+  return drupal_get_form($form);
+}
+
+/**
+ * Function _reptag_autocomplete().
+ */
+function _reptag_autocomplete($string, $all) {
+  global $user;
+  $string = strtoupper($string);
+  // Table tags
+  $iid = array(0, $user->uid);
+  $table_tags = array_unique(array_keys(_reptag_table_load($iid, REPTAG_LOADTAG_FORMAT)));
+  $matches = _reptag_match_tags($string, $table_tags);
+  
+  if ($all) {
+    // Module tags
+    $module_tags = _reptag_module_tags();
+    foreach ($module_tags as $tags) {
+      $matches = array_merge($matches, _reptag_match_tags($string, array_keys($tags)));
+    }
+  }
+  
+  // Display (first) 10 items only
+  if (count($matches) > 10) {
+    $matches = array_slice($matches, 0, 10, TRUE); 
+  }
+
+  print drupal_to_js($matches);
+  exit();
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ * (instead of hook_filter since we need access to $node context)
+ */
+function reptag_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  $disabled_nids = unserialize(variable_get('reptag_disabled_nids', serialize(array())));
+  if (!isset($node->nid) || !in_array($node->nid, $disabled_nids)) {
+    $fields = (array)unserialize(variable_get('reptag_type_'. $node->type .'_fields', serialize(array('body'))));
+    // Support for CCK multiple values fields
+    $field_iterator = $fields;
+    foreach ($field_iterator as $field) {
+      switch ($field) {
+        case 'title':
+          break;
+        case 'body':
+          $fields[] = 'content/body/#value';
+          $fields[] = 'teaser';
+          break;
+        default:
+          if (isset($node->$field)) {
+            foreach ($node->$field as $idx => $content) {
+              $fields[] = $field .'/'. $idx .'/value';
+              $fields[] = $field .'/'. $idx .'/safe';
+              $fields[] = 'content/'. $field .'/field/items/'. $idx .'/#item/value';
+              $fields[] = 'content/'. $field .'/field/items/'. $idx .'/#item/safe';
+            }
+          }
+      }
+    }
+    // Process the fields
+    switch ($op) {
+      case 'update':
+      case 'delete':
+        _reptag_cache_del($node, $fields);
+        break;
+      case 'view':
+      case 'print':
+        if (isset($teaser) && $teaser) {
+          $node->is_teaser = TRUE;
+        }
+        if (variable_get('reptag_cache', 0)) {
+          if (!variable_get('reptag_staticonly', 0)) {
+            if (isset($node->in_preview)) {
+              if (variable_get('reptag_preview', 1)) {
+                reptag_process($node, $fields, REPTAG_PROCALL);
+              }
+            }
+            else {
+              if (!_reptag_cache_get($node, $fields, $teaser)) {
+                reptag_process($node, $fields, REPTAG_PROCSTATIC);
+                _reptag_cache_set($node, $fields, $teaser);
+              }
+              reptag_process($node, $fields, REPTAG_PROCDYNAMIC);
+            }
+          }
+        }
+        else {
+          if (isset($node->in_preview)) {
+            if (variable_get('reptag_preview', 1)) {
+              reptag_process($node, $fields, REPTAG_PROCALL);
+            }
+          }
+          else {
+            reptag_process($node, $fields, REPTAG_PROCALL);
+          }
+        }
+        break;
+    }
+  }
+}
+
+/**
+ * Implementation of hook_comment().
+ * (run reptag_process on comments (static tags only))
+ */
+function reptag_comment(&$comment, $op) {
+  if (variable_get('reptag_enable_comments', 0)) {
+    switch ($op) {
+      case 'update':
+      case 'delete':
+        if (variable_get('reptag_cache', 0)) {
+          _reptag_cache_del($comment, array('comment'));
+        }
+        break;
+      case 'view':
+        if (variable_get('reptag_cache', 0)) {
+          if ($comment->op != t('Preview comment')) {
+            if (!_reptag_cache_get($comment, array('comment'))) {
+              reptag_process($comment, array('comment'), REPTAG_PROCSTATIC);
+              _reptag_cache_set($comment, array('comment'));
+            }
+          }
+          else {
+            reptag_process($comment, array('comment'), REPTAG_PROCSTATIC);
+          }
+        }
+        else {
+          reptag_process($comment, array('comment'), REPTAG_PROCSTATIC);
+        }
+        break;
+      default:
+    }
+  }
+}
+
+/**
+ * Implementation of hook_node_type().
+ */
+function reptag_node_type($op, $info) {
+  switch ($op) {
+    case 'update':
+      if (isset($info->old_type)) {
+        $fields = variable_get('reptag_type_'. $info->old_type .'_fields', serialize(array('body')));
+        variable_set('reptag_type_'. $info->type .'_fields', $fields);
+        variable_del('reptag_type_'. $info->old_type .'_fields');
+      }
+      break;
+    case 'delete':
+      variable_del('reptag_type_'. $info->type .'_fields');
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function reptag_form_alter(&$form, $form_state, $form_id) {
+  if (variable_get('reptag_showhelp', 1)) {
+    // Add reptag help to node form and comment form
+    if ((isset($form['type']['#value']) && $form['type']['#value'] .'_node_form' == $form_id)
+         || ($form_id == 'comment_form' && variable_get('reptag_enable_comments', 0))) {
+      $help = _reptag_online_help();
+      if (count($help)) {
+        $form['reptag_help'] = array(
+          '#type' => 'fieldset',
+          '#title' => t('Rep[lacement]Tags - Help'),
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+          '#weight' => 1
+        );
+        $form['reptag_help'][] = $help;
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_cron().
+ */
+function reptag_cron() {
+  cache_clear_all(NULL, 'cache_reptag');
+}
+
+/**
+ * Implementation of hook_flush_caches().
+ */
+function reptag_flush_caches() {
+  return array('cache_reptag');
+}
+
+/**
+ * Function _reptag_online_help().
+ * (print overview of available tags)
+ */
+function _reptag_online_help() {
+  $form = array();
+  // Module tags
+  $modules = _reptag_module_help();
+  ksort($modules);
+  foreach ($modules as $module => $helptags) {
+    if (!empty($helptags)) {
+      $rows = array();
+      if (is_array($helptags)) {
+        foreach ($helptags as $tag => $repl) {
+          $rows[] = array($tag, '&nbsp;', $repl);
+        }
+      }
+      else {
+        $rows[] = array(array('data' => $helptags, 'colspan' => '3'));
+      }
+      $form[$module] = array(
+        '#type' => 'fieldset',
+        '#title' => ucfirst($module),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+      $form[$module]['table'] = array(
+        '#value' => theme('table', array(), $rows),
+      );
+    }
+  }
+  
+  // Table tags
+  global $user;
+  $iid = array(0, $user->uid);
+  $reptag_table = _reptag_table_load($iid, REPTAG_LOADTAG_FORMAT);
+  ksort($reptag_table);
+  $rows = array();
+  foreach ($reptag_table as $tag => $repl) {
+    $rows[] = array(check_plain($tag), '&nbsp;', htmlentities($repl, ENT_COMPAT, 'UTF-8'));
+  }
+  if (!empty($rows)) {
+    $form['variables'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Additional Rep[lacement]Tags'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+    $form['variables']['table'] = array(
+      '#value' => theme('table', array(), $rows),
+    );
+  }
+  
+  return $form;
+}
+
+/**
+ * Function reptag_workspace().
+ */
+function reptag_workspace() {
+  global $user;
+  drupal_set_title(t('Workspace: @name', array('@name' => $user->name)));
+  
+  return drupal_get_form('_reptag_admin_user_form');
+}
+
+/**
+ * Implementation of hook_help()
+ */
+function reptag_help($path, $arg) {
+  switch ($path) {
+    case 'admin/settings/reptag' : 
+      return t("
+        Reptag will replace a variety of tags, tokens and variables in text fields within nodes.
+        The node content types and the fields within these node types that are processed can be defined here.
+        <br/>Different reptag sub-modules provide different groups of available tag replacements. 
+        Enable the reptag modules to use them.
+        <br/>Reptag tags are saved in the database storage in the unexpanded form, 
+        and are only applied when a node is viewed.
+        <br/>Some reptag values are 'static' and can be cached, 
+        others are dynamically calculated on-the-fly.
+      ");
+      break;
+    case 'admin/settings/reptag/site' : 
+    case 'admin/settings/reptag/user' : 
+      return t("
+        Enter token names and their replacement text. 
+        New tokens can be used by surrounding them with '\$' signs in the target text.
+        <br/>Example: <b>Tag:</b> <code>ADDRESS</code> => <b>Replacement:</b> <code>21 Nonesuch st</code>
+        <br/>Embedding <code>\$ADDRESS\$<code> in node body will be replaced with \"21 Nonesuch st\" in all cases.
+      ");
+      break;
+      
+  };
+} 
+
+/**
+ * Implementation of hook_content_extra_fields.
+ *
+ * Information for the positioning of non-CCK contrib fields
+ * @see content_extra_field_weight()
+ * 
+ * reptag_form_alter() sets weight to 1 - which makes sense, but cck then
+ * scambles the node edit form when the 'body' is repositioned.
+ */
+function reptag_content_extra_fields($type_name) {
+  $extra = array();
+
+  if (variable_get('reptag_showhelp', 1)) {
+    $extra['reptag_help'] = array(
+      'label' => t('Reptag help'),
+      'weight' => 1,
+    );
+  }
+  return $extra;
+}

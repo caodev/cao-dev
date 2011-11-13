@@ -1,0 +1,12 @@
+; $Id: spamicide.info,v 1.2 2009/05/16 20:00:38 lipcpro Exp $
+name = Spamicide
+description = "Provides yet another tool in the arsonal against spam."
+core = 6.x
+package = "Spam control"
+
+; Information added by drupal.org packaging script on 2010-08-08
+version = "6.x-1.3"
+core = "6.x"
+project = "spamicide"
+datestamp = "1281286574"
+

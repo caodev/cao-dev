@@ -1,0 +1,24 @@
+<?php
+function mediarss_perm() {
+  return array();
+}
+function mediarss_init() {
+
+}
+/**
+ * Implementation of hook_views_plugins
+ */
+function mediarss_views_plugins() {
+ return array(
+	'row' => array(
+		'mediarss' => array(
+			'title' => t('Media RSS'),
+			'help' => t('Generates an RSS feed with images from a view.'),
+			'handler' => 'views_plugin_row_mediarss',
+			'path' => drupal_get_path('module', 'mediarss') . '/plugins',
+			'uses options' => TRUE,
+			'type' => 'feed',
+		),
+	),
+  );
+}

@@ -1,0 +1,14 @@
+<?php
+function vsc_init (){
+  /*drupal_add_css(drupal_get_path('module', 'vsc').'/vsc.css');
+  drupal_add_js(drupal_get_path('module', 'vsc').'/vsc.js');*/
+}
+function vsc_form_alter (&$form, &$form_state, $form_id){
+  //dsm("Form ID: " . $form_id);
+  switch ($form_id) {
+    case "visual_node_form":
+    case "video_node_form":
+      $form['creativecommons']['#weight'] = -1;
+      break;
+ } 
+}

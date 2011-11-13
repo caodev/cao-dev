@@ -1,0 +1,299 @@
+<?php
+// $Id: reptag.install,v 1.17.2.3 2009/01/08 03:24:01 dman Exp $
+
+/**
+ * @file
+ * Install/update routines for reptag.module
+ */
+
+require_once(drupal_get_path('module', 'reptag') .'/reptag_helper.inc');
+require_once(drupal_get_path('module', 'reptag') .'/reptag_module.inc');
+
+function reptag_schema() {
+  $schema = array();
+  $schema['reptag_vars'] = array(
+    'fields' => array(
+      'rtid'      => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'name'      => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'value'     => array('type' => 'text', 'not null' => TRUE),
+      'uid'       => array('type' => 'int', 'length' => 10, 'not null' => TRUE, 'default' => 0),
+      'language'  => array('type' => 'varchar', 'length' => 12, 'not null' => TRUE, 'default' => '')
+    ),
+    'primary key' => array('rtid'),
+    'indexes' => array(
+      'uid'       => array('uid'),
+      'language'  => array('language')
+    )
+  );
+  $schema['reptag_registry'] = array(
+    'fields' => array(
+      'module'      => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'path'        => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'weight'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'roles'       => array('type' => 'text', 'not null' => FALSE),
+      'enabled'     => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'static'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'description' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => '')
+    ),
+    'indexes' => array(
+      'weight'  => array('weight'),
+      'enabled' => array('enabled'),
+      'static'  => array('static')
+    )
+  );
+  $schema['cache_reptag'] = array(
+    'fields' => array(
+      'cid'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'data'        => array('type' => 'blob', 'size' => 'big'),
+      'expire'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'created'     => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'headers'     => array('type' => 'text', 'not null' => FALSE),
+      'serialized'  => array('type' => 'int', 'size' => 'small', 'not null' => TRUE, 'default' => 0)
+    ),
+    'primary key' => array('cid'),
+    'indexes' => array(
+      'expire' => array('expire')
+    )
+  );
+
+  return $schema;
+}
+
+function reptag_install() {
+  // Create tables
+  drupal_install_schema('reptag');
+  // Insert default values (enabled modules, default roles, ...)
+  variable_set('reptag_plainrep_roles', serialize(array(DRUPAL_ANONYMOUS_RID)));
+  
+  $modules = _reptag_module_list(TRUE);
+  foreach ($modules as $module => $details) {
+    if (in_array($module, array('format.tags', 'image.tags', 'links.tags', 'node.tags', 'system.tags'))) {
+      $modules[$module]['enabled'] = TRUE;
+      $modules[$module]['roles'] = array(DRUPAL_AUTHENTICATED_RID);
+    }
+  }
+  _reptag_module_register($modules, TRUE);
+}
+
+function reptag_uninstall() {
+  // Drop tables
+  drupal_uninstall_schema('reptag');
+  // Remove variables
+  db_query("DELETE FROM {variable} WHERE name LIKE 'reptag_%'");
+  cache_clear_all('variables', 'cache');
+}
+
+function reptag_update_1() {
+  return _system_update_utf8(array('reptag_vars', 'reptag_storage'));
+}
+
+function reptag_update_2() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("CREATE TABLE {reptag_storage} (
+                nid int(10) unsigned NOT NULL,
+                vid int(10) unsigned NOT NULL,
+                body longtext NOT NULL default '',
+                teaser longtext NOT NULL default '',
+                PRIMARY KEY (vid),
+                KEY nid (nid)
+                ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+    case 'pgsql':
+      $ret[] = update_sql("CREATE TABLE {reptag_storage} (
+                nid integer NOT NULL default '0',
+                vid integer NOT NULL default '0',
+                body text NOT NULL default '',
+                teaser text NOT NULL default '',
+                PRIMARY KEY (vid));");
+      $ret[] = update_sql("CREATE INDEX reptag_storage_nid_idx ON reptag_storage(nid);");
+      $ret[] = update_sql("CREATE SEQUENCE reptag_storage_vid_seq INCREMENT 1 START 1;");
+      break;
+  }
+
+  return $ret;
+}
+
+function reptag_update_3() {
+  $ret = array();
+  // Restore nodes from old cache table and drop the table
+  $result = db_query("SELECT * FROM {reptag_storage}");
+  while ($node = db_fetch_object($result)) {
+    $ret[] = update_sql("UPDATE {node_revisions} SET body = '%s', teaser = '%s' WHERE vid = %d", $node->body, $node->teaser, $node->vid);
+  }
+  $ret[] = update_sql("DROP TABLE {reptag_storage}");
+  // Create new cache table
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("CREATE TABLE {cache_reptag} (
+                cid varchar(255) NOT NULL default '',
+                data longblob,
+                expire int NOT NULL default '0',
+                created int NOT NULL default '0',
+                headers text,
+                PRIMARY KEY (cid),
+                INDEX expire (expire)
+                ) /*!40100 DEFAULT CHARACTER SET UTF8 */ ");
+      break;
+    case 'pgsql':
+      $ret[] = update_sql("CREATE TABLE {cache_reptag} (
+                cid varchar(255) NOT NULL default '',
+                data bytea,
+                expire int NOT NULL default '0',
+                created int NOT NULL default '0',
+                headers text,
+                PRIMARY KEY (cid))");
+      $ret[] = update_sql("CREATE INDEX {cache_reptag}_expire_idx ON {cache_reptag} (expire)");
+      break;
+  }
+
+  return $ret;
+}
+
+function reptag_update_4() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql("CREATE TABLE {reptag_registry} (
+                module varchar(255) NOT NULL default '',
+                path varchar(255) NOT NULL default '',
+                weight int NOT NULL default '0',
+                roles longtext,
+                enabled int NOT NULL default '0',
+                static int NOT NULL default '0',
+                description varchar(255) NOT NULL default '',
+                PRIMARY KEY (module)
+                ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+    case 'pgsql':
+      $ret[] = update_sql("CREATE TABLE {reptag_registry} (
+                module varchar(255) NOT NULL default '',
+                path varchar(255) NOT NULL default '',
+                weight int NOT NULL default '0',
+                roles text NOT NULL,
+                enabled int NOT NULL default '0',
+                static int NOT NULL default '0',
+                description varchar(255) NOT NULL default '',
+                PRIMARY KEY (module));");
+      break;
+  }
+  // Migrate existing module settings
+  $modules = _reptag_module_list(TRUE);
+  foreach ($modules as $module => $details) {
+    $modules[$module]['enabled'] = variable_get('reptag_module_'. $module, 0);
+    $modules[$module]['roles'] = unserialize(variable_get('reptag_module_'. $module .'_roles', serialize(array())));
+  }
+  _reptag_module_register($modules, TRUE);
+  // Plaintext replacement roles
+  variable_set('reptag_plainrep_roles', variable_get('reptag_module_plainrep_roles', serialize(array())));
+
+  // Remove obsolete variables
+  $ret[] = update_sql("DELETE FROM {variable} WHERE name LIKE 'reptag_module_%'");
+  cache_clear_all('variables', 'cache');
+
+  return $ret;
+}
+
+function reptag_update_5() {
+  return array(array('success' => (count(_reptag_module_list(TRUE)) > 0), 'query' => 'Rebuild module list ...'));
+}
+
+function reptag_update_6() {
+  $ret = array();
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql('ALTER TABLE {reptag_vars} ADD language varchar(12) NOT NULL default \'\'');
+      break;
+    case 'pgsql':
+      db_add_column($ret, 'reptag_vars', 'language', 'varchar(12)', array('not null' => TRUE, 'default' => NULL));
+      break;
+  }
+
+  return $ret;
+}
+
+function reptag_update_7() {
+  $ret = array();
+  $content_types = node_get_types('types');
+  foreach ($content_types as $type) {
+    $new_fields = array();
+    $fields = (array)unserialize(variable_get('reptag_type_'. $type->type .'_fields', serialize(array('content/body/#value'))));
+    foreach ($fields as $field) {
+      switch ($field) {
+        case 'title':
+          $new_fields[] = 'title';
+          break;
+        default:
+          if (preg_match('#^content/([^/]+)/#i', $field, $matches)) {
+            $new_fields[] = $matches[1];
+          }
+      }
+    }
+    $ret[] = array('success' => TRUE, 'query' => 'Updating \''. check_plain($type->type) .'\' fields ...');
+    variable_set('reptag_type_'. $type->type .'_fields', serialize($new_fields));
+  }
+
+  return $ret;
+}
+
+function reptag_update_6000() {
+  $ret = array();
+  // Migrate existing table tags to new table schema
+  // Step 1: Rename 'reptag_vars' to transitional 'reptag_vars_tmp'
+  db_rename_table($ret, 'reptag_vars', 'reptag_vars_tmp');
+  // Step 2: Create new 'reptag_vars' table (using the new schema)
+  $schema = array();
+  $schema['reptag_vars'] = array(
+    'fields' => array(
+      'rtid'      => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'name'      => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'value'     => array('type' => 'text', 'not null' => TRUE),
+      'uid'       => array('type' => 'int', 'length' => 10, 'not null' => TRUE, 'default' => 0),
+      'language'  => array('type' => 'varchar', 'length' => 12, 'not null' => TRUE, 'default' => '')
+    ),
+    'primary key' => array('rtid'),
+    'indexes' => array(
+      'uid'       => array('uid'),
+      'language'  => array('language')
+    )
+  );
+  db_create_table($ret, 'reptag_vars', $schema['reptag_vars']);
+  // Step 3: Move items to new table (generates a serial rtid)
+  $result = db_query('SELECT * FROM {reptag_vars_tmp}');
+  while ($var = db_fetch_object($result)) {
+    $ret[] = array(
+      'success' => update_sql("INSERT INTO {reptag_vars} (name, value, uid, language) VALUES ('%s', '%s', %d, '%s')",
+                            $var->name, unserialize($var->value), $var->uid, empty($var->language) ? 'en' : $var->language),
+      'query' => 'Migrating existing table tags (SELECT -> INSERT): \''. check_plain($var->name) .'\''
+    );
+  }
+  // Step 4: Remove 'reptag_vars_tmp'
+  db_drop_table($ret, 'reptag_vars_tmp');
+
+  // Add indices to reptag_registry (weight, enabled, static)
+  db_add_index($ret, 'reptag_registry', 'weight', array('weight'));
+  db_add_index($ret, 'reptag_registry', 'enabled', array('enabled'));
+  db_add_index($ret, 'reptag_registry', 'static', array('static'));
+  // Remove primary key (module) from reptag_registry
+  db_drop_primary_key($ret, 'reptag_registry');
+
+  // Add 'serialized' column to cache_reptag
+  db_add_field($ret, 'cache_reptag', 'serialized', array('type' => 'int', 'size' => 'small', 'not null' => TRUE, 'default' => 0));
+
+  // Rename i18n settings (i18n module to core's locale)
+  variable_set('reptag_locale_enable', variable_get('reptag_i18n_enable', 0));
+  variable_set('reptag_locale_mode', variable_get('reptag_i18n_mode', 0));
+
+  // Remove obsolete variables
+  variable_del('reptag_enable');
+  variable_del('reptag_add_sample');
+  variable_del('reptag_i18n_enable');
+  variable_del('reptag_i18n_mode');
+
+  return $ret;
+}

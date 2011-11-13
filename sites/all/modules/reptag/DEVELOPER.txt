@@ -1,0 +1,213 @@
+*****************************************************************************
+Name: reptag developer documentation
+Author: Thilo Wawrzik <drupal at profix898 dot de>
+*****************************************************************************
+This is a developer info on howto create a .tags module for reptag
+and howto use the reptag-provided API to work with tags.
+***************************************************************************** 
+WRITING REPTAG .TAGS MODULES
+
+function _reptag_sample_init($context) {
+  return array(
+    "#\{MYTEXT}#i"           => "This is replacement text",
+    "#\{MYTIME}#i"           => date('H:i:s'),
+    "#{MYFUNC}#i"            => _reptag_sample_myfunc(),
+  );
+}  
+
+The array returned from _reptag_xxx_init contains all the replacement
+definitions. Since the $reptags array is processed by preg_replace()
+you should format (at least) the left side in a regexp compatible
+format. 'sample' is to be replaced with the name of the .tags module. 
+
+You can also provide replacement tags that are dependent on the node
+they occur in. Variable $context contains all information about the
+node/text currently processed. Look at node.tags for a working example
+on that. This focuses on modules for other node types (e.g. cck) to
+provide a similar functionality as node.tags.
+ 
+function _reptag_sample_info() {
+  return array(t('Sample .tags file'), FALSE);
+}
+
+The array returned from _reptag_xxx_info contains a short description
+on what this module does and/or what tags it exports. The text appears
+under modules on the reptag settings pages. The second element is to
+distinguish 'static' and 'dynamic' module tags (TRUE = static, FALSE =
+dynamic). All modules using the old syntax without TRUE/FALSE are
+assumed 'dynamic'. Static modules contain (invariant) replacement
+tags, which do not change with the time or user on every view. With
+partial cache feature enabled these tags are replaced only once when
+the node form is submitted (-> 'About Partial Cache' in README.txt).
+
+function _reptag_sample_help() {
+  return array(
+    "{MYTEXT}"           => "This is replacement text",
+    "{MYTIME}"           => date('H:i:s'),
+    "{MYFUNC}"           => 'return of the function',
+  );
+}
+
+The array returned from _reptag_xxx_help should be formatted to create
+a sample representation of the tags available in the current module.
+What means 'left-side' entries should be reduced to {..} form and the
+corresponding 'right-side' values must always generate meaningful
+output. The array is presented to the user when he/she creates or
+edits a node (on node form) under 'Rep[lacement]Tags - Help' section.
+
+function _reptag_sample_theme() {
+  return array(
+    'reptag_sample_output' => array(
+      'file' => 'tags/sample.tags.inc',
+      'arguments' => array(),
+    )
+  );
+}
+
+If your .tags module implements theme_ functions to render output, you
+must provide a _reptag_xxx_theme() function that returns an array with
+the details of these functions (same format as for regular Drupal
+modules). This is required for Drupal 6 compatibility, where every
+theme_ function must be registered prior use.
+
+function _reptag_sample_require() {
+  return TRUE;
+}
+
+Some of the modules may depend on other modules, libraries or PEAR
+packages. For example the wiki Modul needs Text_Wiki (PEAR) to be
+available on the server. You can check your prerequisites in this
+function. When _reptag_xxx_require returns FALSE the module is
+automatically disabled. Additionally a warning is shown when the admin
+tries to enable the module on the modules settings page.
+
+function _reptag_sample_process($text, $tags, $context) {
+  //override default process procedure
+  return $text;
+}
+
+By default reptags are processed with preg_replace(). Sometimes it can
+be helpful (or necessary) to use a specialised processing function
+instead. When such function is defined in your module it simply
+overrides the reptag's default processing unit. $text contains the
+content to be processed, $tags is the array defined in the module's
+_init() function and $context provides direct access to the $node
+object (when processing nodes only) and must be used carefully.
+
+function _reptag_sample_myfunc() {
+  return '<strong>my function test</strong>';
+}
+
+You can code and run user-defined procedures and replace a tag with
+their output. In sample.tags_ the tag {MYFUNC} is replaced with
+'<strong>my function test</strong>', the return value of
+_reptag_sample_myfunc().
+
+*****************************************************************************
+EXPOSING FUNCTIONALITY TO REPTAG FROM EXISTING DRUPAL MODULES
+
+It is possible to expose tags from other Drupal modules to reptag.
+What means you can add functionality to reptag from your existing
+module without the need to write a whole new .tags module. To archieve
+that 2 hooks have been intoduced:
+
+The first is hook_reptag() and MUST be implemented by your module.
+
+function hook_reptag($op, $context = NULL) {
+  switch($op) {
+    case 'info':
+      return array(t('API (Sample Implementation)'), TRUE);
+    case 'help':
+      return array("{API}Text{/API}" => "<a href=\"...\">Text</a>");
+    case 'init':
+      return array("#{API}(.*?){/API}#s" => "<a href='...'>\\1</a>");
+    case 'theme': // optional (see above)
+      return array( ... );
+  }
+}
+
+The arguments and return values are very similar to the .tags modules.
+Instead of _reptag_xxx_hook in .tags module you simply return the
+arrays from from hook_reptag($op == 'hook').
+
+Where a .tags module implements _reptag_xxx_process a Drupal module
+(optionally) implements hook_reptag_process() using the same
+parameters.
+
+function hook_reptag_process($text, $tags, $context = NULL) {
+  return $text;
+}
+
+*****************************************************************************
+CALL REPTAG TO PROCESS USER CONTENT DIRECTLY
+
+With a recent Drupal 6 version of reptag you can use replacements from
+within every module. Simply call the reptag_replace() wrapper:
+
+if (function_exists('reptag_replace')) {
+  $text = '[b]bold[/b]';
+  $text = reptag_replace($text);
+  echo $text;
+}
+
+reptag_replace() assumes that you want to process static replacement
+tags only. Use reptag_replace($text, TRUE) to override this behaviour.
+It also passes the current user's uid by default.
+
+In case you need a more flexible alternative to reptag_replace() use
+reptag_process() directly. You only need to pass the required
+parameters.
+
+if (function_exists('reptag_process')) {
+  $param->uid = 0;              // 0 or any uid
+  $param->text = &$body;        // pass by reference
+  reptag_process($param, array('text'));
+  echo $body;                   // print output
+}
+
+if (function_exists('reptag_process')) {
+  $param->uid = 0;              // 0 or any uid
+  $param->text = '[b]bold[/b]'; // or pass string directly
+  reptag_process($param, array('text'));
+  echo $param->text;            // print output
+}
+
+uid is used to determine permissions (and therefore available tags).
+It should be set to 0 (anonymous user) if no special permissions are
+required. Be careful with 'dynamic' .tags modules (e.g. node.tags).
+Some tags depend on the $node/$context object which is not necessarily
+available!
+
+By default all tags, what means static and dynamic replacement tags,
+are used in reptag_process(). If you want to process with static or
+dynamic tags only, you can set the third parameter accordingly. (!The
+default behaviour is different from reptag_replace().) If you need to
+select the modules to use directly you can set the fourth parameter.
+
+Take a look at the inline docs of reptag_process.inc to get more
+details on the parameters for reptag_process().
+
+*****************************************************************************
+SOME GENERAL IDEAS
+
+1. I decided to keep the .tags modules concept. There is no reason IMO
+to add a dozen modules to Drupal's modules page whose sole purpose is
+to serve reptag internally. Instead hooks_reptag is a supplement for
+existing Drupal modules to expose functionality to reptag.
+
+2. Reptag uses a module registry (table reptag_registry) to manage the
+available modules. The registry brings several advantages over older
+reptag versions: #1) reduced memory footprint because only required
+module are included #2) faster execution / less overhead (only one db
+query and additional access check instead of iterating over all
+modules) #3) configurable order of module processing (weight concept)
+#4) simple and unified code to work with .tags modules and other
+module exported tags
+
+3. All the .tags modules live in the private _reptag_xxx_ namespace
+(e.g. _reptag_mymodule_hook()) to avoid namespace collision issues.
+
+*****************************************************************************
+Hope this helps. Please send an email to <drupal at profix898 dot de>
+to share your .tags modules with other users. You are always welcome
+to ask for further assistance.

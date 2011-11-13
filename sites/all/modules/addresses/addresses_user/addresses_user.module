@@ -1,0 +1,324 @@
+<?php
+/**
+ * @author Bruno Massa
+ * @file
+ * You can associate a geographic address with users.
+ */
+
+/**
+ * On installation call this function so we make sure to
+ * reset the user schema with new fields.
+ */
+function addresses_user_new_install() {
+  variable_set('addresses_user_reset_schema', 1);
+}
+
+/**
+ * The user table requires a valid schema, but the
+ * addresses_user_schema() function may be called
+ * before the fields are all defined/available. For
+ * this reason, we want to reset the schema after
+ * other modules were initialized.
+ */
+function addresses_user_init() {
+  if (variable_get('addresses_user_reset_schema', 0)) {
+    // this will call addresses_user_schema()
+    // and fix-up the table as required
+    cache_clear_all('schema', 'cache', TRUE);
+    drupal_get_schema('addresses_user');
+  }
+}
+
+/**
+ * Check if user is allowed to have an address book.
+ *
+ * @param $account
+ *   Object. The current user account
+ * @return
+ *   Boolean. If the user can or cannot access the page
+ */
+function _addresses_user_access($account) {
+  global $user;
+  if (($account->uid == $user->uid || user_access('administer users'))
+      && variable_get('addresses_user_book', FALSE)
+      && user_access('create address book', $account)) {
+    return TRUE;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Let admin select what addresses fields are relevant.
+ */
+function addresses_user_form__addresses_settings_alter(&$form, &$form_state) {
+  module_load_include('settings.inc', 'addresses');
+  $form += _addresses_settings_fields(variable_get('addresses_user_settings', array()));
+
+  // Set the 'addresses' as a fieldset
+  $form['addresses_user'] = array(
+    '#description'  => t('Choose what fields user addresses may have'),
+    '#title'        => t('User addresses fields'),
+    '#tree'         => TRUE,
+    '#type'         => 'fieldset',
+    '#collapsible'  => TRUE,
+  ) + $form['addresses'];
+
+  unset($form['addresses']);
+
+  // Other options
+  $form['addresses_user_settings'] = array(
+    '#title'        => t('User addresses settings'),
+    '#type'         => 'fieldset',
+    '#collapsible'  => TRUE,
+  );
+  $form['addresses_user_settings']['addresses_user_book'] = array(
+    '#default_value'  => variable_get('addresses_user_book', FALSE),
+    '#description'    => t('Users may have several addresses, like an address book.'),
+    '#title'          => t('Address book'),
+    '#type'           => 'checkbox',
+  );
+
+  $form['addresses_user_settings']['addresses_user_edit_form'] = array(
+    '#title'        => t('User edit form'),
+    '#type'         => 'fieldset',
+  );
+  $form['addresses_user_settings']['addresses_user_edit_form']['addresses_user_form'] = array(
+    '#default_value'  => variable_get('addresses_user_form', FALSE),
+    '#title'          => t('Show the address fields'),
+    '#tree'           => FALSE,
+    '#type'           => 'checkbox',
+  );
+  $form['addresses_user_settings']['addresses_user_edit_form']['addresses_user_form_collapsed'] = array(
+    '#default_value'  => variable_get('addresses_user_form_collapsed', FALSE),
+    '#title'          => t('Collapsed the address fieldset'),
+    '#tree'           => FALSE,
+    '#type'           => 'checkbox',
+  );
+  $form['addresses_user_settings']['addresses_user_edit_form']['addresses_user_form_weight'] = array(
+    '#default_value'  => variable_get('addresses_user_form_weight', 0),
+    '#title'          => t('Weight'),
+    '#tree'           => FALSE,
+    '#delta'          => 50,
+    '#type'           => 'weight',
+    '#description'    => 'Use the weight to place the Address fields between Profile fields. Unfortunately, this does not work very well with other module fields and the Save button.',
+  );
+
+  $form['addresses_user_settings']['addresses_user_registration_form'] = array(
+    '#title'        => t('User registration form'),
+    '#type'         => 'fieldset',
+  );
+  $form['addresses_user_settings']['addresses_user_registration_form']['addresses_user_register'] = array(
+    '#default_value'  => variable_get('addresses_user_register', FALSE),
+    '#title'          => t('Show the address fields'),
+    '#tree'           => FALSE,
+    '#type'           => 'checkbox',
+  );
+  $form['addresses_user_settings']['addresses_user_registration_form']['addresses_user_register_collapsed'] = array(
+    '#default_value'  => variable_get('addresses_user_register_collapsed', FALSE),
+    '#title'          => t('Collapsed the address fieldset'),
+    '#tree'           => FALSE,
+    '#type'           => 'checkbox',
+  );
+  $form['addresses_user_settings']['addresses_user_registration_form']['addresses_user_register_weight'] = array(
+    '#default_value'  => variable_get('addresses_user_register_weight', 0),
+    '#title'          => t('Weight'),
+    '#tree'           => FALSE,
+    '#delta'          => 50,
+    '#type'           => 'weight',
+    '#description'    => 'Use the weight to place the Address fields between Profile fields. Unfortunately, this does not change the profile weights and it may not be possible to place the Addresses at the right place (i.e. it may be one earlier or one later but not in between because you will have the same weight and thus the next order uses alphabetic order.)',
+  );
+
+  // Even though this form will be passed through to system_settings_form, we
+  // will still need a custom submit handler so that we can save the field settings
+  // in a compatible format.  This is because the fieldset added here applies
+  // the #tree attribute to the rest of the form elements, which changes the shape
+  // of the data returned on submit.
+  $form['#submit'][] = '_addresses_user_settings_submit';
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Put the address form into the registration form.
+ */
+function addresses_user_form_user_register_alter(&$form, &$form_state) {
+  addresses_user_form_user_profile_form_alter($form, $form_state, TRUE);
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Put the address form into the user form.
+ */
+function addresses_user_form_user_profile_form_alter(&$form, &$form_state, $register = FALSE) {
+  if ((variable_get('addresses_user_register', FALSE) && $register)
+   || (variable_get('addresses_user_form',     FALSE) && $form['_category']['#value'] == 'account')) {
+
+    // get existing user address if defined
+    $address = array();
+    if (!$register) {
+      module_load_include('inc', 'addresses_user');
+      $addresses = _addresses_user_address_get($form['#uid']);
+      if (!empty($addresses)) {
+        // get the first element (may not be $addresses[0])
+        $address = array_shift($addresses);
+        // (should we check that it is a primary address?)
+      }
+    }
+
+    // Get the fields used on this address
+    $fields = variable_get('addresses_user', array());
+
+    // If it's the very first time it's loaded, use all fields
+    if (empty($fields)) {
+      $ftypes = module_invoke_all('addressesfieldapi', 'fields');
+      foreach ($ftypes as $ftype => $field) {
+        // List of address fields
+        $fields[$ftype] = empty($field_values[$ftype]) ? $field['display'] : $field_values[$ftype];
+      }
+    }
+
+    // Get the address form builder
+    $form['address_information'] =  array(
+      '#collapsible'        => TRUE,
+      '#collapsed'          => variable_get($register ? 'addresses_user_register_collapsed' : 'addresses_user_form_collapsed', FALSE),
+      '#title'              => t('Address'),
+      '#type'               => 'fieldset',
+      '#weight'             => variable_get($register ? 'addresses_user_register_weight' : 'addresses_user_form_weight', 0),
+    );
+    $form['address_information']['addresses'] = array(
+      '#default_value'  => $address,
+      '#fields'         => $fields,
+      '#required'       => TRUE,
+      '#type'           => 'addresses_elements',
+      '#tree'           => TRUE,
+    );
+  }
+}
+
+/**
+ * Submit the address
+ *
+ * @ingroup form
+ */
+function _addresses_user_form_submit($form, &$form_state) {
+  require_once('addresses_user.inc');
+
+  $uid = $form['#uid']; // edit form has this one
+  if (!$uid) {
+    $uid = $form_state['user']->uid; // register form has that one
+  }
+
+  $address =& $form_state['values']['addresses'];
+
+  _addresses_user_address_save($address, $uid);
+}
+
+/**
+ * Submit the settings
+ *
+ * @ingroup form
+ */
+function _addresses_user_settings_submit($form, &$form_state) {
+  $ftypes = $form_state['values']['addresses_user'];
+  $fields = array();
+  $settings = array();
+
+  foreach ($ftypes as $ftype => $elements) {
+    $fields[$ftype] = $elements[$ftype . '_select'];
+    foreach ($elements as $name => $value) {
+      $settings[$name] = $value;
+    }
+  }
+
+  variable_set('addresses_user', $fields);
+  variable_set('addresses_user_settings', $settings);
+  unset($form_state['addresses_user']);
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function addresses_user_menu() {
+  // Add tab for address book.
+  $items['user/%user/address'] = array(
+    'access callback'   => '_addresses_user_access',
+    'access arguments'  => array(1),
+    'page callback'     => '_addresses_user_address',
+    'file'              => 'addresses_user.inc',
+    'title'             => 'Address Book',
+    'type'              => MENU_LOCAL_TASK,
+    'weight'            => 1,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function addresses_user_perm() {
+  return array('create address book');
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function addresses_user_theme() {
+  return array(
+    'addresses_user_overview' => array(
+      'arguments' => array('uid', 'addresses'),
+      'file'      => 'addresses_user.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function addresses_user_user($op, &$edit, &$account, $category = NULL) {
+  switch ($op) {
+    case 'delete':
+      // Delete all addresses that the user has set under their account
+      db_query('DELETE FROM {addresses_user} WHERE eid = %d', $account->uid);
+      break;
+    case 'view':
+      if (!variable_get('addresses_user_book', FALSE)) {
+        module_load_include('inc', 'addresses_user');
+        if ($addresses = _addresses_user_address_get($account->uid)) {
+          $addresses = array_pop($addresses);
+          $account->content['addresses'][] =  array(
+            '#type' => 'user_profile_item',
+            '#title' => t('Address'),
+            '#value' => theme('addresses', $addresses),
+          );
+        }
+      }
+      break;
+    case 'insert':
+    case 'update':
+      if (!variable_get('addresses_user_book', FALSE)) {
+        if (isset($edit['addresses'])) {
+          if (isset($edit['address_information']['addresses'])) {
+            $address =& $edit['address_information']['addresses'];
+//             $address['aid'] = $edit['addresses']['aid'];
+          }
+          else {
+            $address =& $edit['addresses'];
+          }
+        }
+        elseif (isset($account->addresses)) {
+          $address =& $account->addresses;
+        }
+
+        if (isset($address)) {
+          module_load_include('inc', 'addresses_user');
+          _addresses_user_address_save($address, $account->uid);
+        }
+      }
+      break;
+  }
+}
+
+// vim: ts=2 sw=2 et syntax=php

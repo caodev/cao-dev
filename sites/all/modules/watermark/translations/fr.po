@@ -1,0 +1,136 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2006-08-30 14:40+0100\n"
+"Last-Translator: Jérôme <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: ../\n"
+
+#: watermark.module:24
+msgid "Adds watermark to image.module. Requires image.module"
+msgstr "Ajoute des filigranes au module <em>image</em>. Requiert le module <em>image</em>"
+
+#: watermark.module:41
+msgid "Watermark"
+msgstr "Filigrane"
+
+#: watermark.module:48
+msgid "Enable watermarking of new images?"
+msgstr "Activer les filigranes sur les nouvelles images ?"
+
+#: watermark.module:50
+msgid "Check this box to enable watermarking of new images."
+msgstr "Cochez cette boite pour activer les filigranes sur les nouvelles images."
+
+#: watermark.module:55
+msgid "Watermark overlay image"
+msgstr "Filigrane en sur-impression"
+
+#: watermark.module:60
+msgid "Path of the image that should be used as the watermark image, relative to the Drupal root. This should be an 8-bit PNG image (tested and verified), although other formats may work (untested)."
+msgstr "Chemin d'accès à l'image qui devra être utilisée come filigrane, relatif à la racine de Drupal. Ce doit être une image PNG 8-bit (testé et vérifié), bien que d'autres formats puissent fonctionnés (non testé)."
+
+#: watermark.module:73
+msgid "Percentage"
+msgstr "Pourcentage"
+
+#: watermark.module:76
+msgid "Percentage to apply the watermark to the image."
+msgstr "Pourcentage d'opacité du filigrane sur l'image."
+
+#: watermark.module:80
+msgid "Middle"
+msgstr "Centre"
+
+#: watermark.module:81
+msgid "Middle right"
+msgstr "Centre droite"
+
+#: watermark.module:82
+msgid "Middle left"
+msgstr "Centre gauche"
+
+#: watermark.module:83
+msgid "Top middle"
+msgstr "Haut millieu"
+
+#: watermark.module:84
+msgid "Top left"
+msgstr "Haut gauche"
+
+#: watermark.module:85
+msgid "Top right"
+msgstr "Haut droite"
+
+#: watermark.module:86
+msgid "Bottom middle"
+msgstr "Bas millieu"
+
+#: watermark.module:87
+msgid "Bottom right"
+msgstr "Bas droite"
+
+#: watermark.module:88
+msgid "Bottom left"
+msgstr "Bas gauche"
+
+#: watermark.module:93
+msgid "Location"
+msgstr "Emplacement"
+
+#: watermark.module:96
+msgid "Location on the final image where the watermark will be placed."
+msgstr "Position du filigrane sur l'image."
+
+#: watermark.module:101
+msgid "Apply watermark to the following images"
+msgstr "Activer les filigranes sur les images suivantes"
+
+#: watermark.module:103
+msgid "Check which images you want to apply watermarks for."
+msgstr "Cochez les images sur lesquelles vous voulez appliquer des filigranes."
+
+#: watermark.module:172
+msgid "Watermark applied to image: %file"
+msgstr "Filigrane appliqué à l'image : %file"
+
+#: watermark.module:175
+msgid "Error adding watermark."
+msgstr "Erreur lors de l'ajout du filigrane."
+
+#: watermark.module:249
+msgid "Failed to merge image with watermark."
+msgstr "Erreur lors de la fusion de l'image et du filigrane."
+
+#: watermark.module:254
+msgid "Failed to save merged image."
+msgstr "Erreur lors de la sauvegarde de l'image fusionée."
+
+#: watermark.module:266
+msgid "Image file %file not found."
+msgstr "L'image %file est introuvable."
+
+#: watermark.module:287
+msgid "Image file %file is an unsupported format type=%type."
+msgstr "Le format %type du fichier image %file n'est pas suporté."
+
+#: watermark.module:295
+msgid "Failed to create handle for image file %file via function %function."
+msgstr "Erreur lors de la création d'une accroche sur l'image %file avec la fonction %function."
+
+#: watermark.module:176
+msgid "error"
+msgstr "erreur"
+
+#: watermark.module:0
+msgid "watermark"
+msgstr "watermark"
+

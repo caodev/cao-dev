@@ -1,0 +1,71 @@
+/* $Id: reptag.css,v 1.1 2008/06/04 12:21:06 profix898 Exp $ */
+
+.reptag-headbar {
+  padding: 1px 5px;
+  margin-bottom: 10px;
+  
+  background-color: #EDF5FA;
+  font-weight: bold;
+}
+
+/* Dialog styles */
+.reptag-dialog {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  
+  width: 700px;
+  margin-left: -350px;
+  
+  cursor: default;
+  background-color: #FFF;
+  border: 1px solid #3D9CD7;
+}
+
+.reptag-dialog-bar {
+  height: 20px;
+  padding-left: 2px;
+  
+  color: #FFF;
+  text-align: left;
+  background-color: #3D9CD7;
+  font-weight: bold;
+}
+
+.reptag-dialog-close {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  margin: 1px;
+}
+
+.reptag-dialog-load {
+  position: fixed;
+  left: 50%;
+  
+  width: 16px;
+  margin-left: -8px;
+}
+
+.reptag-dialog-content {
+  height: 500px;
+  margin: 20px;
+  
+  text-align: left;
+  background-color: #FFF;
+  
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.reptag-exclude-append,
+.reptag-exclude-remove,
+.reptag-exclude-wrapper {
+  display: none;
+}
+
+#reptag-exclude-add-wrapper,
+#reptag-exclude-remove-wrapper {
+  display: none;
+  width: 250px;
+}

@@ -1,0 +1,6 @@
+/* $Id: curlypage.css,v 1.1 2009/11/16 18:50:19 manfer Exp $ */
+/**
+ * This CSS is necesary to prevent firefox 3.x showing a border on
+ * transparent flash movies embedded with object when they are active.
+ */
+object.curlypage {outline: none;}

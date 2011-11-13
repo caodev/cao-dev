@@ -1,0 +1,5 @@
+﻿; $Id$
+name = johnvsc hates ie6
+description = Creates a block that sniffs out if the end user is using IE6, then respectively explains to them why they should abandon all hope
+package = Other
+core = 6.x

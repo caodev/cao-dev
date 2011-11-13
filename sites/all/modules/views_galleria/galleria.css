@@ -1,0 +1,23 @@
+#container #midden_wrapper #inhoud .galleria{list-style:none; display: block;}
+#container #midden_wrapper #inhoud .galleria li{ padding: 0; margin: 0; display:block;width:80px;height:80px;overflow:hidden;float:left;margin:0 10px 10px 0}
+#container #midden_wrapper #inhoud .galleria li a{display:none}
+#container #midden_wrapper #inhoud .galleria li div{position:absolute;display:none;top:0;left:180px}
+#container #midden_wrapper #inhoud .galleria li div img{ float: none; margin: 0; cursor:pointer}
+#container #midden_wrapper #inhoud .galleria li.active div img,.galleria li.active div{display:block}
+#container #midden_wrapper #inhoud .galleria li img.thumb{cursor:pointer;top:auto;left:auto;display:block;width:auto;height:auto}
+#container #midden_wrapper #inhoud .galleria li .caption{display:block;padding-top:.5em}
+p.galleria-nav { display: block; clear: both;}
+* html  #container #midden_wrapper #inhoud .galleria li div span{width:400px} /* MSIE bug */
+
+.galleria_container{
+display: block;
+}
+.view-content  .galleria_container img {
+float: none
+}
+
+.galleria_wrapper{
+overflow:hidden;
+width:587px;
+max-height:587px;
+}

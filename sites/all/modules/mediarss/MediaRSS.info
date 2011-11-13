@@ -1,0 +1,20 @@
+name = Media RSS
+description = Creates a media field for image nodes on RSS feeds
+package = Views
+
+dependencies[]=views
+
+core = 6.x
+; Information added by drupal.org packaging script on 2008-09-23
+version = "6.x-1.0"
+core = "6.x"
+project = "mediarss"
+datestamp = "1222207534"
+
+ 
+; Information added by drupal.org packaging script on 2009-05-14
+version = "6.x-2.9"
+core = "6.x"
+project = "mediarss"
+datestamp = "1242293461"
+

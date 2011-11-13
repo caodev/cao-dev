@@ -1,0 +1,13 @@
+; $Id: watermark.info,v 1.5 2008/06/23 23:20:38 kbahey Exp $
+name = Image Watermark
+description = "Allows the user to apply watermarks on image upload"
+dependencies[] = image
+package = Image
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "watermark"
+datestamp = "1278836331"
+

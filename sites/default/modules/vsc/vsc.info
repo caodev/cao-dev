@@ -1,0 +1,6 @@
+; $Id: vsc.info,v 1.0 j_zavocki Exp $
+name = VSC
+description = Custom functions for Visual Substance
+core = 6.x
+package = Visual Substance
+version = "6.x"

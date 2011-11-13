@@ -1,0 +1,130 @@
+<?php
+// $Id: total_control.module,v 1.20 2010/03/02 22:45:32 jenlampton Exp $
+/**
+ * @file
+ *
+ * This module enables an administrative dashboard.
+ */
+include_once('includes/total_control.inc'); 
+include_once('includes/total_control.views_default.inc');
+
+define('TOTAL_CONTROL_REQUIRED_PANELS_API', '3');
+define('TOTAL_CONTROL_REQUIRED_VIEWS_API', '2');
+// This is the name of the dashboard as the page manager module sees it via the page task.
+define('TOTAL_CONTROL_DASHBOARD_PANEL_NAME', 'dashboard');
+define('TOTAL_CONTROL_MINIMUM_VERSION', 1);
+define('TOTAL_CONTROL_VERSION', 1);
+
+/** 
+ * Implementation of hook_perm().
+ *
+ * Adds permissions for access to the total control dashboard
+ */
+function total_control_perm() {
+  return array('have total control', 'administer total control');
+}
+
+/** 
+ * Implementation of hook_menu().
+ *
+ * Adds the total control dashboard
+ */
+function total_control_menu() {
+  $items = array();
+
+  $items['admin/settings/control'] = array(
+    'title' => 'Total Control',
+    'description' => 'Adjust administration menu settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('total_control_admin_settings'),
+    'access arguments' => array('administer total control'),
+    'file' => 'total_control.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_form_alter().
+ *
+ * Adds views adjustment handling when content types are added or removed
+ */
+function total_control_form_alter(&$form, $form_state, $form_id) {
+  if ('node_type_form' == $form_id) {
+    $form['#submit'][] = 'total_control_add_type_submit';
+  }
+  if ('node_type_delete_confirm' == $form_id) {
+    $form['#submit'][] = 'total_control_remove_type_submit';
+  }
+}
+
+/**
+ * Implementation of hook_ctools_plugin_api().
+ *
+ * Needed so that next hooks are picked up.
+ */
+function total_control_ctools_plugin_api($module, $api) {
+  if ($module == 'page_manager' && $api == 'pages_default') {
+    return array('version' => 1);
+  }  
+}
+
+/**
+ * Implementation of hook_ctools_plugin_dierctory().
+ *
+ * Lets the system know we implement task and task_handler plugins.
+ */
+function total_control_ctools_plugin_directory($module, $plugin) {
+  return 'plugins/' . $plugin;
+}
+
+/**
+ * Implementation of hook_default_page_manager_handlers().
+ */
+function total_control_default_page_manager_handlers() {
+  $handlers = array();
+  include_once('includes/total_control.default_page.inc');
+  return $handlers;
+}
+
+/**
+ * Implementation of hook_views_api().
+ *
+ * Register View API information. This is required for your module to have
+ * its include files loaded; for example, when implementing
+ * hook_views_default_views().
+ *
+ * @return
+ *   An array with the following possible keys:
+ *   - api:  (required) The version of the Views API the module implements.
+ *   - path: (optional) If includes are stored somewhere other than within
+ *       the root module directory or a subdirectory called includes, specify
+ *       its path here.
+ */
+function total_control_views_api() {
+  // TODO
+  return array(
+    'api' => 2,
+    //'path' => drupal_get_path('module', 'total_control') . '/includes', 
+  );
+}
+
+/**
+ * Implementation of hook_user().
+ *
+ * Redirects to the dashboard if configured.
+ */
+function total_control_user($op, &$edit, &$account, $category = NULL){
+  if (($op == 'login') && (variable_get('total_control_login_redirect', 0) == 1)){
+    drupal_goto('admin/dashboard');
+  }
+}
+ 
+/**
+ * Implementation of hook_views_pre_render().
+ *
+ * Adds the create content links to dashboard views.
+ */
+function total_control_views_pre_render(&$view) {
+ // TODO
+}

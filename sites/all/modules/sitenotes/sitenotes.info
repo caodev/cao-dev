@@ -1,0 +1,10 @@
+; $Id: sitenotes.info,v 1.4.2.1 2008/02/14 19:05:16 nancyw Exp $
+name = Sitenotes
+description = "Enables creating site notes for administrators."
+core = 6.x
+; Information added by drupal.org packaging script on 2008-10-24
+version = "6.x-1.2"
+core = "6.x"
+project = "sitenotes"
+datestamp = "1224888631"
+

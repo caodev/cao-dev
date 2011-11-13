@@ -1,0 +1,176 @@
+<?php
+/**
+ * @file
+ * Module installation/uninstallation hooks.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function addresses_cck_install() {
+  // Notify content module when this module is installed.
+  drupal_load('module', 'content');
+  content_notify('install', 'addresses_cck');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function addresses_cck_uninstall() {
+  // Notify content module when this module is uninstalled.
+  drupal_load('module', 'content');
+  content_notify('uninstall', 'addresses_cck');
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function addresses_cck_enable() {
+  // Notify content module when this module is enabled.
+  drupal_load('module', 'content');
+  content_notify('enable', 'addresses_cck');
+}
+
+/**
+ * Implementation of hook_disable().
+ */
+function addresses_cck_disable() {
+  // Notify content module when this module is disabled.
+  drupal_load('module', 'content');
+  content_notify('disable', 'addresses_cck');
+}
+
+/**
+ * Implementation of hook_update_N().
+ *
+ * Transfer cck_address fields.
+ * cck_address is a 5.x CCK extension module that was not ported to 6.x.
+ */
+function addresses_cck_update_6000() {
+  $ret = array();
+  $result = db_query("SELECT * FROM {content_node_field} WHERE type = 'cck_address'");
+  while ($field = db_fetch_array($result)) {
+    $field['global_settings'] = unserialize($field['global_settings']);
+    $field['db_columns'] = unserialize($field['db_columns']);
+    // Transfer global settings.
+    $global_settings = serialize(array(
+      'aname' => !empty($field['global_settings']['fielddisplay']['field_display_other']),
+      'street' => !empty($field['global_settings']['fielddisplay']['field_display_street1']),
+      'additional' => !empty($field['global_settings']['fielddisplay']['field_display_street2']) || !empty($field['global_settings']['fielddisplay']['field_display_apt']),
+      'city' => !empty($field['global_settings']['fielddisplay']['field_display_city']),
+      'province' => !empty($field['global_settings']['fielddisplay']['field_display_state']),
+      'country' => !empty($field['global_settings']['fielddisplay']['field_display_country']),
+      'postal_code' => !empty($field['global_settings']['fielddisplay']['field_display_zip']),
+      'is_primary' => FALSE,
+    ));
+    $update = db_query("UPDATE {content_node_field} SET type = 'addresses_cck', global_settings = '%s' WHERE field_name = '%s'", $global_settings, $field[field_name]);
+    $ret[] = array('success' => $update !== FALSE, 'query' => "UPDATE {content_node_field} SET type = 'addresses_cck', global_settings = '$global_settings' WHERE field_name = '$field[field_name]'");
+    // Match old columns to new columns.
+    $schema = module_invoke_all('addressesfieldapi', 'fields');
+    $columns = array(
+      'aname' => 'other',
+      'street' => 'street1',
+      'additional' => 'street2',
+      'city' => 'city',
+      'province' => 'state',
+      'country' => 'country',
+      'postal_code' => 'zip',
+    );
+    // If field has its own table, rename columns.
+    if ($field['db_storage'] == CONTENT_DB_STORAGE_PER_FIELD) {
+      $table = _content_tablename($field['field_name'], CONTENT_DB_STORAGE_PER_FIELD);
+      foreach ($schema as $column => $spec) {
+        if (db_column_exists($table, $column)) {
+          db_change_field($ret, $table, "$field[field_name]_$columns[$column]", "$field[field_name]_$column", $spec);
+        }
+        else {
+          db_add_field($ret, $table, "$field[field_name]_$column", $spec);
+        }
+      }
+      if (db_column_exists($table, "$field[field_name]_apt")) {
+        if (db_column_exists($table, "$field[field_name]_additional")) {
+          $ret[] = update_sql("UPDATE {{$table}} SET $field[field_name]_additional = $field[field_name]_apt WHERE $field[field_name]_additional IS NULL AND $field[field_name]_apt IS NOT NULL");
+          $ret[] = update_sql("UPDATE {{$table}} SET $field[field_name]_additional = CONCAT($field[field_name]_additional, '\n', $field[field_name]_apt) WHERE $field[field_name]_additional IS NOT NULL AND $field[field_name]_apt IS NOT NULL");
+        }
+        db_drop_field($ret, $table, "$field[field_name]_apt");
+      }
+    }
+    $field_result = db_query("SELECT * FROM {content_node_field_instance} WHERE field_name = '%s'", $field['field_name']);
+    while ($instance = db_fetch_array($field_result)) {
+      $instance['widget_settings'] = unserialize($instance['widget_settings']);
+      $instance['display_settings'] = unserialize($instance['display_settings']);
+      // Transfer type-specific settings.
+      $additional = $field['global_settings']['field_defaults_street2'];
+      $additional .= empty($field['global_settings']['field_defaults_apt']) ? '' : "\n". $field['global_settings']['field_defaults_apt'];
+      $widget_settings = serialize(array(
+        'default_value' => array(
+          array(
+            'aname' => $field['global_settings']['field_defaults_other'],
+            'street' => $field['global_settings']['field_defaults_street1'],
+            'additional' => $additional,
+            'city' => $field['global_settings']['field_defaults_city'],
+            'province' => $field['global_settings']['field_defaults_state'],
+            'country' => strtolower($field['global_settings']['field_defaults_country']),
+            'postal_code' => $field['global_settings']['field_defaults_zip'],
+          ),
+        ),
+      ));
+      $update = db_query("UPDATE {content_node_field_instance} SET widget_type = 'addresses_elements', widget_settings = '%s' WHERE field_name = '%s' AND type_name = '%s'", $widget_settings, $instance[field_name], $instance[type_name]);
+      $ret[] = array('success' => $result !== FALSE, 'query' => "UPDATE {content_node_field_instance} SET widget_type = 'addresses_elements', widget_settings = '$widget_settings' WHERE field_name = '$instance[field_name]' AND type_name = '$instance[type_name]'");
+      // If field uses type table, rename columns.
+      if ($field['db_storage'] == CONTENT_DB_STORAGE_PER_CONTENT_TYPE) {
+        $table = _content_tablename($instance['type_name'], CONTENT_DB_STORAGE_PER_CONTENT_TYPE);
+        foreach ($schema as $column => $spec) {
+          if (db_column_exists($table, "$instance[field_name]_$columns[$column]")) {
+            db_change_field($ret, $table, "$instance[field_name]_$columns[$column]", "$instance[field_name]_$column", $spec);
+          }
+          else {
+            db_add_field($ret, $table, "$instance[field_name]_$column", $spec);
+          }
+        }
+        if (db_column_exists($table, "$instance[field_name]_apt")) {
+          if (db_column_exists($table, "$instance[field_name]_additional")) {
+            $ret[] = update_sql("UPDATE {{$table}} SET $instance[field_name]_additional = $instance[field_name]_apt WHERE $instance[field_name]_additional IS NULL AND $instance[field_name]_apt IS NOT NULL");
+            $ret[] = update_sql("UPDATE {{$table}} SET $instance[field_name]_additional = CONCAT($instance[field_name]_additional, '\n', $instance[field_name]_apt) WHERE $instance[field_name]_additional IS NOT NULL AND $instance[field_name]_apt IS NOT NULL");
+          }
+          db_drop_field($ret, $table, "$instance[field_name]_apt");
+        }
+      }
+    }
+  }
+  content_notify('enable', 'addresses_cck');
+  return $ret;
+}
+
+/**
+ * Updating country field definitions as there now might be another default value.
+ */
+function addresses_cck_update_6101(&$sandbox) {
+  $fields = content_fields();
+  module_load_include('crud.inc', 'content', 'includes/content');
+  module_load_include('module', 'addresses');
+  $afields = addresses_addressesfieldapi('fields');
+  $country_field_schema = $afields['country'];
+
+  $ret = array();
+  $updated = FALSE;
+  foreach ($fields as $fname => $field) {
+    if ($field['type'] == 'addresses_cck') {
+      $field['columns']['country'] = $country_field_schema;
+      $re = content_field_instance_update($field, FALSE);
+      $updated = TRUE;
+      $ret[] = array(
+        'success' => !empty($re),
+        'query' => 'Addresses field updated: '. check_plain($field['field_name']),
+      );
+    }
+  }
+  if ($updated) {
+    // Clear caches and rebuild menu.
+    content_clear_type_cache(TRUE);
+    menu_rebuild();
+  }
+  return $ret;
+}
+
+// vim: ts=2 sw=2 et syntax=php

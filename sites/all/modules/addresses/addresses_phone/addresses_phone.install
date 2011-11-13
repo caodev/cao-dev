@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Module installation/uninstallation hooks.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function addresses_phone_install() {
+  drupal_set_message(t('To display phone and fax numbers with Addresses, you need to add them to your formatting options in the <a href="!addresses_admin">Addresses configuration area</a>.',
+    array('!addresses_admin' => url('admin/settings/address'))), 'status');
+
+  if (module_exists('addresses_user')) {
+    module_load_include('module', 'addresses_user');
+    addresses_user_new_install();
+  }
+}
+
+/**
+ * Implementation of hook_update_N().
+ *
+ * Updates addresses_phone table fields to store 24 characters instead of 16.
+ *
+ * @see http://drupal.org/node/699572
+ */
+function addresses_phone_update_6100(&$sandbox) {
+  $ret = array();
+
+  // Define settings for the phone and fax fields, all settings must be defined
+  // to comply with pgsql requirement.
+  // see db_change_field()
+  $phone_definition = $fax_definition = array(
+    'default' => '', 'length' => 24, 'not null' => FALSE, 'type' => 'varchar',
+  );
+  $phone_definition['description'] = 'Phone numbers, like cellphone, home, office.';
+  $fax_definition['description'] = 'Fax number.';
+
+  // Update CCK field tables if addresses_cck enabled.
+  if (module_exists('addresses_cck')) {
+    drupal_load('module', 'content');
+
+    // Update content_node_field's db_columns
+    content_associate_fields('addresses_cck');
+
+    // Array to tell us not to update a shared table that has been updated
+    $updated_shared_tables = array();
+    // Check every content-type to see if addresses_cck is used.
+    foreach (content_types() as $type) {
+      foreach ($type['fields'] as $field_name => $field) {
+        // Check each field to see if it is an Addresses field
+        if ($field['module'] == 'addresses_cck') {
+          // If a shared table exists for this field
+          if (in_array('content_' . $field_name, $type['tables'])) {
+            $table = 'content_' . $field_name;
+            $shared_table = TRUE;
+            if (in_array($table, $updated_shared_tables)) {
+              // Unset the table to skip updating as it has already been updated
+              $table =  FALSE;
+            }
+          }
+          else {
+            $table = 'content_type_' . $type['type'];
+            $shared_table = FALSE;
+          }
+
+          // If there is a table set to update for the field being checked
+          if ($table) {
+            // Check that fields exists, probably not needed, then alter entity attributes
+            if ($field['columns']['phone']) {
+              db_change_field($ret, $table, $field_name . '_phone', $field_name . '_phone', $phone_definition);
+            }
+            if ($field['columns']['fax']) {
+              db_change_field($ret, $table, $field_name . '_fax', $field_name . '_fax', $fax_definition);
+            }
+
+            if ($shared_table) {
+              $updated_shared_tables[] = $table;
+            }
+          }
+        }
+      }
+    }
+
+    // Clear the CCK cache
+    content_clear_type_cache();
+  }
+
+  // Update addresses_user's phone and fax fields.
+  if (db_table_exists('addresses_user')) {
+    db_change_field($ret, 'addresses_user', 'phone', 'phone', $phone_definition);
+    db_change_field($ret, 'addresses_user', 'fax', 'fax', $fax_definition);
+  }
+
+  return $ret;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function addresses_phone_uninstall() {
+  drupal_set_message(t('To remove phone and fax numbers from Addresses, you need to remove them from your formatting options in the <a href="!addresses_admin">Addresses configuration area</a>.',
+    array('!addresses_admin' => url('admin/settings/address'))), 'status');
+}
+
+// vim: ts=2 sw=2 et syntax=php

@@ -1,0 +1,97 @@
+<?php
+// $Id: textile.module,v 1.22.4.3 2010/06/08 11:17:11 kiam Exp $
+
+/**
+ * @file
+ * The textile module allows input of Textile shorthand.
+ */
+
+/**
+ * Implements hook_filter().
+ */
+function textile_filter($op, $delta = 0, $format = -1, $text = '') {
+  switch ($op) {
+    case 'list':
+      return array(t("Textile"));
+
+    case 'description':
+      return t('Allows content to be submitted using Textile, a simple, plain text syntax that is filtered into valid XHTML.');
+
+    case 'process':
+      if (variable_get("textile_tags_$format", 0)) {
+        return preg_replace_callback(
+          '{\[textile\](.*?)(\[/textile\]|$)}is', '_textile_process_match', $text
+        );
+      }
+      else {
+        return _textile_process_match(array(NULL, $text));
+      }
+
+    case 'settings':
+      $form = array();
+      $form['textile_settings'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Textile filter'),
+        '#collapsible' => TRUE
+      );
+      $form['textile_settings']["textile_tags_$format"] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Use tags'),
+        '#default_value' => variable_get("textile_tags_$format", 0),
+        '#description' => t('If enabled, only text between [textile] and optional [/textile] tags will be processed; otherwise, all text will be processed as Textile markup.')
+      );
+
+      return $form;
+
+    default:
+      return $text;
+  }
+}
+
+/**
+ * Implements hook_filter_tips().
+ */
+function textile_filter_tips($delta, $format, $long = FALSE) {
+  if ($long) {
+    module_load_include('inc', 'textile', 'textile.tips');
+    return _textile_filter_long_tips();
+  }
+  elseif (variable_get("textile_tags_$format", 0)) {
+    return t('You can use Textile markup to format text between the [textile] and (optional) [/textile] tags.');
+  }
+  else {
+    return t('You can use Textile markup to format text.');
+  }
+}
+
+/**
+ * Implements hook_help().
+ */
+function textile_help($path = 'admin/help#textile', $arg) {
+  switch ($path) {
+    case 'admin/help#textile':
+      return '<p>' .
+      t('The Textile module allows users to enter content using Textile, a
+        simple, plain text syntax that is filtered into valid XHTML. The <a
+        href="@tips_url" title="Textile help">filter tips page</a>
+        provides syntax descriptions and examples.', array('@tips_url' => url('filter/tips'))) .
+      '</p>';
+  }
+}
+
+/**
+ * Helper function for preg_replace_callback().
+ */
+function _textile_process_match($matches) {
+  static $textile = NULL;
+
+  if (empty($textile)) {
+    module_load_include('php', 'textile', 'classTextile');
+
+    $textile = new Textile();
+    //$textile->hu is the string that preceeds all relative URLs.
+    $textile->hu = url(NULL);
+  }
+
+  return $textile->TextileThis($matches[1]);
+}

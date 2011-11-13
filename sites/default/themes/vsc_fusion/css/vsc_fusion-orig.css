@@ -1,0 +1,1586 @@
+/*[fmt]1A20-1A0A-3*/
+/*$Id: fusion-starter-style.css,v 1.1.2.6 2010/02/14 06:44:16 sociotech Exp $*/
+/*+clearfix {*/
+.ntype-candidate fieldset.group-visual-substance:after, #explore-menu ul.menu:after, #block-menu-menu-search-and-explore ul.menu:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  font-size: 0;
+}
+.ntype-candidate fieldset.group-visual-substance, #explore-menu ul.menu, #block-menu-menu-search-and-explore ul.menu {
+  display: inline-block;
+}
+.ntype-candidate fieldset.group-visual-substance, #explore-menu ul.menu, #block-menu-menu-search-and-explore ul.menu {
+/*\*/
+  display: block;
+/**/
+  _height: 1px;
+}
+/*+}*/
+.main-inner {
+  padding-top: 15px;
+}
+html {
+  background-color: #000000;
+}
+body.admin-menu {
+  top: 0px;
+  display: block;
+  position: relative;
+}
+#hp-slide-show {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 230px;
+}
+#hp-blurb {
+  display: block;
+  position: relative;
+  height: 410px;
+  text-align: left;
+  padding-top: 6px;
+  width: 220px;
+}
+.profile dl dd {
+  padding-left: 11px;
+}
+.node .terms {
+  text-align: right;
+}
+h3.title {
+  color: #888888;
+}
+h4 {
+  color: #303030;
+  font-size: 24px;
+  text-transform: lowercase;
+  margin: 20px 0;
+}
+h5 {
+  color: #999999;
+  font-size: 22px;
+  margin: 20px 0 30px 20px;
+  line-height: 28px;
+}
+/*Basic Typography & Colors
+--------------------------------------------------------------
+Add general site styling here for typography and background*/
+body {
+  font-size: 75%;
+/*also set in fusion_starter.info: settings[base-font-size] = font-size-12*/
+  background-color: #000000;
+  color: #555555;
+  margin: 0;
+}
+/*Default link styles - separate a:visited for a different visited link style*/
+a, a:link, a:visited {
+  color: #AE7640;
+}
+.node ul.links li a.active {
+  color: #999999;
+}
+/*Hover/active link styles. Don't forget :focus for accessibility*/
+a:hover, a:focus, a:active {
+  color: #999999;
+}
+strong {
+  color: #AAAAAA;
+}
+#explore-menu ul li, #block-menu-menu-search-and-explore ul li {
+}
+/*button links*/
+#button-link a:link, #button-link a:visited {
+  position: relative;
+  background-color: #000000;
+}
+#button-link a:hover {
+  background-color: #333333;
+}
+.link-inline {
+  display: inline-block;
+  width: auto;
+  padding: 16px;
+  margin: 0 12px 2px -10px;
+}
+.link-block {
+  display: block;
+  padding: 15px;
+  margin-bottom: 1px;
+}
+.large-text {
+  font-size: 22px;
+}
+#button-link a.help {
+  width: 24px;
+  float: right;
+  top: -49px;
+  background-color: #4D0A06;
+  display: block;
+  color: #777777;
+  font-weight: normal;
+  font-style: normal;
+}
+#user-add-content {
+  margin-bottom: 50px;
+  margin-top: 15px;
+  padding-left: 0;
+}
+#user-add-content .pane-content {
+  display: block;
+  position: relative;
+  left: 19px;
+  top: 6px;
+}
+/*slideshows*/
+#slideshow-info h4 {
+  margin-bottom: 0px;
+  font-size: 18px;
+  padding-top: 20px;
+  color: #888888;
+  height: auto;
+  display: block;
+}
+#slideshow-info {
+  text-align: left;
+}
+.comment .picture {
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  clear: left;
+}
+.comment .picture img {
+  display: block;
+  height: 54px;
+}
+/*Specific Typography
+--------------------------------------------------------------*/
+#site-name {
+  font-size: 100%;
+  display: block;
+  position: absolute;
+  top: 7px;
+  left: 10px;
+}
+.footer-message {
+  font-size: 90%;
+}
+/*HTML Elements
+--------------------------------------------------------------
+Site Info
+--------------------------------------------------------------
+Wrapper around logo, site name, and slogan*/
+.header-site-info span {
+  display: block;
+}
+/*Add float here to put logo and site name side by side, also add margins as
+needed*/
+#logo {
+}
+/*Link and hover styles for site name*/
+#site-name a:link, #site-name a:visited, #site-name a:hover, #site-name a:active {
+}
+/*Typography for site slogan*/
+#slogan {
+}
+/*Regions
+
+Classes (.region-name) should always be used instead of IDs (#region-name) so
+that Skinr styles can override them with a class later
+--------------------------------------------------------------
+All Regions
+--------------------------------------------------------------
+By default this wrapper is set to 100% width and centered -- override here to
+narrow wrapper or align left or right*/
+.page {
+}
+/*The 0 values here remove padding and spacing at the bottom of the page.
+Remove to add a gap at the very bottom of the page*/
+.page-inner {
+  margin-bottom: 0;
+  padding: 0;
+}
+.profile dl {
+  margin-left: -1px;
+  display: block;
+  height: auto;
+  padding-left: 0px;
+}
+.profile dl dd.creativecommons-user-default-license-type {
+  /*[disabled]margin-left:190px;*/
+}
+.profile dl dd.country-name {
+  /*[disabled]margin-left:191px;*/
+}
+/*Header Regions
+--------------------------------------------------------------
+Header Top region to the bottom of Header region
+For full-width header background, add background image/color here*/
+.header-group-wrapper {
+  background-image: url(../images/bg-header-wrapper.png);
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  height: 35px;
+  position: fixed;
+  z-index: 200;
+}
+.header-group {
+}
+/*Header Top region which sits above the header
+Works well with inline login or inline menu block style*/
+.header-top-wrapper {
+}
+.header-top {
+}
+/*Primary Menu   TODO: add default colours
+/--------------------------------------------------------------
+Add general styles for primary menu here, such as typography, borders, floats,
+or spacing above/below*/
+.primary-menu {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 600px;
+}
+/*styles for Superfish primary menu*/
+.primary-menu-inner ul.sf-menu {
+  float: right;
+}
+/*Link style for top level menu items, add padding here*/
+.primary-menu-inner ul.sf-menu a, .primary-menu-inner ul.sf-menu a:visited {
+}
+.primary-menu-inner ul.sf-menu a:hover, .primary-menu-inner ul.sf-menu a.active, .primary-menu-inner ul.sf-menu a:active, .primary-menu-inner ul.sf-menu a:focus {
+  color: #999999;
+}
+/*These are the top level menu items, add border-right here for separators*/
+.primary-menu-inner ul.sf-menu li {
+  border-right: 1px solid #303030;
+  height: 26px;
+}
+/*Add border-right: 0; here to remove separator on last menu item*/
+.primary-menu-inner ul.sf-menu li.last {
+}
+/*Style for container of dropdown, add background or border*/
+.primary-menu-inner ul.sf-menu ul {
+}
+/*Style for individual dropdown menu items, add border-bottom for separators*/
+.primary-menu-inner ul.sf-menu li li {
+  background-color: #FFF;
+}
+.primary-menu-inner ul.sf-menu li li.last {
+}
+.primary-menu-inner ul.sf-menu li li li {
+}
+/*Style for hover of dropdown menu items (add background-color here)*/
+.primary-menu-inner ul.sf-menu li ul li:hover, .primary-menu-inner ul.sf-menu li ul li.sfHover {
+}
+/*Secondary menu
+--------------------------------------------------------------
+This menu usually appears in the header as a set of simple text links*/
+.secondary-menu {
+}
+/*Set general style for menu here -- background, alignment, etc.*/
+.secondary-menu-inner ul.links {
+}
+/*Add a border-right here for a separator*/
+.secondary-menu-inner ul.links li {
+}
+/*Add border-right: 0; here to remove right separator on last menu item*/
+.secondary-menu-inner ul.links li.last {
+}
+/*Styles for links*/
+.secondary-menu-inner ul.links li a:link, .secondary-menu-inner ul.links li a:visited {
+  padding: 3px;
+}
+.secondary-menu-inner ul.links li a:hover, .secondary-menu-inner ul.links li a:focus, .secondary-menu-inner ul.links li a.active {
+}
+/*Header - Search
+--------------------------------------------------------------*/
+.search-box {
+}
+.search-box-inner {
+}
+.search-box-inner form#search-theme-form {
+}
+.search-box-inner input#edit-search-theme-form-header {
+}
+/*Preface Regions*/
+.header-site-info {
+  overflow: visible;
+}
+/*--------------------------------------------------------------
+The Preface Top region sits between the header and the Main Area
+(columns, sidebars, and main content).  The Preface Bottom region
+is inside the Main Area.*/
+.preface-top-wrapper {
+}
+.preface-top {
+}
+.preface-top-inner {
+}
+.preface-bottom {
+}
+.preface-bottom-inner {
+}
+/*Main Area (content + sidebars + preface bottom + postscript top)
+--------------------------------------------------------------*/
+.main-wrapper {
+  background-image: url(../images/bg-main-wrapper.png);
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  background-color: #171717;
+}
+/*Sidebar Regions
+--------------------------------------------------------------
+Sidebar widths can be controlled through theme settings*/
+.sidebar-first {
+}
+.sidebar-last {
+}
+/*Content Regions
+--------------------------------------------------------------*/
+.content-top {
+}
+.content-inner {
+  padding-top: 8px;
+}
+body.ntype-visual .content-inner {
+  padding-top: 19px;
+}
+.content {
+}
+#pid-homepage .pane-visual-slideshow-panel-pane-1 {
+  float: right;
+  display: block;
+  position: relative;
+  width: 720px;
+}
+#user-statement .view-homepage-artist div.field-content {
+  display: block;
+  position: relative;
+  padding-left: 45px;
+  padding-top: 6px;
+  padding-bottom: 7px;
+}
+#user-statement .view-homepage-artist {
+  margin-left: 104px;
+}
+#user-statement .view-homepage-artist .views-field-title {
+  text-align: right;
+}
+#user-statement .view-homepage-artist label {
+  font-size: 22px;
+  font-weight: normal;
+}
+#user-picture.pane-user-picture {
+  float: left;
+  margin-right: 16px;
+}
+#user-stats span.stat-title {
+  font-weight: normal;
+  font-style: normal;
+  width: 93px;
+  display: inline-block;
+  text-align: right;
+  margin-right: 12px;
+}
+#user-stats {
+}
+.page-search-targeted #views-exposed-form-search-content-page-1 .views-exposed-form .views-exposed-widget {
+  clear: left;
+}
+#hp-blurb .inner .content {
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: normal;
+  text-align: left;
+}
+#hp-blurb ul li strong {
+  color: #888888;
+}
+#hp-blurb ul li {
+  list-style-type: none;
+  margin-left: -18px;
+  line-height: 1.2;
+}
+#slideshow-author {
+  margin-bottom: 10px;
+  display: block;
+}
+p {
+  margin: 0 0 25px;
+  color: #666666;
+}
+.two-c p, .three-c p, .four-c p {
+  margin: 0 15px 25px 0;
+}
+div.field-field-visual-image, #artist-visual {
+  text-align: center;
+}
+div.content-profile-display {
+  border: 1px none #0D0D0D;
+}
+.content-bottom {
+}
+/*This region only appears on full node pages. It's useful for ads or other
+content between the body of the node and its comments*/
+.node-bottom {
+}
+body.ntype-visual .creativecommons p {
+  margin-top: -2px;
+  font-size: 95%;
+}
+/*Postscript & Footer Regions
+--------------------------------------------------------------*/
+.postscript-top {
+}
+.postscript-top-inner {
+}
+.postscript-bottom-wrapper {
+}
+.postscript-bottom {
+}
+.postscript-bottom-inner {
+}
+.footer-wrapper {
+  padding-top: 20px;
+  font-size: 13px;
+}
+.footer {
+}
+#footer {
+  color: #333333;
+}
+.footer #search-block-form label {
+  display: none;
+}
+#footer a {
+  color: #555555;
+}
+#footer ul li a.active {
+  color: #DDDDDD;
+}
+.footer-inner {
+}
+#copyright {
+  display: block;
+  width: 100%;
+  text-align: right;
+  font-size: 90%;
+  padding-top: 22px;
+  color: #333333;
+}
+.footer-message-wrapper {
+}
+.footer-message {
+}
+.footer-message-inner {
+}
+.footer-message-text {
+}
+/*Page titles
+/--------------------------------------------------------------
+Page and full node titles*/
+h1.title {
+  font-size: 34px;
+  padding: 23px 0 0px;
+  color: #303030;
+  height: auto;
+  line-height: 1.2;
+}
+.section-users h1.title {
+  font-size: 36px;
+  line-height: 70px;
+  color: #333333;
+}
+body.page-user h1.title {
+  display: block;
+  /*[disabled]position:absolute;*/
+  color: #000000;
+  font-size: 48px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+/*Default node styles
+/--------------------------------------------------------------
+Change unpublished and preview colors for dark background themes*/
+.node-unpublished {
+  background-color: #000;
+}
+a.feed-icon {
+  display: block;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.preview .node {
+  background-color: #FFFFEA;
+}
+/*Typography for node titles*/
+h2.title {
+}
+/*Colors and styles for linked node titles, ie. teaser listing at /node*/
+h2.title a:link, h2.title a:visited {
+}
+h2.title a:hover, h2.title a:focus, h2.title a:active {
+}
+.profile h3 {
+  border-bottom: 0px solid #333;
+  margin-top: 40px;
+}
+/*Separators and padding for node teasers*/
+.teaser {
+}
+div.teaser.node-type-visual {
+  border-bottom: 1px solid #121212;
+}
+#teaser-substance {
+  display: block;
+  left: 0px;
+  position: relative;
+  top: -40px;
+  margin-left: 356px;
+  width: auto;
+}
+/*Author/date info*/
+.meta {
+  text-align: right;
+  margin-bottom: 14px;
+}
+.submitted.teaser {
+  text-align: right;
+  margin-bottom: 3px;
+}
+.submitted {
+  text-align: right;
+  margin-bottom: 15px;
+}
+.node-type-article .submitted {
+  float: right;
+  clear: both;
+  margin: 0 0 5px 10px;
+}
+/*Links for nodes (taxonomy, commenting, read more, etc)*/
+.node ul.links li {
+  margin-right: 5px;
+  padding-right: 8px;
+  border-right: 1px solid #555555;
+}
+.flag-bookmarks.last {
+  border-right: 1px none #000000;
+}
+.node ul.links li.last {
+  border-right: 1px none #000000;
+}
+/*Only more/read more links*/
+div.node .read-more a, div.node .more-link a {
+}
+/*Drupal Messages
+/--------------------------------------------------------------
+General style for all errors/messages (border, padding, etc.)*/
+div.content-messages div.messages, div.content-help div.help {
+}
+/*Status messages: green*/
+div.content-messages-inner div.status {
+}
+/*Warning messages: yellow*/
+div.content-messages-inner div.warning {
+}
+/*Error messages: red*/
+div.content-messages-inner div.error {
+  border-width: 0px 4px 0px 20px;
+  background-color: #4D0A06;
+}
+/*Help messages: blue*/
+div.content-help-inner div.help {
+}
+/*Error that appears when a required form field is not filled out*/
+.form-item input.error, .form-item textarea.error, .form-item select.error {
+  border: 1px solid #E80000;
+}
+/*"New" text and required form field asterisk (default = red)*/
+.marker, .form-required {
+  color: #CC4646;
+}
+/*Default block title styles
+/--------------------------------------------------------------*/
+h2.block-title {
+}
+#block-menu-menu-search-and-explore h2.block-title {
+  display: none;
+}
+#hp-blurb h2.pane-title {
+  font-size: 22px;
+  margin-bottom: 26px;
+}
+#user-add-content h2.pane-title {
+  display: block;
+  top: -13px;
+  position: relative;
+}
+#footer h2.block-title {
+  font-size: 30px;
+  color: #222222;
+  height: 30px;
+  display: block;
+  line-height: 30px;
+}
+/*Breadcrumbs
+--------------------------------------------------------------*/
+.breadcrumbs {
+}
+.breadcrumbs a:link, .breadcrumbs a:visited {
+}
+.block-region {
+  background-color: #323232;
+  border: 2px dashed #555555;
+  text-shadow: none;
+}
+/*Tab Menus   TODO: tab styles?
+/--------------------------------------------------------------*/
+#content-tabs {
+  background-color: transparent;
+  float: left;
+/*LTR*/
+  margin: 8px 0 0px;
+  padding: 0;
+}
+#content-tabs-inner {
+  border-left: 9px solid #0D0D0D;
+}
+#content-tabs ul.primary, #content-tabs ul.secondary {
+  border-bottom: 1px none #000;
+  clear: both;
+  float: left;
+/*LTR*/
+  margin: 0 0 -1px;
+  padding: 0 10px;
+}
+#content-tabs ul.secondary {
+  margin-top: 10px;
+  text-transform: lowercase;
+  margin-left: 25px;
+}
+#content-tabs ul.primary li, #content-tabs ul.secondary li {
+  border-style: none;
+  display: inline;
+  float: left;
+/*LTR*/
+  list-style: none;
+  margin: 0 2px 0 0;
+  padding: 0;
+}
+#content-tabs ul.primary li a:link, #content-tabs ul.primary li a:visited, #content-tabs ul.secondary li a:link, #content-tabs ul.secondary li a:visited {
+  background-color: transparent;
+  border: none;
+  color: #333;
+  float: left;
+/*LTR*/
+  font-weight: bold;
+  margin: 0;
+  padding: 6px;
+  text-decoration: none;
+  white-space: nowrap;
+  display: block;
+  width: auto;
+  height: auto;
+  font-size: 21px;
+  text-align: center;
+}
+#content-tabs ul.secondary li a:link, #content-tabs ul.secondary li a:visited {
+  color: #555;
+  background-image: none;
+  line-height: normal;
+  width: auto;
+  height: auto;
+  margin-right: 7px;
+  font-size: 12px;
+}
+#content-tabs ul.primary li a.active:link, #content-tabs ul.primary li a.active:visited {
+  color: #CCC;
+  padding-bottom: 2px;
+  background-position: 0 -70px;
+}
+#content-tabs ul.primary li a.menu-item-edit {
+  background-position: -140px 0;
+}
+#content-tabs ul.secondary li a.active:link, #content-tabs ul.secondary li a.active:visited {
+  color: #CCC;
+  padding-bottom: 2px;
+}
+#content-tabs ul.primary li a:hover, #content-tabs ul.primary li a:focus {
+  border-bottom: 0px none #777;
+  color: #777;
+}
+#content-tabs ul.primary li a.active:link .menu-item-edit {
+  background-position: -140px 0;
+}
+#content-tabs ul.primary li a.menu-item-edit.active, #content-tabs ul.primary li a.menu-item-edit:hover {
+  background-position: -140px -70px;
+}
+#content-tabs ul.secondary li a:hover, #content-tabs ul.secondary li a:focus {
+  color: #777;
+  padding-bottom: 2px;
+  background-position: 0 -70px;
+}
+/*Pagers
+--------------------------------------------------------------*/
+ul.pager {
+}
+ul.pager li {
+}
+ul.pager a, ul.pager li.pager-current {
+  border-color: #333;
+}
+ul.pager li.pager-current {
+  background-color: #777;
+  color: #FFF;
+}
+ul.pager a:hover, ul.pager a:active, ul.pager a:focus {
+  background-color: #777;
+  border-color: #333;
+  color: #FFF;
+}
+/*Forms
+/--------------------------------------------------------------
+Typography and backgrounds for all form buttons*/
+form input.form-submit {
+  margin: 15px 2px 2px;
+  padding: 10px;
+  background-color: #000000;
+  border: 1px solid #333333;
+  color: #555555;
+  cursor: pointer;
+}
+/*Hover style for form buttons*/
+form input.form-submit:hover, form input.form-submit.hover, form input.form-submit:focus {
+  border: 1px solid #555555;
+  color: #777777;
+}
+form#user-login-form input.form-submit {
+  /*+placement:anchor-top-left 92px 172px;*/
+  position: absolute;
+  left: 92px;
+  top: 172px;
+}
+.page-search-targeted input.form-submit {
+  margin-left: 40px;
+  margin-bottom: 22px;
+}
+#TB_ajaxContent #user-login-form input.form-submit {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+/*Typography, background, borders, padding for form fields*/
+.form-item input, .form-item select, .form-item textarea {
+  background-color: #333333;
+  border: 1px solid #303030;
+  color: #CCCCCC;
+  background-image: url(../images/bg-main-wrapper.png);
+  background-position: 100% 90%;
+  background-repeat: repeat-x;
+  padding: 8px;
+  margin-bottom: 7px;
+}
+.page-search-targeted #edit-type-wrapper select {
+  margin-left: 40px;
+}
+#TB_ajaxContent #user-login-form .form-item input {
+  margin-top: 10px;
+  margin-bottom: -6px;
+}
+input.form-autocomplete {
+  padding: 0;
+}
+/*Remove backgrounds and border on radios and checkboxes*/
+.form-item .form-radio, .form-item .form-checkbox {
+  background: none;
+  border: none !important;
+}
+/*Fieldset wrapper around groups of form elements -- add border here*/
+fieldset {
+  border: 11px solid #0D0D0D;
+}
+fieldset fieldset {
+  border: 1px solid #0D0D0D;
+}
+/*Typography and spacing for legend of fieldsets*/
+fieldset legend {
+  color: #AE7640;
+  font-weight: bold;
+  font-size: 180%;
+  text-transform: lowercase;
+}
+fieldset fieldset legend {
+  color: #AE7640;
+  font-weight: bold;
+  font-size: 130%;
+  text-transform: lowercase;
+}
+/*Link style for legend of fieldsets*/
+fieldset legend, legend.collapse-processed, legend.collapse-processed a:link, legend.collapse-processed a:visited {
+}
+/*Resizeable Grippie*/
+.resizable-textarea .grippie {
+  height: 9px;
+  overflow: hidden;
+  border: 1px solid #FFF;
+  border-top-width: 0;
+  cursor: s-resize;
+  margin-bottom: 8px;
+  background-color: #AE7640;
+}
+/*Custom icons on (open) collapsible fieldsets*/
+html.js fieldset.collapsible legend a:link, html.js fieldset.collapsible legend a:visited {
+}
+/*Custom icons on (closed) collapsible fieldsets*/
+html.js fieldset.collapsed legend a:link, html.js fieldset.collapsed legend a:visited {
+}
+/*Tables
+--------------------------------------------------------------*/
+table {
+}
+/*Body of tables*/
+tbody {
+  /*[disabled]border-top:1px solid #CCC;*/
+  /*[disabled]border-left:1px solid #303030;*/
+  /*[disabled]border-right:1px solid #303030;*/
+}
+/*Header of tables*/
+thead th, th {
+  border-bottom: 1px solid #111;
+}
+tbody th {
+  /*[disabled]border-bottom:1px solid #CCC;*/
+}
+/*Alternating row background styles*/
+tr.even, tr.even td {
+  background-color: #000000;
+  border-bottom: 1px none #0F0F0F;
+}
+tr.odd, tr.odd td {
+  background-color: #090909;
+  border-bottom: 1px none #121212;
+}
+.views-field-field-visual-image-fid {
+  text-align: left;
+}
+td.active {
+}
+tr.drag td, tr.drag-previous td {
+  color: #000;
+}
+/*Maintenance Page
+/--------------------------------------------------------------
+Maintenance page tpl file in Fusion Core has simplified layout, but you can
+also add specific styles, such as a background, just for your offline page*/
+.in-maintenance {
+}
+/*--------------------------------------------------------------
+Module styles
+/--------------------------------------------------------------
+Book
+/--------------------------------------------------------------*/
+.book-navigation .menu {
+  border-top: 1px solid #CCC;
+}
+.book-navigation .page-links {
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+}
+/*Comments
+/--------------------------------------------------------------
+Style for each individual comment*/
+div.comment {
+  border-bottom: 1px solid #333333;
+}
+/*Subject (title) of each comment*/
+div.comment h3.title {
+}
+/*Links (edit, reply, delete) for each comment*/
+div.comment div.links a, div.comment ul.links a {
+}
+/*Alternating styles for even/odd comments*/
+.comments div.odd {
+  background-color: #555;
+}
+.comments div.even {
+  background-color: #EEE;
+}
+/*A special highlight style for a comment by the author of the node*/
+.comments div.comment-by-author {
+  background-color: transparent;
+}
+/*Comment signatures*/
+.signature {
+  border-top: 1px solid #D6DDB9;
+}
+/*User avatars in comments*/
+.comment-wrapper .picture img {
+}
+/*Forum
+/--------------------------------------------------------------*/
+#forum .description {
+}
+.forum-topic-navigation {
+  border-top: 1px solid #888;
+  border-bottom: 1px solid #888;
+}
+/*Poll
+/--------------------------------------------------------------*/
+div.poll div.bar {
+  background-color: #DDD;
+}
+div.poll div.bar div.foreground {
+  background-color: #999;
+}
+/*Profiles
+/--------------------------------------------------------------*/
+.profile .picture {
+  float: none;
+}
+.pane-user-profile .profile .picture {
+  /*[disabled]text-align:right;*/
+  /*[disabled]top:-25px;*/
+  /*[disabled]display:block;*/
+  /*[disabled]position:absolute;*/
+  /*[disabled]left:374px;*/
+}
+/*Styles for sub-headings on user profiles*/
+.profile dt {
+  background-color: #111;
+  text-align: left;
+  padding: 5px;
+  width: 95%;
+  float: none;
+  margin-bottom: 15px;
+  margin-left: 0px;
+}
+/*Ubercart - catalog
+/--------------------------------------------------------------
+Horizontal list of subcategories in catalog*/
+ul.uc-categories {
+}
+.uc-categories li a {
+  font-weight: bold;
+  padding: 0 5px 0 3px;
+}
+/*Product and category names*/
+.catalog-grid-title a:link, .catalog-grid-title a:visited, .category a:link, .category a:visited {
+}
+.catalog-grid-title a:hover, .catalog-grid-title a:focus, .category a:hover, .category a:focus {
+}
+/*Sell price in Ubercart catalog*/
+.category-grid-products .catalog-grid-sell-price {
+}
+/*Ubercart - add to cart buttons
+/--------------------------------------------------------------
+Add to cart buttons*/
+input.node-add-to-cart, input.list-add-to-cart {
+}
+/*Hover and focus styles, with .hover class added for IE6 support*/
+input.node-add-to-cart:hover, input.node-add-to-cart.hover, input.node-add-to-cart:focus, input.list-add-to-cart:hover, input.list-add-to-cart.hover, input.list-add-to-cart:focus {
+}
+/*Ubercart - product nodes
+/--------------------------------------------------------------*/
+#field-group {
+}
+#price-group {
+}
+/*Product images*/
+.product-image a img {
+}
+.product-image a:hover img, .product-image a:focus img {
+}
+/*Display price on full product nodes*/
+.full-node .product-group .uc-price-display {
+}
+/*Product attributes on full nodes*/
+.full-node .product-group .attributes {
+}
+/*Ubercart - general / checkout
+/--------------------------------------------------------------
+For optional "Powered by Ubercart" footer message*/
+#store-footer {
+}
+#store-footer a:link, #store-footer a:visited {
+}
+/*View cart/Checkout links in Ubercart cart block*/
+.cart-block-summary-links ul.links li a {
+}
+.cart-block-summary-links ul.links li.cart-block-checkout a:link, .cart-block-summary-links ul.links li.cart-block-checkout a:visited {
+}
+/*Key checkout process buttons: Checkout, Continue, and Submit Order*/
+#uc-cart-view-form #edit-checkout, #uc-cart-checkout-form #edit-continue, #uc-cart-checkout-review-form #edit-submit {
+}
+/*Table on final order review page*/
+.order-review-table {
+}
+#cart-form-products table th {
+  border-bottom: 3px solid #DEC2C3;
+}
+/*Skinr
+/--------------------------------------------------------------
+This is a sample Skinr style to get you started. See fusion_starter.info*/
+.fusion-example-stylename .inner {
+/*When setting the background color, also set foreground colors for text and
+links, even if it's similar to the default body style. Remember, this block
+style may be used in regions with other foreground colors, thus making text
+invisible if left unspecified*/
+  background-color: #CCC;
+  color: #000;
+/*All padding and borders should go on the .inner div, so as not to break
+the widths of the grid*/
+  border: 3px solid #000;
+  padding: 10px;
+}
+.grid-3 {
+  display: block;
+  position: relative;
+  float: left;
+  width: 310px;
+  padding: 0 0 20px;
+}
+.grid-last {
+  margin-right: 0;
+}
+/*Custom Floats*/
+.float-center {
+  display: block;
+  position: relative;
+  margin: 0 auto;
+  width: auto;
+  height: auto;
+}
+.float-left {
+  display: block;
+  position: relative;
+  margin: 0px 10px 10px 0;
+  float: left;
+}
+.float-right {
+  display: block;
+  position: relative;
+  margin: 10px 0 10px 10px;
+  float: right;
+}
+#picture-info-teaser {
+  clear: left;
+}
+.padding {
+  padding: 10px;
+}
+.border {
+  padding: 4px;
+  border: 3px solid #121212;
+  outline: 1px solid #333333;
+}
+.clear {
+  clear: both;
+}
+/*Visual Node Pages*/
+#artist-declaration {
+  display: block;
+  position: relative;
+  margin: 0px 0 20px 0px;
+}
+#artist-declaration .artist-name a {
+  color: #555555;
+  font-size: 30px;
+  padding-right: 14px;
+}
+#artist-declaration .visual-title {
+  color: #999999;
+  font-size: 22px;
+}
+#picture-info {
+  text-align: right;
+  padding-right: 7px;
+  margin-bottom: 30px;
+  height: auto;
+}
+#visual-bottom #addthis {
+  margin: 0;
+  float: left;
+}
+.visual-submitted {
+  display: block;
+  position: relative;
+  text-align: right;
+}
+/*Date Block*/
+div.date-block {
+  display: block;
+  position: relative;
+  height: 57px;
+  width: 50px;
+  text-align: center;
+  clear: right;
+  border: 2px solid #333333;
+  -moz-border-radius: 5px;
+  margin: 0 auto 10px;
+}
+.views-field-field-event-time-value div.date-block {
+  float: none;
+  margin: -8px auto 20px;
+}
+div.date-block span.day {
+  width: 50px;
+  display: block;
+  font-size: 21px;
+  font-weight: bold;
+  border-top: 2px solid #333333;
+  margin-bottom: -3px;
+  padding-top: 4px;
+}
+div.date-block span.month, div.date-block span.year {
+  font-size: 10px;
+}
+/*Candidate Theming*/
+/*[clearfix]*/.ntype-candidate fieldset.group-visual-substance {
+}
+div.field-field-candidate-visual img.imagecache-grid12-5-400px, div.teaser.node-type-candidate a.imagecache-grid12-2-160px img {
+  float: left;
+  margin-left: 0;
+  margin-right: 4px;
+}
+/*Search Theming
+Five Star Overrides*/
+div.fivestar-widget-static .star {
+  float: left;
+/*RTL*/
+  width: 17px;
+  height: 15px;
+  overflow: hidden;
+  text-indent: -999em;
+  background: url(../images/star.png) no-repeat 0 0;
+/*RTL*/
+}
+div.fivestar-widget-static .star span.on {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url(../images/star.png) no-repeat 0 -32px;
+/*RTL*/
+}
+div.fivestar-widget-static .star span.off {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: url(../images/star.png) no-repeat 0 0;
+/*RTL*/
+}
+div.fivestar-widget .cancel, div.fivestar-widget .star {
+  float: left;
+/*RTL*/
+  width: 17px;
+  height: 15px;
+  overflow: hidden;
+  text-indent: -999em;
+}
+div.fivestar-widget .star, div.fivestar-widget .star a {
+  background: url(../images/star.png) no-repeat 0 0;
+/*RTL*/
+  text-decoration: none;
+}
+div.fivestar-widget .cancel a, div.fivestar-widget .star a {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-position: 0 0;
+/*RTL*/
+  cursor: pointer;
+}
+div.fivestar-widget div.hover a, div.rating div a:hover {
+  background-position: 0 -32px;
+/*RTL*/
+  background-image: url(../images/star.png);
+}
+form.fivestar-widget, body.not-logged-in div.fivestar-static-form-item {
+  display: block;
+  float: right;
+  margin-top: 22px;
+  margin-bottom: 22px;
+}
+/*Thick Box*/
+#TB_overlay {
+  z-index: 1000;
+}
+#TB_window {
+  position: fixed;
+  background-image: url(../images/bg-main-wrapper.png);
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  z-index: 1002;
+  color: #555555;
+  display: none;
+/*
+border: 4px solid #525252;
+*/
+  text-align: left;
+  top: 50%;
+  left: 50%;
+  overflow: hidden;
+}
+#TB_ajaxContent {
+  clear: both;
+  padding: 2px 15px 15px;
+  overflow: hidden;
+  text-align: left;
+  line-height: 1em;
+}
+#TB_title {
+  background-color: #303030;
+  height: 27px;
+}
+/*User Picture Theming*/
+#user-picture {
+  display: block;
+  position: relative;
+}
+.pane-user-picture #user-picture {
+  display: block;
+  position: relative;
+  width: 92px;
+}
+#user-roles-list {
+  display: block;
+  position: absolute;
+  top: 30px;
+  left: 89px;
+}
+#user-picture.artist img, span.artist {
+  border-left: 3px solid #C05F00;
+  color: #C05F00;
+}
+#user-picture.gallery img, span.dealer {
+  border-right: 3px solid #006EBF;
+  color: #006EBF;
+}
+#user-picture.patron img, span.patron {
+  border-bottom: 3px solid #54BF00;
+}
+#user-roles-list span {
+  border: 1px none #000000;
+}
+/*Collections Theming*/
+div.collection-thumb {
+  display: inline-table;
+  padding: 10px 20px 15px 0px;
+  vertical-align: top;
+  text-align: right;
+}
+div.collection-thumb.row-override {
+  padding-right: 0px;
+}
+div.collection-thumb a.title {
+  font-size: 10px;
+}
+/*Calendar Theming*/
+.calendar-calendar tr.odd, .calendar-calendar tr.even {
+  background-color: transparent;
+}
+.calendar-calendar tr {
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+}
+.calendar-calendar th {
+  color: #555;
+  background-color: #090909;
+  text-align: center;
+  margin: 0;
+}
+.calendar-calendar th a {
+  font-weight: bold;
+  color: #FFF;
+  background-color: #CCC;
+}
+.calendar-calendar td {
+  width: 12%;
+/*14% is about 1/7 of total table width*/
+  min-width: 12%;
+  border: 1px solid #111;
+  color: #777;
+  text-align: right;
+  vertical-align: top;
+  margin: 0;
+  padding: 0;
+}
+.calendar-calendar .week {
+  clear: both;
+  font-style: normal;
+  color: #555;
+  font-size: 0.8em;
+}
+.calendar-calendar th.days {
+  color: #CCC;
+  background-color: #224;
+  text-align: center;
+  padding: 1px;
+  margin: 0;
+}
+.calendar-calendar div.day {
+  float: right;
+  text-align: center;
+  padding: 0.125em 0.25em 0;
+  margin: 0;
+  background-color: #090909;
+  border: 1px solid #7F7F7F;
+  border-width: 0 0 1px 1px;
+  clear: both;
+  width: 1.5em;
+}
+.calendar-calendar div.calendar {
+  background-color: transparent;
+  border: 1px solid #111;
+  text-align: left;
+  margin: 0 0.25em 0.25em 0;
+  width: 96%;
+  float: right;
+/*needed to keep IE from hiding the floating day number*/
+  clear: both;
+}
+.calendar-calendar div.title a {
+  color: #000;
+}
+.calendar-calendar div.title a:hover {
+  color: #C00;
+}
+table.calendar-legend {
+  background-color: #CCC;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.calendar-calendar td.calendar-agenda-hour {
+  font-family: serif;
+  text-align: right;
+  border: none;
+  border-top: 1px dotted #333;
+  padding-top: 0.25em;
+  width: 1%;
+}
+.calendar-calendar td.calendar-agenda-items {
+  border: 1px dotted #333;
+  text-align: left;
+}
+.calendar-calendar div.calendar div.inner .calendar-agenda-empty {
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+  padding: 1em 0;
+  background-color: #FFF;
+}
+.calendar-calendar div.date-nav {
+  background-color: #333;
+  color: #777;
+  padding: 0.2em;
+  width: auto;
+  border: 1px none #333;
+}
+.calendar-calendar div.date-nav a, .calendar-calendar div.date-nav h3 {
+  color: #777;
+}
+.calendar-calendar .date-heading h3 {
+  font-size: 18px;
+}
+.calendar-calendar th.days {
+  background-color: #111;
+  color: #777;
+  font-weight: bold;
+  border: 1px solid #111;
+}
+.calendar-calendar td.empty {
+  background: #111;
+  border-color: #111;
+}
+.calendar-calendar table.mini td.empty {
+  background: #222;
+  border-color: #FFF;
+}
+.calendar-calendar td div.day {
+  border: 1px none #CCC;
+  border-top: none;
+  border-right: none;
+  margin-bottom: 2px;
+}
+.calendar-calendar table tr td.today div.day {
+  background-color: #414141;
+}
+.calendar-calendar td .inner div, .calendar-calendar td .inner div a {
+  background: #000;
+}
+.calendar-calendar td .inner div.calendar div, .calendar-calendar td .inner div.calendar div a {
+  border: none;
+  background: #FFC;
+  padding: 0 2px;
+}
+.calendar-calendar td .inner div.calendar div.calendar-more, .calendar-calendar td .inner div.calendar div.calendar-more a {
+  color: #444;
+  background: #FFF;
+  text-align: right;
+}
+.calendar-calendar td .inner .view-field, .calendar-calendar td .inner .view-field a {
+  color: #444;
+  font-weight: normal;
+}
+.calendar-calendar td .inner div.day a {
+  color: #555555;
+}
+.calendar-calendar table tr td.today a:link {
+  background-color: transparent;
+  color: #FFFFFF;
+}
+.calendar-calendar tr td.today, .calendar-calendar tr.odd td.today, .calendar-calendar tr.even td.today {
+  background-color: #777777;
+  color: #0D0D0D;
+}
+/*Explore Menu*/
+/*[clearfix]*/#explore-menu ul.menu, #block-menu-menu-search-and-explore ul.menu {
+}
+#explore-menu ul li, #block-menu-menu-search-and-explore ul li {
+  display: block;
+  position: relative;
+  float: left;
+}
+#explore-menu ul.menu li a:link, #explore-menu ul.menu li a:visited, #block-menu-menu-search-and-explore ul.menu li a:link, #block-menu-menu-search-and-explore ul.menu li a:visited {
+  display: block;
+  padding: 18px;
+  font-size: 21px;
+  background-color: #0F0F0F;
+  margin-bottom: 3px;
+  margin-right: 3px;
+}
+#explore-menu ul.menu li a:hover, #block-menu-menu-search-and-explore ul.menu li a:hover {
+  display: block;
+  background-color: #333333;
+  text-decoration: none;
+}
+#block-menu-menu-search-and-explore ul.menu li a.active {
+  color: #7F7F7F;
+}
+.full-screen {
+  display: block;
+  position: absolute;
+  height: 30px;
+  width: 100px;
+  top: 360px;
+  left: 888px;
+  z-index: 1000;
+}
+.full-screen h2.block-title {
+  float: left;
+  font-size: 12px;
+  line-height: 32px;
+  margin-right: 4px;
+}
+#artist-page-link, .focus-link {
+  font-size: 22px;
+}
+#visual-bottom #artist-page-link {
+  font-size: 16px;
+  background-color: #000000;
+  display: block;
+  width: auto;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+.tinyTip {
+  width: 325px;
+  padding: 17px 0px 0px;
+  display: block;
+  background: url(../images/tinyTip-top.png) no-repeat 0px 0px;
+}
+.tinyTip .content {
+  padding: 0px 15px;
+  font-size: 14px;
+  font-family: "Lucida Sans Unicode";
+  color: #010101;
+  background: url(../images/tinyTip-content.png) repeat-y 0px 0px;
+}
+.tinyTip .bottom {
+  height: 47px;
+  background: url(../images/tinyTip-bottom.png) no-repeat 0px 0px;
+  font: 0px/0px sans-serif;
+}
+#vsc-monitor-color tbody {
+  border-top: 0px solid #CCCCCC;
+}
+#pid-filter-tips ul.tips {
+  font-size: 100%;
+}
+#content-region ul.tips li {
+  list-style: square;
+}
+#pid-filter-tips td.description {
+  width: 300px;
+}
+#pid-filter-tips td.get {
+  width: 200px;
+}
+code {
+  color: #008000;
+}
+.footnote {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 20px;
+  border-left: 1px solid #555555;
+  padding: 20px;
+  font-size: 11px;
+}
+hr {
+  border: 1px dotted #222;
+}
+.panel-3col-33 .panel-col-first, .panel-3col-33 .panel-col, .panel-3col-33 .panel-col-last {
+  float: left;
+  width: 33%;
+}
+body.ntype-video div.emvideo-video {
+  background-color: #000000;
+  padding-bottom: 20px;
+}
+body.section-node-add #main {
+  color: #CCC;
+}
+.username-check-informer, html.js input.form-autocomplete {
+  background-color: #808080;
+  background-image: none;
+  color: #000;
+  padding: 8px;
+}
+html.js input.throbbing {
+  background-position: 0 0;
+  background-color: #87CEFA;
+}
+.username-check-informer-accepted {
+  background: #6B8E23 none;
+}
+.username-check-informer-rejected {
+  background: #8B0000 none;
+}
+#event-description {
+  display: block;
+  position: relative;
+  margin: 10px 0 20px;
+  height: auto;
+  width: 100%;
+}
+#full-screen {
+  display: block;
+  position: absolute;
+  top: 30px;
+  left: 920px;
+}
+.timeline-event-label {
+  margin-top: 50px;
+}

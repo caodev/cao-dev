@@ -1,0 +1,56 @@
+<?php
+// $Id: sample.tags.inc_,v 1.2.2.2 2008/11/29 17:13:13 profix898 Exp $
+
+function _reptag_sample_init($context) {
+  return array(
+    "#{MYTEXT}#i"           => "This is replacement text",
+    "#{MYTIME}#i"           => date('H:i:s'),
+    "#{MYFUNC}#i"           => myfunc(),
+  );
+}
+
+function _reptag_sample_info() {
+  return array(t('Sample .tags file'), FALSE);
+}
+
+function _reptag_sample_help() {
+  return array(
+    "{MYTEXT}"           => "This is replacement text",
+    "{MYTIME}"           => date('H:i:s'),
+    "{MYFUNC}"           => _reptag_sample_myfunc(),
+  );
+}
+
+/* ---- functions below this line are optional ---- */
+
+function _reptag_sample_require() {
+  return TRUE;
+}
+
+function _reptag_sample_process($text, $tags, $context) {
+  //override default process procedure
+  return $text;
+}
+
+function _reptag_sample_myfunc() {
+  $data = array('body' => '<strong>my function test</strong>');
+  return theme('reptag_sample_output', data);
+  
+  // The code above uses a theme_ function to format the output.
+  // But - of course - a custom function can be simpler ;)
+  //return '<strong>my function test</strong>';
+}
+
+function _reptag_sample_theme() {
+  return array(
+    'reptag_sample_output' => array(
+      'file' => 'sample.tags.inc',
+      'path' => drupal_get_path('module', 'reptag') .'/tags',
+      'arguments' => array('data' => NULL),
+    )
+  );
+}
+
+function theme_reptag_sample_output($data) {
+  return check_plain($data['body']);
+}

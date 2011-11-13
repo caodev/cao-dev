@@ -1,0 +1,14 @@
+; $Id: curlypage_scheduler.info,v 1.1.2.1 2010/01/07 21:48:07 manfer Exp $
+name = Curlypage scheduler
+description = Adds scheduling options to curlypages.
+package = Curlypage
+core = 6.x
+dependencies[] = curlypage
+files[] = curlypage_scheduler.module
+files[] = curlypage_scheduler.install
+; Information added by drupal.org packaging script on 2010-07-03
+version = "6.x-3.4"
+core = "6.x"
+project = "curlypage"
+datestamp = "1278198013"
+

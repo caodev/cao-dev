@@ -1,0 +1,44 @@
+<?php
+// $Id: sitenotes.install,v 1.10.2.2 2008/08/28 16:48:02 nancyw Exp $
+
+/**
+ * @file
+ * Creates site notes node type for admins and allowed roles.
+ */
+
+/**
+ * Implementation of hook_update().
+ *  This is update is needed to add weight to existing sitenotes nodes.
+ */
+function sitenotes_update_1() {
+  return array(update_sql("UPDATE {node} SET sticky=-100 WHERE type='sitenotes'"));
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function sitenotes_uninstall() {
+
+// Remove all Site Note nodes.
+  $result = db_query('SELECT nid FROM {node} WHERE type = "sitenotes"');
+  while ($obj = db_fetch_object($result)) {
+    node_delete($obj->nid);
+  }
+
+// Remove the node type.
+  node_type_delete('sitenotes');
+
+// Remove all Site Note blocks.
+  db_query("DELETE FROM {blocks} WHERE module='sitenotes'");
+
+// Remove variables.
+  variable_del('sitenotes_block_0');
+  variable_del('sitenotes_search');
+
+// clear the cache tables (see http://drupal.org/node/64279#comment-211282)
+  cache_clear_all('*', 'cache', TRUE);
+  cache_clear_all('*', 'cache_filter', TRUE);
+  cache_clear_all('*', 'cache_page', TRUE);
+
+  watchdog('SiteNotes', 'sitenotes module removed');
+}

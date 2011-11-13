@@ -1,0 +1,854 @@
+<?php
+// $Id: user_badges.module,v 1.15.2.5 2009/08/11 19:43:34 likeless Exp $
+
+/**
+ * @file
+ * @brief User Badges module file
+ * 
+ * This file contains all the functions used by the module.
+ *
+ * @author Jeff Robbins (jjeff), http://drupal.org/user/17190
+ * @author Chad Phillips (hunmonk), http://drupal.org/user/22079
+ * @author Heine Deelstra (Heine), http://drupal.org/user/17943
+ * @author Nuno Veloso (nunoveloso18), http://drupal.org/user/80656
+ * @author Richard Skinner (Likeless), http://drupal.org/user/310635
+ *
+ * @warning For more information on licensing, read the LICENCE.txt file.
+ *
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function user_badges_help($path, $arg) {
+  switch ($path) {
+    case 'admin/modules#description':
+      // This description is shown in the listing at admin/modules.
+      return t('Merit badges that administrators can assign to users.');
+
+    case 'admin/settings/user_badges':
+      return t("User badges are iconic images which can be assigned to users. They can represent accomplishments, status, or anything you'd like. These badges will show up in the user's profile, and could also be used by a theme to appear with user postings on forums, comments, or nodes. Badges can be assigned manually by an administrator by visiting a user's profile. They also can be assigned automatically by role or ecommerce purchase (if ecommerce modules are installed).");
+
+    case 'admin/settings/user_badges/roles':
+      return t("Select the badge that you'd like to associate with each role.");
+
+    case 'admin/settings/user_badges/images':
+      return t("Upload images to display as a user badge. These images can be anything you like, but it is recommended that you maintain a uniform icon size for all of your badges. Keep in mind that a user may have many badges displayed so you'll probably want to keep them as small as possible (like 16x16 pixels or smaller).");
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function user_badges_perm() {
+  return array('manage badges');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function user_badges_menu() {
+  $items = array();
+  $access = array('manage badges');
+  
+  $items['admin/user/user_badges'] = array(
+    'title' => 'Badges',
+    'page callback' => 'user_badges_settings_page',
+    'access arguments' => $access,
+    'file' => 'user_badges.admin.inc',
+  );
+  $items['admin/user/user_badges/list'] = array(
+    'title' => 'Edit user badges',
+    'access arguments' => $access,
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+    'file' => 'user_badges.admin.inc',
+  );
+  $items['admin/user/user_badges/images'] = array(
+    'title' => 'Images',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_badges_images_form'),
+    'access arguments' => $access,
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'user_badges.admin.inc',
+  );
+  $items['admin/user/user_badges/roles'] = array(
+    'title' => 'Roles',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_badges_roles_form'),
+    'access arguments' => $access,
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'user_badges.admin.inc',
+  );
+  $items['admin/user/user_badges/settings'] = array(
+    'title' => 'Settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_badges_settings_form'),
+    'access arguments' => $access,
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'user_badges.admin.inc',
+  );
+  $items['admin/user/user_badges/delete'] = array(
+    'title' => 'Delete badge',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_badges_delete_form'),
+    'access arguments' => $access,
+    'type' => MENU_CALLBACK,
+    'file' => 'user_badges.admin.inc',
+  );
+  $items['user/%user/badges'] = array(
+    'title' => 'Badges',
+    'page callback' => 'user_badges_page',
+    'page arguments' => array(1),
+    'access arguments' => $access,
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 5,
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_user().
+ *
+ * This handles assignment of badges based on role.
+ * When a role is assigned or removed, appropriate badges are added or removed.
+ */
+function user_badges_user($op, &$edit, &$account, $category = 'account') {
+  switch ($op) {
+
+    case 'load':
+      if ($account->uid > 0) {
+        $account->badges = user_badges_get_badges($account->uid);
+      }
+      break;
+
+    case 'insert':
+      if (is_array($account->roles)) {
+        // Get the list of role badges.
+        $roles = user_badges_get_roles();
+        $badges = user_badges_get_badges('select');
+        $message = user_access('manage badges');
+        $rids = array_keys($account->roles);
+        foreach ($rids as $rid) {
+          // if this role has a badge
+          if (key_exists($rid, $roles)) {
+            // and user doesn't already have this badge
+            if (!key_exists($roles[$rid], $account->badges)) {
+              $success = user_badges_user_add_badge($account->uid, $roles[$rid], 'role');
+              if ($success && $message) {
+                drupal_set_message(t('User assigned %name badge.', array('%name' => $badges[$roles[$rid]])));
+              }
+            }
+          }
+        }
+      }
+      break;
+
+    case 'update':
+      if (is_array($edit['roles'])) {
+        // Badges only get assigned or removed when a user's role assignments are changed.
+
+        // Add authenticated users (code below only cares about array keys) to prevent badge deletion
+        $new_roles = $edit['roles'];
+        $new_roles[2] = 2;
+        // Get the list of role badges.
+        $roles = user_badges_get_roles();
+        $badges = user_badges_get_badges('select');
+
+        $message = user_access('manage badges');
+
+        // What are the added roles?
+        $added = array_diff(array_keys($new_roles), array_keys((array)$account->roles));
+        foreach ($added as $rid) {
+          // if this role has a badge
+          if (key_exists($rid, $roles) && !key_exists($roles[$rid], $account->badges)) {
+            $success = user_badges_user_add_badge($account->uid, $roles[$rid], 'role');
+            if ($success && $message) {
+              drupal_set_message(t('User assigned %name badge.', array('%name' => $badges[$roles[$rid]])));
+            }
+          }
+        }
+
+        // What are the removed roles?
+        $removed = array_diff(array_keys((array)$account->roles), array_keys($new_roles));
+        foreach ($removed as $rid) {
+          // If this role has a badge and user has this badge..
+          if (key_exists($rid, $roles) && key_exists($roles[$rid], $account->badges)) {
+            $success = user_badges_user_remove_badge($account->uid, $roles[$rid], 'role');
+            drupal_set_message(t('%name badge removed from user.', array('%name' => $badges[$roles[$rid]])));
+          }
+        }
+      }
+      break;
+
+    case 'delete':
+      db_query('DELETE FROM {user_badges_user} WHERE uid = %d', $account->uid);
+      break;
+
+    case 'view':
+      $badgeimgs = array();
+      foreach ($account->badges as $badge) {
+        $badgeimgs[] = theme('user_badge', $badge);
+      }
+      if (!empty($badgeimgs)) {
+        $account->content['user_badges'] = array(
+          '#type' => 'user_profile_category',
+          '#title' => t('Badges'),
+          '#weight' => 10,
+        );
+        $account->content['user_badges']['badges'] = array(
+          '#type' => 'user_profile_item',
+          '#value' => theme('user_badge_group', $badgeimgs),
+        );
+      }
+  }
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function user_badges_theme() {
+  $themes = array();
+  $themes['user_badge'] = array(
+    'arguments' => array(
+      'badge' => NULL,
+    ),
+  );
+  $themes['user_badge_group'] = array(
+    'arguments' => array(
+      'badgeimages' => array(),
+    ),
+  );
+  return $themes;
+}
+
+/**
+ * Define the page on user/uid/badges.
+ */
+function user_badges_page($account) {
+  drupal_set_title(t('Edit badges for %user_name', array('%user_name' => $account->name)));
+
+  return drupal_get_form('user_badges_page_form', $account);
+}
+
+/**
+ * Form to assign badges to users.
+ */
+function user_badges_page_form(&$form_state, $account) {
+  $form = array();
+
+  $form['uid'] = array('#type' => 'value', '#value' => $account->uid);
+  $form['badges'] = array('#tree' => TRUE);
+
+  $badges = user_badges_get_badges('all');
+  foreach ($badges as $badge) {
+    $form['badges'][$badge->bid] = array(
+      '#type' => 'checkbox',
+      '#title' => theme('user_badge', $badge),
+      '#return_value' => 1,
+      '#default_value' => array_key_exists($badge->bid, $account->badges),
+      '#description' => check_plain($badge->name),
+    );
+  }
+
+  $form[] = array(
+    '#type' => 'submit',
+    '#value' => t('Save Badges'),
+  );
+  return $form;
+}
+
+function user_badges_page_form_submit($form, &$form_state) {
+  $badges = $form_state['values']['badges'];
+  $uid = $form_state['values']['uid'];
+  user_badges_user_save($badges, $uid, FALSE);
+}
+
+/**
+ * Assign user badges to a user
+ *
+ * @param $edit is an array containing badges array
+ * @param $uid is the user id
+ * @param $quiet suppresses message display
+ */
+function user_badges_user_save($edit, $uid, $quiet = TRUE) {
+  $badges = user_badges_get_badges($uid);
+
+  if (is_array($edit)) {
+    // an array of just the checked boxes please
+    $newbadges = array();
+    foreach ($edit as $bid => $is_selected) {
+      if ($is_selected) {
+        $newbadges[] = $bid;
+      }
+    }
+
+    $success = TRUE;
+
+    // what are the added badges?
+    $added = array_diff($newbadges, array_keys($badges));
+
+    foreach ($added as $bid) {
+      if (!key_exists($bid, $badges)) {
+        $success = (boolean) user_badges_user_add_badge($uid, $bid);
+      }
+    }
+
+    // what are the removed badges?
+    $removed = array_diff(array_keys($badges), $newbadges);
+
+    foreach ($removed as $bid) {
+      // and user has this badge
+      if (key_exists($bid, $badges)) {
+        $success = $success && (boolean) user_badges_user_remove_badge($uid, $bid);
+      }
+    }
+    if ($success && !$quiet) {
+      drupal_set_message(t('Badges saved.'));
+    }
+    elseif (!$quiet) {
+      drupal_set_message(t('There was a problem saving badges to the database.'), 'error');
+    }
+  }
+}
+
+/**
+ * Add a badge to user.
+ *
+ * @param $uid User ID.
+ * @param $bid Badge ID.
+ * @param $type Whether set as part of the role, or individually assigned ('user', 'role').
+ *
+ * @return bool with query success
+ */
+function user_badges_user_add_badge($uid, $bid, $type = NULL) {
+  user_badges_user_remove_badge($uid, $bid, $type);
+  return db_query('INSERT INTO {user_badges_user} (uid, bid, type) VALUES (%d, %d, \'%s\')', $uid, $bid, $type);
+}
+
+
+/**
+ * remove a badge from user.
+ *
+ * @param $uid User ID.
+ * @param $bid Badge ID.
+ * @param $type Whether set as part of the role, or individually assigned ('user', 'role').
+ *
+ * @return bool with query success
+ */
+function user_badges_user_remove_badge($uid, $bid, $type = NULL) {
+  if (is_null($type)) {
+    return db_query('DELETE FROM {user_badges_user} WHERE uid=%d AND bid=%d', $uid, $bid);
+  }
+  else {
+    return db_query('DELETE FROM {user_badges_user} WHERE uid=%d AND bid=%d AND type=\'%s\'', $uid, $bid, $type);
+  }
+}
+
+
+/**
+ * Add a badge to user.
+ *
+ * @param $uid User ID.
+ * @param $bid Badge ID.
+ * @param $type Whether set as part of the role, or individually assigned ('user', 'role').
+ *
+ * @return bool with query success
+ */
+function user_badges_edit_form_submit($form, &$form_state) {
+  $form_state['redirect'] = user_badges_save_badge($form_state['values']);
+}
+
+
+/**
+ * Return array of user badges where keys are badge ids (bid)
+ *   and values are object containing badge info
+ * if $uid is a user id, returns badges for that user
+ * if $uid is 'all', returns all badges
+ * if $uid is 'select', returns badges for form_select options
+ *   returned values for 'select' are just badge names
+ */
+function user_badges_get_badges($uid) {
+  static $badges, $past_uid;
+  if (empty($past_uid) || $past_uid !== $uid) {
+    $past_uid = $uid;
+    $badges = array();
+    if ($uid == 'all' || $uid == 'select') {
+      $sql = db_query('
+        SELECT b.bid, b.weight, b.name, b.image, b.href 
+        FROM {user_badges_badges} b 
+        ORDER BY b.weight, b.name'
+      );
+    }
+    else {
+      $usr = db_result(db_query('SELECT COUNT(uid) FROM {users} WHERE uid = %d AND status = 0', $uid));
+  
+      if ($usr && variable_get('user_badges_showblocked', 0)) {
+        $sql = db_query('
+          SELECT DISTINCT b.bid, b.weight, b.name, b.image, b.href 
+          FROM {user_badges_badges} b 
+            INNER JOIN {user_badges_user} u ON b.bid = u.bid 
+            INNER JOIN {user_badges_roles} r ON b.bid = r.bid
+          WHERE u.uid = %d AND r.rid = 0
+          ORDER BY b.weight, b.name', 
+          $uid
+        );
+      }
+      else {
+        $limit = variable_get('user_badges_showone', 0) ? ' LIMIT 1 ' : '';
+        $sql = db_query('
+          SELECT DISTINCT b.bid, b.weight, b.name, b.image, b.href 
+          FROM {user_badges_badges} b
+            INNER JOIN {user_badges_user} u ON b.bid = u.bid 
+          WHERE u.uid = %d 
+          ORDER BY b.weight, b.name
+          %s', 
+          $uid, $limit
+        );
+      }
+    }
+    while ($badge = db_fetch_object($sql)) {
+      if ($uid == 'select') {
+        $badges[$badge->bid] = $badge->name;
+      }
+      else {
+        $badges[$badge->bid] = $badge;
+      }
+    }
+  }
+
+  return $badges;
+}
+
+
+/**
+ * Return badge object for given badge id
+ */
+function user_badges_get_badge($bid) {
+  return db_fetch_object(db_query('SELECT * FROM {user_badges_badges} WHERE bid = %d', $bid));
+}
+
+
+/**
+ * Define the edit form for userbadges.
+ */
+function user_badges_edit_form($form_state, $bid = NULL) {
+  if (is_numeric($bid)) {
+    $edit = db_fetch_object(db_query('SELECT * FROM {user_badges_badges} WHERE bid = %d', $bid));
+    if (is_numeric($edit->bid)) {
+      $form['bid'] = array(
+        '#type' => 'hidden',
+        '#value' => $edit->bid,
+      );
+    }
+  }
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => isset($edit) ? $edit->name : '',
+    '#size' => 40,
+    '#maxlength' => 100,
+    '#description' => t('Name for the badge. Will be displayed as tooltip when rolling over badge image.'),
+    '#attributes' => NULL,
+    '#required' => TRUE,
+  );
+  $selects = user_badges_image_selects();
+  if (count($selects)) {
+    $form['image'] = array(
+      '#type' => 'radios',
+      '#title' => t('Image'),
+      '#default_value' => isset($edit) ? $edit->image : '',
+      '#options' => $selects,
+      '#description' => t('Select an image to associate with this badge. You can upload additional images on the <a href="@url">Images page</a>.', array('@url' => url("admin/user/user_badges/images"))),
+    );
+  }
+  else {
+    drupal_set_message('<strong>'. t('You have to <a href="@upload_link">upload badge images</a> first.', array('@upload_link' => url("admin/user/user_badges/images"))) .'</strong>', 'error');
+  }
+  $form['weight'] = array(
+    '#type' => 'weight',
+    '#title' => t('Weight'),
+    '#default_value' => isset($edit) ? $edit->weight : '',
+    '#delta' => 10,
+    '#description' => t('Lighter weighted items float to the top of lists. Heavier items go to the bottom.'),
+  );
+  $form['href'] = array(
+    '#type' => 'textfield', 
+    '#title' => t('Description URL'),
+    '#description' => t('You can specify here the link where your badge will redirect your user.
+      This is useful for explanation pages about the badge, for instance. If you do not whish 
+      your badge to be clickable, please leave this field empty') .'<br />'.
+      '<u>'. t('Tips:') .'</u>'.'<ul>'.
+        '<li>'. t('If you provide the full URL, it will be considered an external URL.') .'</li>'.
+        '<li>'. t('If you provide only the path (e.g. "admin/content/node"), it is considered an
+          internal link.') .'</li>'.
+      '</ul>',
+    '#default_value' => $edit->href,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  return $form;
+}
+
+
+/**
+ * Saves information about a badge into the database and return a fixed string
+ * 
+ * @return 'admin/user/user_badges' - not sure if that's a good practice.
+ */
+function user_badges_save_badge($edit) {
+  $edit = (object)$edit;
+  if (isset($edit->bid) && preg_match("/^[0-9]+$/D", $edit->bid)) {
+    db_query('DELETE FROM {user_badges_badges} WHERE bid = %d', $edit->bid);
+    $result = db_query("
+      INSERT INTO {user_badges_badges} (bid, name, image, weight, href)
+      VALUES (%d, '%s', '%s', %d, '%s')",
+      $edit->bid, $edit->name, $edit->image, $edit->weight, trim($edit->href)
+    );
+    drupal_set_message('Edited image');
+  }
+  else {
+    $result = db_query("
+      INSERT INTO {user_badges_badges} (name, image, weight, href)
+      VALUES ('%s', '%s', %d, '%s')",
+      $edit->name, $edit->image, $edit->weight, trim($edit->href)
+    );
+    drupal_set_message('Inserted new image');
+  }
+  if ($result) {
+    drupal_set_message(t('Badge %badgename saved.', array('%badgename' => $edit->name)));
+  }
+  else {
+    drupal_set_message(t('There was a problem saving the badge information into the database.'));
+  }
+  return 'admin/user/user_badges';
+}
+
+
+function user_badges_delete_form($form_state, $bid) {
+  if ($badge = user_badges_get_badge($bid)) {
+    $form = array();
+    $form['badge'] = array('#value' => theme('user_badge_group', array(theme('user_badge', $badge))));
+    $form['bid'] = array('#type' => 'value', '#value' => $bid);
+    return confirm_form($form, t('Are you sure you want to delete the badge %name?', array('%name' => $badge->name)), 'admin/user/user_badges');
+  }
+  form_set_error('', t('This badge does not exist.'));
+}
+
+function user_badges_delete_form_submit($form, &$form_state) {
+  $bid = $form_state['values']['bid'];
+  db_query("DELETE FROM {user_badges_badges} WHERE bid = %d", $bid);
+  db_query("DELETE FROM {user_badges_user} WHERE bid = %d", $bid);
+  db_query("DELETE FROM {user_badges_roles} WHERE bid = %d", $bid);
+  drupal_set_message(t('Badge deleted.'));
+  $form_state['redirect'] = 'admin/user/user_badges';
+}
+
+
+function user_badges_image_selects() {
+  $selects = array();
+  $dir = file_create_path('badges');
+  $files = file_scan_directory($dir, '.*\.(((J|j)(p|P)(g|G))|((p|P)(n|N)(g|G))|((g|G)(i|I)(f|F)))', array('.', '..', 'CVS'), 0, FALSE);
+  foreach ($files as $file) {
+    $selects[$file->filename] = theme('image', $file->filename, $file->filename, $file->filename);
+  }
+
+  return $selects;
+}
+
+/**
+ * Returns an array where keys are role ids (rid) and values are badge ids (bid)
+ * These values are assigned on admin/user/user_badges/roles
+ *
+ * @param $rid - if set, return only value for this role
+ *
+ * @return a list of roles
+ */
+function user_badges_get_roles($rid = NULL) {
+  $roles = array();
+  if ($rid) {
+    $sql = db_query('SELECT * FROM {user_badges_roles} WHERE rid = %d', $rid);
+  }
+  else {
+    $sql = db_query('SELECT * FROM {user_badges_roles}');
+  }
+  while ($row = db_fetch_object($sql)) {
+    $roles[$row->rid] = $row->bid;
+  }
+
+  return $roles;
+}
+
+/**
+ * Save information about roles for user_badges (in settings)
+ */
+function user_badges_save_roles($roles) {
+  if (is_array($roles)) {
+    $success = TRUE;
+    db_query('DELETE FROM {user_badges_roles}');
+    db_query("DELETE FROM {user_badges_user} WHERE type='role'");
+    foreach ($roles as $rid => $bid) {
+      if ($bid) {
+        $success = $success && db_query('INSERT INTO {user_badges_roles} (rid, bid) VALUES (%d, %d)', $rid, $bid);
+        // Blocked user (represented as `rid 0«) has no entry in the users_role table
+        if ($rid == 0) {
+          $success = $success && db_query("
+            INSERT INTO {user_badges_user} (uid, bid, type) 
+            SELECT uid, %d, 'role' FROM {users} WHERE status = 0", $bid);
+        }
+        // Authenticated user, rid 2 has no entry in the users_role table
+        if ($rid == 2) {
+          $success = $success && db_query("
+            INSERT INTO {user_badges_user} (uid, bid, type) 
+            (SELECT uid, %d, 'role' FROM {users} WHERE uid > 0)", $bid);
+        }
+        else {
+          $success = $success && db_query("
+            INSERT INTO {user_badges_user} (uid, bid, type) 
+            (SELECT uid, %d, 'role' FROM {users_roles} WHERE rid=%d)", $bid, $rid);
+        }
+      }
+    }
+    if ($success) {
+      drupal_set_message(t('Roles saved.'));
+    }
+    else {
+      drupal_set_message(t('There was a problem saving roles to the database'));
+    }
+  }
+}
+
+/**
+ * Returns HTML representation of user badges for given uid
+ *   @param $uid the user id
+ *   @param $refresh (FALSE) when TRUE, refreshes the cache for $uid
+ *
+ *   @return string html representation of userbadges
+ */
+function user_badges_for_uid($uid, $refresh = FALSE) {
+  static $cache;
+  if ($uid) {
+    if (isset($cache[$uid]) && !$refresh) {
+      return $cache[$uid];
+    }
+    else {
+      $user_badges = user_badges_get_badges($uid);
+        foreach ((array)$user_badges as $badge) {
+        $badges[] = theme('user_badge', $badge);
+      }
+      $cache[$uid] = isset($badges) ? theme('user_badge_group', $badges) : '';
+      return $cache[$uid];
+    }
+  }
+}
+
+/**
+ * Returns HTML representation of user badges for given user
+ * $array is array defining criteria for user_load()
+ * most common use will be:
+ *   user_badges_for_user(array('uid'=>123));
+ */
+function user_badges_for_user($array) {
+  $account = user_load($array);
+  foreach ((array)$account->badges as $badge) {
+    $badges[] = theme('user_badge', $badge);
+  }
+  if ($badges) {
+    return theme('user_badge_group', $badges);
+  }
+}
+
+/**
+ * Return html representation of a group of badges
+ * $badgeimages is an array of badge image tags from theme_user_badge()
+ */
+function theme_user_badge_group($badgeimages) {
+  if (!empty($badgeimages)) {
+    return '<div class="user_badges">'. implode('', $badgeimages) .'</div>';
+  }
+}
+
+/**
+ * Return html representation of a badge image
+ * (note: theme_image does the check_plaining)
+ */
+function theme_user_badge($badge) {
+  $image = theme('image', $badge->image, $badge->name, $badge->name);
+  if ($badge->href != "") {
+    return l($image, $badge->href, array('html' => TRUE));
+  }
+  else {
+    return $image;
+  }
+}
+
+/**
+ *  Implementation of hook_views_api().
+ */
+function user_badges_views_api() {
+  return array(
+    'api' => 2.0,
+  );
+}
+
+/**
+* Implementation of hook_action_info().
+*/
+function user_badges_action_info() {
+  return array(
+    'user_badges_add_badge_action' => array(
+      'description' => t('Add badge'),
+      'type' => 'user',
+      'configurable' => TRUE,
+      'hooks' => array(
+        'any' => TRUE,
+       ),
+      ),
+    'user_badges_remove_badge_action' => array(
+      'description' => t('Remove badge'),
+      'type' => 'user',
+      'configurable' => TRUE,
+      'hooks' => array(
+        'any' => TRUE,
+       ),
+    ),
+  );
+}
+
+/**
+* Implementation of a Drupal action.
+* Adds a badge to the current user.
+*/
+function user_badges_add_badge_action(&$account, $context = array()) {
+  if (isset($account->uid)) {
+    $uid = $account->uid;
+  }
+  elseif (isset($context['uid'])) {
+    $uid = $context['uid'];
+  }
+  else {
+    global $user;
+    $uid = $user->uid;
+  }
+  $success = TRUE;
+  $badges = user_badges_get_badges('all');
+
+  foreach ($context['badges'] as $bid) {
+    $success = (boolean) user_badges_user_add_badge($uid, $bid, 'uid');
+    if ($success) {
+      watchdog('action', 'Added user badge %badge to user %name.', array('%name' => check_plain($user->name), '%badge' => check_plain($badges[$bid]->name)));
+    }
+    else {
+      watchdog('action', 'Unable to add user badge %badge to user %name.', array('%name' => check_plain($user->name), '%badge' => check_plain($badges[$bid]->name)), WATCHDOG_WARNING);
+    }
+  }
+}
+
+function user_badges_add_badge_action_form($context) {
+  $form['badges'] = array('#tree' => TRUE);
+
+  $badges = user_badges_get_badges('all');
+  $context['badges'] = is_array($context['badges']) ? $context['badges'] : array();
+
+  foreach ($badges as $badge) {
+    $form['badges'][$badge->bid] = array(
+      '#type' => 'checkbox',
+      '#title' => theme('user_badge', $badge),
+      '#return_value' => 1,
+      '#default_value' => $context['badges'][$badge->bid],
+      '#description' => check_plain($badge->name),
+    );
+  }
+
+  return $form;
+}
+
+function user_badges_add_badge_action_submit($form, $form_state) {
+  $badges = array();
+  foreach ($form_state['values']['badges'] as $badge => $set) {
+    if ($set) {
+      $badges[$badge] = $badge;
+    }
+  }
+  return array('badges' => $badges);
+}
+
+/**
+* Implementation of a Drupal action.
+* Removes a badge to the current user.
+*/
+function user_badges_remove_badge_action(&$account, $context = array()) {
+  if (isset($account->uid)) {
+    $uid = $account->uid;
+  }
+  elseif (isset($context['uid'])) {
+    $uid = $context['uid'];
+  }
+  else {
+    global $user;
+    $uid = $user->uid;
+  }
+  $success = TRUE;
+  $badges = user_badges_get_badges('all');
+
+  foreach ($context['badges'] as $bid) {
+    $success = (boolean) user_badges_user_remove_badge($uid, $bid, 'uid');
+    if ($success) {
+      watchdog('action', 'Removed user badge %badge to user %name.', array('%name' => check_plain($user->name), '%badge' => check_plain($badges[$bid]->name)));
+    }
+    else {
+      watchdog('action', 'Unable to remove user badge %badge to user %name.', array('%name' => check_plain($user->name), '%badge' => check_plain($badges[$bid]->name)), WATCHDOG_WARNING);
+    }
+  }
+}
+
+function user_badges_remove_badge_action_form($context) {
+  $form['badges'] = array('#tree' => TRUE);
+
+  $badges = user_badges_get_badges('all');
+  $context['badges'] = is_array($context['badges']) ? $context['badges'] : array();
+
+  foreach ($badges as $badge) {
+    $form['badges'][$badge->bid] = array(
+      '#type' => 'checkbox',
+      '#title' => theme('user_badge', $badge),
+      '#return_value' => 1,
+      '#default_value' => $context['badges'][$badge->bid],
+      '#description' => check_plain($badge->name),
+    );
+  }
+
+  return $form;
+}
+
+function user_badges_remove_badge_action_submit($form, $form_state) {
+  $badges = array();
+  foreach ($form_state['values']['badges'] as $badge => $set) {
+    if ($set) {
+      $badges[$badge] = $badge;
+    }
+  }
+  return array('badges' => $badges);
+}
+
+/**
+* Implementation of hook_cron()
+* UNCOMMENT in order to get User Badges to work along with Auto Assign Role
+* notes: - this is a quite fast solution in order to solve Auto Assign Role issue
+*        - do not forget to set up your cron
+*/
+// function user_badges_cron() {
+//   
+//   $result = db_query('SELECT * FROM {user_badges_roles}');
+//   
+//   $roles = array();
+//   while ($o = db_fetch_object($result)) {
+//     $roles[$o->rid] = $o->bid;
+//   }
+//   
+//   user_badges_save_roles($roles);
+// }

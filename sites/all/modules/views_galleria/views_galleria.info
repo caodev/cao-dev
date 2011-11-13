@@ -1,0 +1,15 @@
+name = Views Galleria
+description = Views plugin for Galleria integration.
+package = Views
+core = 6.x
+dependencies[] = views
+dependencies[] = imagefield
+version = "6.x-1.0-alpha2"
+project = "views_galleria"
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "views_galleria"
+datestamp = "1278836287"
+

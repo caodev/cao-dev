@@ -1,0 +1,356 @@
+<?php
+/**
+ * @author Bruno Massa
+ * @file
+ * You can associate a geographic address with content, using CCK.
+ *
+ * @todo Ensure this will work with the Views and GMap
+ */
+
+/**
+ * Implementation of hook_content_is_empty().
+ */
+function addresses_cck_content_is_empty($item, $field) {
+  foreach (array_keys($field['columns']) as $ftype) {
+    if (!empty($item[$ftype])) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+/**
+ * Implementation of hook_field_info().
+ *
+ * Its a CCK hook to describe the CCK fields.
+ *
+ * @return
+ *   Array. Keyed by field type name. Each element of the array is an
+ *   array with these keys and values:
+ *   - "label":       The human-readable label for the field type.
+ *   - "description": The main description of this field. What kind of
+ *                    it stores.
+ *   - "callbacks":   An array describing the callback functions that this
+ *                    field uses for tables and arguments.
+ */
+function addresses_cck_field_info() {
+  return array(
+    'addresses_cck' => array(
+      'label'       => t('Address'),
+      'description' => t('Store addresses.'),
+      'callbacks'   => array(
+        'tables'    => CONTENT_CALLBACK_DEFAULT,
+        'arguments' => CONTENT_CALLBACK_DEFAULT,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_formatter_info().
+ *
+ * Its a CCK hook to declare information about a formatter.
+ *
+ * @return
+ *   Array. Keyed by formatter name, each element of the array is an associative
+ *   array with these keys and values:
+ *   - "label": The human-readable label for the formatter.
+ *   - "field types": An array of field type names that can be displayed using
+ *     this formatter.
+ */
+function addresses_cck_field_formatter_info() {
+  $default = array(
+    'arguments'       => array('element'),
+    'multiple values' => CONTENT_HANDLE_CORE,
+    'field types'     => array('addresses_cck'),
+  );
+  $formatters = array(
+    'default' => array(
+      'label'           => t('Default'),
+      'arguments'       => array('element'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+      'field types'     => array('addresses_cck'),
+    ),
+    'single_line' => array(
+      'label'           => t('Single Line'),
+      'arguments'       => array('element'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+      'field types'     => array('addresses_cck'),
+    ),
+  );
+
+  $afields = module_invoke_all('addressesfieldapi', 'fields');
+  foreach ($afields as $ftype => $field) {
+    if (!empty($field['theme'])) {
+      foreach ($field['theme'] as $theme => $description) {
+        $formatters['addresses_field_'. $theme] = $default;
+        $formatters['addresses_field_'. $theme]['label'] = $description;
+      }
+    }
+  }
+
+  return $formatters;
+}
+
+/**
+ * Implementation of hook_field_settings().
+ *
+ * @param $op
+ *   String. The operation to be performed.
+ * @param $field
+ *   Array. The field on which the operation is to be performed.
+ * @return
+ *   Depends. This varies depending on the operation.
+ *   - "form": an array of form elements to add to
+ *     the settings page.
+ *   - "validate": no return value. Use form_set_error().
+ *   - "save": an array of names of form elements to
+ *     be saved in the database.
+ *   - "database columns": an array keyed by column name, with arrays of column
+ *     information as values.
+ *   - "filters": an array whose values are 'filters'
+ *     definitions as expected by views.module (see Views Documentation).
+ *   - "callbacks": an array describing the field's behaviour regarding hook_field
+ *     operations. The array is keyed by hook_field operations ('view', 'validate'...)
+ *     and has the following possible values :
+ *       CONTENT_CALLBACK_NONE     : do nothing for this operation
+ *       CONTENT_CALLBACK_CUSTOM   : use the behaviour in hook_field(operation)
+ *       CONTENT_CALLBACK_DEFAULT  : use content.module's default bahaviour
+ *     Note : currently only the 'view' operation implements this feature.
+ *     All other field operation implemented by the module _will_ be executed
+ *     no matter what.
+ */
+function addresses_cck_field_settings($op, $field) {
+  switch ($op) {
+    case 'form':
+      // Get the form fields from the API addressesfieldapi
+      module_load_include('settings.inc', 'addresses');
+      $form = _addresses_settings_fields($field);
+      $form['required'] = array(
+        '#type'   => 'hidden',
+        '#value'  => $field['required'],
+      );
+      $form['#validate'][] = '_addresses_cck_field_validate';
+      return $form;
+
+    case 'save':
+      // First, get the form fields from the API addressesfieldapi
+      module_load_include('settings.inc', 'addresses');
+      $form = _addresses_settings_fields($field);
+
+      // With the fields and their values correctly assigned,
+      // its time to recover only the field name and its value
+      // and save that
+      foreach (array_keys($form['addresses']) as $ftype) {
+        foreach (element_children($form['addresses'][$ftype]) as $field) {
+          $fields[] = $field;
+        }
+      }
+      return $fields;
+
+    case 'callbacks':
+      // The simple callback map for such field
+      return array(
+        'view' => CONTENT_CALLBACK_CUSTOM,
+      );
+
+    case 'database columns':
+      // Return the table similar to those set on hook_schema.
+      // It describes each database field that will be stored.
+      return module_invoke_all('addressesfieldapi', 'fields');
+
+    case 'views data':
+      // Rerebuild the Views integration, since the address field is,
+      // in fact, a bundle of fields.
+      //$db_info      = content_database_info($field);
+      $table_alias  = content_views_tablename($field);
+      $cck_default  = content_views_field_views_data($field);
+      $data[$table_alias]['table'] = $cck_default[$table_alias]['table'];
+      unset($cck_default[$table_alias]['table']);
+
+      $cck_default = array_shift($cck_default[$table_alias]);
+
+      $ftypes = module_invoke_all('addressesfieldapi', 'fields');
+      foreach ($ftypes as $ftype => $field_data) {
+        $field_cck = $cck_default;
+        if (isset($field_data['title'])) {
+          $field_cck['title'] .= ' '. $field_data['title'];
+        }
+        $field_cck['filter']['field'] = $field['field_name'] .'_'. $ftype;
+//        $field_cck['filter']['title'] .= ' '. $field_data['title'];
+        $field_cck['filter']['title'] = $cck_default['title short'] . ': ' . $field_cck['filter']['title'] . ' '. $field_data['title'];
+
+//         unset($field_cck['field']['additional fields']);
+        $data[$table_alias][$field['field_name'] .'_'. $ftype] = $field_cck;
+      }
+
+      return $data;
+  }
+}
+
+/**
+ * Reset the general 'required' value based on each address field.
+ *
+ * @ingroup form
+ */
+function _addresses_cck_field_validate(&$form, &$form_state) {
+  if (substr($form_state['values']['country'], 0, 4) == 'top_') {
+    $form_state['values']['country'] = substr($form_state['values']['country'], 4);
+  }
+  if (isset($form_state['values']['columns']) && is_array($form_state['values']['columns'])) {
+    foreach (array_keys($form_state['values']['columns']) as $ftype) {
+      if ($form_state['values'][$ftype . '_select'] == ADDRESSES_FIELD_REQUIRED) {
+        form_set_value($form['field']['required'], TRUE, $form_state);
+        return;
+      }
+    }
+  }
+  form_set_value($form['field']['required'], FALSE, $form_state);
+}
+
+/**
+ * Implementation of hook_geocode_handlers_alter().
+ *
+ * Allows the address field to be used by the geocode module.
+ *
+ * @see http://drupal.org/project/geocode
+ */
+function addresses_cck_geocode_handlers_alter(&$handlers) {
+  $handlers['geocode_google']['field types'][] = 'addresses_cck';
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function addresses_cck_theme() {
+  return array(
+    // Shows address in the default view: Multilines
+    'addresses_cck_formatter_default' => array(
+      'arguments' => array('element'),
+      'file'      => 'addresses_cck.inc',
+    ),
+    // Shows address in only one line
+    'addresses_cck_formatter_single_line' => array(
+      'arguments' => array('element'),
+      'file'      => 'addresses_cck.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_widget().
+ *
+ * @param $form
+ *   the entire form array, $form['#node'] holds node information
+ * @param $form_state
+ *   the form_state, $form_state['values'][$field['field_name']]
+ *   holds the field's form values.
+ * @param $field
+ *   the field array
+ * @param $items
+ *   array of default values for this field
+ * @param $delta
+ *   the order of this item in the array of subelements (0, 1, 2, etc)
+ * @return
+ *   the form item for a single element for this field
+ */
+function addresses_cck_widget(&$form, &$form_state, $field, $items, $delta = 0) {
+  // Include the main module file
+  module_load_include('inc', 'addresses');
+
+  // Get all form fields for building addresses
+  $ftypes = module_invoke_all('addressesfieldapi', 'fields');
+  $fields = array();
+  foreach (array_keys($ftypes) as $ftype) {
+    $fields[$ftype] = $field[$ftype];
+  }
+
+  // The Addresses field
+  $element = array(
+    '#type'           => 'addresses_elements',
+    '#fields'         => $fields,
+    '#default_value'  => $items[$delta],
+  );
+
+  return $element;
+}
+
+/**
+ * Implementation of hook_widget_info().
+ *
+ * Its a CCK hook to describe the CCK widgets.
+ *
+ * @return
+ *   Array. Keyed by widget name. Each element of the array is an
+ *   array with these keys and values:
+ *   - "label": The human-readable label for the widget.
+ *   - "field types": An array of field type names that can be edited using
+ *     this widget.
+ */
+function addresses_cck_widget_info() {
+  return array(
+    'addresses_elements' => array(
+      'label'           => t('Address Field'),
+      'field types'     => array('addresses_cck'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+      'callbacks'       => array('default value' => CONTENT_CALLBACK_DEFAULT),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_token_list().
+ */
+function addresses_cck_token_list($type = 'all') {
+  if ($type == 'field' || $type == 'all') {
+    $tokens = array();
+
+    $fields = module_invoke_all('addressesfieldapi', 'fields');
+
+    foreach ($fields as $field => $field_data) {
+      if (isset($field_data['theme'])) {
+        foreach ($field_data['theme'] as $theme => $theme_title) {
+          $tokens['addresses'][$field . '_' . $theme] = $theme_title;
+        }
+      }
+    }
+
+    return $tokens;
+  }
+}
+
+/**
+ * Implementation of hook_token_values().
+ */
+function addresses_cck_token_values($type, $object = NULL) {
+  if ($type == 'field') {
+    $tokens = array();
+    $item = $object[0];
+
+    $fields = module_invoke_all('addressesfieldapi', 'fields');
+
+    foreach ($fields as $field => $field_data) {
+      if (isset($field_data['theme'])) {
+
+        // Sub-modules such as addresses_phone add a module specification to
+        // avoid clashes between modules.
+        if (!empty($field_data['module'])) {
+          $module = $field_data['module'] . '_';
+        }
+        else {
+          $module = '';
+        }
+
+        if (isset($field_data['theme'])) {
+          foreach ($field_data['theme'] as $theme => $theme_title) {
+            $tokens[$field . '_' . $theme] = theme('addresses_' . $module . $field, $item, $theme);
+          }
+        }
+      }
+    }
+
+    return $tokens;
+  }
+}
+
+// vim: ts=2 sw=2 et syntax=php

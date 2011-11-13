@@ -1,0 +1,471 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: reptag-module\n"
+"POT-Creation-Date: 2007-02-04 20:03+0100\n"
+"PO-Revision-Date: 2008-10-07 10:49+0100\n"
+"Last-Translator: Roi Danton <jabba dot the at web dot de>\n"
+"Language-Team: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+
+#: reptag_admin.inc:169 reptag.module:60
+msgid "Modules"
+msgstr "Module"
+
+#: reptag_admin.inc:259 reptag.module:69
+msgid "Roles / Permissions"
+msgstr "Rollen / Zugriffsrechte"
+
+#: reptag_admin.inc:401 reptag.module:78
+msgid "Content Types"
+msgstr "Inhaltstypen"
+
+#: reptag_admin.inc:886 reptag_maintenance.inc:32
+msgid "Process"
+msgstr "Ausführen"
+
+#: reptag.module:35 reptag.info:0
+msgid "Rep[lacement]Tags"
+msgstr "Rep[lacement]Tags"
+
+#: reptag.module:36 reptag.info:0
+msgid "Replace special tags with user-defined content."
+msgstr "Ersetzt spezielle Tags mit benutzerdefinierten Inhalten."
+
+#: reptag_ajax.inc:77
+msgid "Error: Tag already exists"
+msgstr "Fehler: Tag bereits vorhanden"
+
+#: reptag_ajax.inc:81;103;130;149
+msgid "Error: Empty field(s)"
+msgstr "Fehler: Leere(s) Feld(er)"
+
+#: reptag_ajax.inc:98;126
+msgid "Error: Tag does not exist"
+msgstr "Fehler: Tag ist nicht verhanden"
+
+#: reptag_ajax.inc:145
+msgid "Error: Tag already in list"
+msgstr "Fehler: Tag bereits in der Liste"
+
+#: reptag_ajax.inc:169
+msgid "Error: Invalid selection"
+msgstr "Fehler: Ungültige Auswahl"
+
+#: reptag_ajax.inc:181
+msgid "<em>Click to remove.</em>"
+msgstr "<em>Zum Entfernen anklicken</em>"
+
+#: reptag_ajax.inc:182
+msgid "Close"
+msgstr "Schließen"
+
+#: reptag_ajax.inc:216
+msgid "Error: Nothing to list"
+msgstr "Fehler: Keine Daten zur Auflistung"
+
+#: reptag_ajax.inc:253
+msgid "Rep[lacement]Tag"
+msgstr "Rep[lacement]Tag"
+
+#: reptag_ajax.inc:261
+msgid "Insert"
+msgstr "Einfügen"
+#: reptag.module:43
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: reptag.module:53
+msgid "General"
+msgstr "Allgemein"
+
+#: reptag.module:88
+msgid "SiteWide Tags"
+msgstr "SiteWide Tags"
+
+#: reptag.module:97
+msgid "User Tags"
+msgstr "Benutzer Tags"
+
+#: reptag.module:107
+msgid "RepTags"
+msgstr "RepTags"
+
+#: reptag.module:116
+msgid "Maintenance"
+msgstr "Wartung"
+
+#: reptag.module:344
+msgid "Rep[lacement]Tags - Help"
+msgstr "Rep[lacement]Tags - Hilfe"
+
+#: reptag.module:448
+msgid "Additional Rep[lacement]Tags"
+msgstr "Weitere Rep[lacement]Tags"
+
+#: reptag.module:10
+msgid "administer reptag"
+msgstr "RepTag administrieren"
+
+#: reptag.module:10
+msgid "manage sitewide reptags"
+msgstr "SiteWide RepTags verwalten"
+
+#: reptag.module:10
+msgid "manage user reptags"
+msgstr "Benutzer RepTags verwalten"
+
+#: reptag_admin.inc:10
+msgid "General - Settings"
+msgstr "Allgemeine Einstellungen"
+
+#: reptag_admin.inc:16
+msgid "Enable Rep[lacement]Tags"
+msgstr "Rep[lacement]Tags aktivieren"
+
+#: reptag_admin.inc:22
+msgid "Enable Rep[lacement]Tags in Preview"
+msgstr "Rep[lacement]Tags während der Vorschau aktivieren"
+
+#: reptag_admin.inc:28
+msgid "Show 'Rep[lacement]Tags - Help' section on add/edit node pages"
+msgstr "'Rep[lacement]Tags - Hilfe' beim Bearbeiten von Seiten anzeigen"
+
+#: reptag_admin.inc:34
+msgid "Privilege SiteWide tags over User tags"
+msgstr "SiteWide Tags über Benutzer Tags priorisieren"
+
+#: reptag_admin.inc:37
+msgid "By default users can override site wide tags with their own tags."
+msgstr "Standardmäßig können Nutzer SiteWide Tags mit ihren eigenen überschreiben."
+
+#: reptag_admin.inc:43
+msgid "Expert - Settings"
+msgstr "Experten - Einstellungen"
+
+#: reptag_admin.inc:50
+msgid "Enable Preview - Validation"
+msgstr "Vorschau-Validierung aktivieren"
+
+#: reptag_admin.inc:53
+msgid "Run html-filter on Preview to find invalid tags."
+msgstr "Prüft während der Vorschau auf ungültige Tags innerhalb der Seite."
+
+#: reptag_admin.inc:57
+msgid "Enable Partial PageCache"
+msgstr "Partiellen SeitenSpeicher (Cache) aktivieren"
+
+#: reptag_admin.inc:60
+msgid "<i>(recommended at least for high traffic sites)</i><br />Expand static tags on form submission and cache the result. Only dynamic tags are processed on page view.<br />To disable dynamic tags completely check 'Disable Dynamic Replacements' below."
+msgstr "<i>(empfohlen besonders für HighTraffic Sites)</i><br />Statische Tags werden beim Speichern einer Seite ersetzt und zwischengespeichert. Nur die Dynamischen Tags werden bei jedem Seitenaufruf bearbeitet.<br />Um Dynamische Tags vollständig zu deaktivieren, verwenden Sie 'Dynamische Replacements deaktivieren'."
+
+#: reptag_admin.inc:63
+msgid "none"
+msgstr "keine"
+
+#: reptag_admin.inc:64
+msgid "permanent"
+msgstr "dauerhaft"
+
+#: reptag_admin.inc:67
+msgid "Minimum cache lifetime"
+msgstr "Mindestgültigkeit des Zwischenspeichers (Cache)"
+
+#: reptag_admin.inc:70
+msgid "Set the minimum cache lifetime before the cache expires."
+msgstr "Minimale Zeitspanne bis der Zwischenspeicher (Cache) ungültig wird."
+
+#: reptag_admin.inc:75
+msgid "Disable Dynamic Replacements"
+msgstr "Dynamische Replacements deaktivieren"
+
+#: reptag_admin.inc:78
+msgid "Run reptag on form submission only (disables certain modules, e.g. System, Block, ...).<br />Modules affected by this option are marked 'Static' = 'No'."
+msgstr "RepTag arbeitet nur beim Speichern einer Seite (Einige Module werden zwangsweise deaktiviert, z.B. System, Block, ...).<br />Von dieser Option betroffene Module werden mit 'Statisch' = 'Nein' markiert."
+
+#: reptag_admin.inc:84
+msgid "Enable RepTag-Support for comments."
+msgstr "RepTag-Unterstützung für Kommentare aktivieren."
+
+#: reptag_admin.inc:87
+msgid "Check this option to allow replacement tags (static tags only) for comments."
+msgstr "Diese Option aktiviert ReplacementTags (nur statische) für Kommentare."
+
+#: reptag_admin.inc:92
+msgid "Enable RepTag to process node titles"
+msgstr "RepTag für Seiten-Titel aktivieren"
+
+#: reptag_admin.inc:95
+msgid "<i>(Node title support is not available for full page rendered nodes!)</i><br />With this option enabled you can select node titles for processing under <a href=\"@content-types-settings\">Content Types</a>."
+msgstr "<i>(Für die vollseitige Ansicht ist eine Titel-Unterstützung nicht möglich!)</i><br />Ist diese Option aktiviert, können Sie Seiten-Titel für die Verwendung mit RepTag unter <a href=\"@content-types-settings\">Inhaltstypen</a> konfigurieren."
+
+#: reptag_admin.inc:99
+msgid "Enable Debugging"
+msgstr "Debugging aktivieren"
+
+#: reptag_admin.inc:102
+msgid "Print debug listings (print_r) of module variables."
+msgstr "Gibt Debugdaten (print_r) über Modulvariablen aus."
+
+#: reptag_admin.inc:107
+msgid "UserInterface - Settings"
+msgstr "Benutzeroberfläche"
+
+#: reptag_admin.inc:114
+msgid "Add sample data to tags tables"
+msgstr "Beispieldaten für RepTags anzeigen"
+
+#: reptag_admin.inc:117
+msgid "Adds a row of sample data to site-/user-tags tables."
+msgstr "Fügt eine Zeile mit Beispieldaten am Anfang der Tabelle ein."
+
+#: reptag_admin.inc:121
+msgid "Enable Javascript/AJAX - Support"
+msgstr "Javascript/AJAX - Unterstützung aktivieren"
+
+#: reptag_admin.inc:124
+msgid "Enable Javascript/AJAX - Support for administration pages."
+msgstr "Javascript/AJAX - Unterstützung für den Verwaltungsbereich von RepTag aktivieren."
+
+#: reptag_admin.inc:128
+msgid "Use textareas for replacements"
+msgstr "Mehrzeilige Textfelder für Replacements verwenden"
+
+#: reptag_admin.inc:131
+msgid "Use resizable textareas instead of textfields for replacements in tags table."
+msgstr "Verwendet skalierbare mehrzeilige Textfelder für Replacements statt einfacher Textfelder."
+
+#: reptag_admin.inc:136
+msgid "Integration - Settings"
+msgstr "Integration"
+
+#: reptag_admin.inc:143
+msgid "Enable Quicktags - Integration"
+msgstr "Quicktags - Integration aktivieren"
+
+#: reptag_admin.inc:146
+msgid "Add a button to Quicktag's toolbar. Available only with 'Quicktags' module installed."
+msgstr "Fügt einen Button in die Quicktag Toolbar ein. 'Quicktags' muss dazu installiert sein."
+
+#: reptag_admin.inc:151
+msgid "Enable Workspace - Integration"
+msgstr "Workspace - Integration aktivieren"
+
+#: reptag_admin.inc:154
+msgid "Adds a tab to the user's workspace. Available only with 'Workspace' module installed."
+msgstr "Fügt ein Tab in den Arbeitsplatz (Workspace) des Benutzers ein. 'Workspace' muss dazu installiert sein."
+
+#: reptag_admin.inc:202;241
+msgid "Yes"
+msgstr "Ja"
+
+#: reptag_admin.inc:202;241
+msgid "No"
+msgstr "Nein"
+
+#: reptag_admin.inc:269
+msgid "Option / Module"
+msgstr "Option / Modul"
+
+#: reptag_admin.inc:273;298
+msgid "Module: !module"
+msgstr "Modul: !module"
+
+#: reptag_admin.inc:320
+msgid "Plain text replacements only"
+msgstr "Nur Reintext zulassen"
+
+#: reptag_admin.inc:338
+msgid "Exclude Tags"
+msgstr "Exclude Tags"
+
+#: reptag_admin.inc:358
+msgid "Append"
+msgstr "Hinzufügen"
+
+#: reptag_admin.inc:365
+msgid "Remove"
+msgstr "Entfernen"
+
+#: reptag_admin.inc:384;603
+msgid "Add"
+msgstr "Einfügen"
+
+#: reptag_admin.inc:406
+msgid "Choose the content fields to be processed. Reptag can only run on text fields.<br />Unselecting all fields for a content type will disable reptag for that particular type."
+msgstr "Wählen Sie die Felder aus, die von RepTag bearbeiten werden sollen. RepTag unterstützt zur Zeit nur Textfelder.<br />Sind für einen Inhaltstyp keine Felder ausgewählt, so ist RepTag für diesen Typ deaktiviert."
+
+#: reptag_admin.inc:348
+msgid "You only have the 'Body' field available because <a href=\"!cck\">CCK</a> is not installed."
+msgstr "Das Modul <a href=\"!cck\">CCK</a> ist nicht installiert. Daher ist momentan nur das 'Body'-Feld verfügbar."
+
+#: reptag_admin.inc:427
+msgid "Title"
+msgstr "Titel"
+
+#: reptag_admin.inc:428;439
+msgid "text"
+msgstr "text"
+
+#: reptag_admin.inc:438
+msgid "Body"
+msgstr "Body (Textkörper)"
+
+#: reptag_admin.inc:480
+msgid "SiteWide - Rep[lacement]Tags"
+msgstr "SiteWide - Rep[lacement]Tags"
+
+#: reptag_admin.inc:499
+msgid "User - Rep[lacement]Tags"
+msgstr "Benutzer - Rep[lacement]Tags"
+
+#: reptag_admin.inc:522
+msgid "<strong>MYTAG</strong>"
+msgstr "<strong>MEINTAG</strong>"
+
+#: reptag_admin.inc:525
+msgid "<strong>Hello, I'm Mr. Repl Text.</strong>"
+msgstr "<strong>Hallo, ich bin der Ersatztext.</strong>"
+
+#: reptag_admin.inc:559
+msgid "Edit"
+msgstr "Ändern"
+
+#: reptag_admin.inc:566
+msgid "Del"
+msgstr "Löschen"
+
+#: reptag_admin.inc:616;636;691;722;764;903
+msgid "Save configuration"
+msgstr "Konfiguration speichern"
+
+#: reptag_admin.inc:629;684;711;753;782
+msgid "The configuration options have been saved."
+msgstr "Die Konfiguration wurde gespeichert."
+
+#: reptag_admin.inc:681
+msgid "You dont have neither 'DOMDocument' class nor 'xml_parser_create' function available.<br />HTML-Validation is not possible and will be disabled!"
+msgstr "Weder die 'DOMDocument' Klasse noch die 'xml_parser_create' Funktion sind zurzeit verfügbar.<br />HTML-Validierung ist deshalb nicht möglich und wird deaktiviert!"
+
+#: reptag_admin.inc:699
+msgid "Module '!module' has been disabled!<br />It does not comply with all requirements (e.g. include dependencies, PEAR packages, ...)."
+msgstr "Modul '!module' wurde deaktiviert. Nicht alle Voraussetzungen (z.B. include Abhängigkeiten, PEAR Pakete, ...) werden erfüllt."
+
+#: reptag_admin.inc:714;756
+msgid "The cache has been flushed to reflect the new configuration."
+msgstr "Um die neue Konfiguration zu übernehmen wurde der Zwischenspeicher (Cache) geleert."
+
+#: reptag_admin.inc:804
+msgid "Tag"
+msgstr "Tag"
+
+#: reptag_admin.inc:804
+msgid "Replacement"
+msgstr "Replacement (Ersatztext)"
+
+#: reptag_admin.inc:821
+msgid "Enabled"
+msgstr "Aktiviert"
+
+#: reptag_admin.inc:821
+msgid "Module"
+msgstr "Modul"
+
+#: reptag_admin.inc:821
+msgid "Description"
+msgstr "Description"
+
+#: reptag_admin.inc:821
+msgid "Static"
+msgstr "Statisch"
+
+#: reptag_admin.inc:771
+msgid "Weight"
+msgstr "Gewicht"
+
+#: reptag_admin.inc:847
+msgid "<em>Enter tags to exclude seperated by '|', e.g. '$MYTAG$' or '#{BACK}(.*?){/BACK}#s'.</em>"
+msgstr "<em>RepTags angeben getrennt durch '|', z.B. '$MYTAG$' oder '#{BACK}(.*?){/BACK}#s'.</em>"
+
+#: reptag_admin.inc:857
+msgid "Exclude for role"
+msgstr "Ausschliessen für"
+
+#: reptag_admin.inc:857
+msgid "Tags"
+msgstr "Tags"
+
+#: reptag_admin.inc:870
+msgid "Enter tag to exclude:"
+msgstr "Geben sie einen Tag ein:"
+
+#: reptag_admin.inc:886
+msgid "Field Label"
+msgstr "Bezeichnung des Feldes"
+
+#: reptag_admin.inc:886
+msgid "Type / Widget"
+msgstr "Typ / Widget"
+
+#: reptag_admin.inc:904
+msgid "Reset to defaults"
+msgstr "Zurücksetzen"
+
+#: reptag_maintenance.inc:11
+msgid "RepTag - Maintenance"
+msgstr "RepTag -Wartung"
+
+#: reptag_maintenance.inc:17
+msgid "Regenerate all cached nodes"
+msgstr "Seiten im Zwischenspeicher neu aufbauen"
+
+#: reptag_maintenance.inc:20
+msgid "Use this option to update all cached nodes."
+msgstr "Verwenden Sie diese Option, um die Seiten im Zwischenspeicher zu aktualisieren."
+
+#: reptag_maintenance.inc:25
+msgid "Flush all cached nodes"
+msgstr "Alle zwischengespeicherten Seiten löschen"
+
+#: reptag_maintenance.inc:28
+msgid "Use this option to clear the cache."
+msgstr "Verwenden Sie diese Option, um den Zwischenspeicher zu löschen."
+
+#: reptag_maintenance.inc:34
+msgid "Switch Drupal to 'offline mode' for operation"
+msgstr "Drupal während der Operation in den 'Offline Modus' schalten"
+
+#: reptag_maintenance.inc:33
+msgid "per step"
+msgstr "pro Aufruf"
+
+#: reptag_maintenance.inc:39;40;41;42
+msgid "!n nodes"
+msgstr "!n Seiten"
+
+#: reptag_maintenance.inc:46;69
+msgid "Perform"
+msgstr "Ausführen"
+
+#: reptag_maintenance.inc:76
+msgid "More than one option selected."
+msgstr "Mehr als eine Option gewählt."
+
+#: reptag_maintenance.inc:86;151
+msgid "Maintenance operation successfully comleted."
+msgstr "Wartungsaufgabe erfolgreich durchgeführt."
+
+#: reptag_maintenance.inc:89
+msgid "No option selected."
+msgstr "Keine Option ausgewählt."
+
+#: reptag_maintenance.inc:141
+msgid "Regenerating cached nodes ..."
+msgstr "Seiten im Zwischenspeicher neu aufbauen ..."
+
+#: reptag_maintenance.inc:145
+msgid "Running maintenance ..."
+msgstr "Wartungsaufgabe ausführen ..."
+

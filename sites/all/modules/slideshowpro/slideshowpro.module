@@ -1,0 +1,226 @@
+<?php
+// $Id: slideshowpro.module,v 1.3 2009/02/26 19:40:00 alexb Exp $
+
+/**
+ * @file
+ * Slideshow Pro integration.
+ *
+ * This module integrates the SlideShowPro slideshow
+ * http://slideshowpro.net/ with image module and views.
+ */
+
+/**
+ * Implementation of hook_help().
+ */
+function slideshowpro_help($path, $arg) {
+  switch ($path) {
+    case 'admin/build/modules#description':
+    case 'admin/modules#description':
+      return t('Export SlideShowPro XML documents.');
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function slideshowpro_menu() {
+  $items['admin/settings/ssp'] = array(
+    'title' => 'Slideshow Pro integration',
+    'description' => 'Control Slideshow Pro integration behaviour.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('slideshowpro_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM, // optional
+   );
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme.
+ */
+function slideshowpro_theme($existing, $type, $theme, $path) {
+  return array(
+    'slideshowpro_feed' => array(
+      'file' => 'slideshowpro.theme.inc',
+      'arguments' => array(
+        'view' => NULL,
+        'nodes' => NULL,
+        'type' => NULL,
+      ),
+    ),
+    'slideshowpro_xml_image' => array(
+      'file' => 'slideshowpro.theme.inc',
+      'arguments' => array(
+        'node' => NULL,
+        'size' => NULL,
+        'title_caption' => NULL,
+      ),
+    ),
+    'slideshowpro_embed' => array(
+      'file' => 'slideshowpro.theme.inc',
+      'arguments' => array(
+        'output' => NULL,
+        'id' => NULL,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_filter().
+ */
+function slideshowpro_filter($op, $delta = 0, $format = -1, $text = '') {
+  switch ($op) {
+    case 'list':
+      return array(0 => t('Inline SSP slide shows'));
+
+    case 'description':
+      return t('Add SSP slide shows to your posts.');
+
+    case 'process':
+      foreach (slideshowpro_get_macros($text) as $unexpanded_macro => $macro) {
+        $expanded_macro = slideshowpro_embed($macro);
+        $text = str_replace($unexpanded_macro, $expanded_macro, $text);
+      }
+      return $text;
+    default:
+      return $text;
+  }
+}
+
+/**
+ * Implementation of hook_filter_tips().
+ */
+function slideshowpro_filter_tips($delta, $format, $long = FALSE) {
+  return t('SSP slideshows can be added to this post. Example: [ssp|path=path/to/your/ssp/feed|width=300|height=200].');
+}
+
+/**
+ * Implementation of hook_views_api().
+ * @return Array with Views API version.
+ */
+function slideshowpro_views_api() {
+  return array('api' => 2.0);
+}
+
+/**
+ * Form function for SlideShowPro admin settings.
+ */
+function slideshowpro_settings(&$form_state) {
+  $form = array();
+  $form['#validate'] = array('slideshowpro_settings_validate' => array());
+  $form['slideshowpro_swf'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path to SSP file'),
+    '#default_value' =>  slideshowpro_path_to_ssp(),
+    '#description' => t('Path to your Slideshow Pro Flash application (.swf file) relative to your Drupal directory. 
+      You can get Slide Show Pro here: http://www.slideshowpro.net.
+      See README.txt on how to create this application.'),
+    );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Returns image path with trailing.
+ */
+function slideshowpro_get_image_path() {
+  static $image_path;
+  if (!$image_path) {
+    $schema = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+    $image_path = $schema .'://'. $_SERVER['HTTP_HOST'] . base_path() . file_directory_path() .'/'. variable_get('image_default_path', 'images') .'/';
+  }
+  return $image_path;
+}
+
+/**
+ * Format an album.
+ */
+function slideshowpro_xml_album($album, $images) {
+  static $id = 0;
+  $output .= '<album id="%album_id" title="%title" description="%description" lgPath="">'."\n";
+  $output .= implode("\n", $images) ."\n";
+  $output .= "</album>\n";
+  $variables = array('%album_id' => $id, '%title' => check_plain($album->name), '%description' => check_plain($album->description),
+    '%lgPath' => url(variable_get('image_default_path', 'images'), array('absolute' => TRUE)));
+  $id++;
+  return strtr($output, $variables);
+}
+
+/**
+ * Returns path to slideshow pro.
+ */
+function slideshowpro_path_to_ssp() { 
+  return variable_get('slideshowpro_swf', drupal_get_path('module', 'slideshowpro') .'/ssp.swf');
+}
+
+/**
+ * Return all slideshowpro macros as an array.
+ */
+function slideshowpro_get_macros($text) {
+  $m = array();
+  preg_match_all('/ \[ ( [^\[\]]+ )* \] /x', $text, $matches);
+  $tag_match = (array) array_unique($matches[1]); // Don't process duplicates.
+  
+  foreach ($tag_match as $macro) {
+    $current_macro = '['. $macro .']';
+    $param = array_map('trim', explode('|', $macro));
+    $func_name = array_shift($param); // The first macro param is assumed to be the function name.
+    if ($func_name == 'ssp') {
+      $vars = array();
+      foreach ($param as $p) {
+        $pos = strpos($p, '=');
+        $varname = substr($p, 0, $pos);
+        $varvalue = substr($p, $pos + 1);
+        $vars[$varname] = $varvalue;
+      }
+      // The full unaltered filter string is the key for the array of filter attributes.
+      $m[$current_macro] = $vars;
+    }
+  }
+
+  return $m;
+}
+
+/**
+ * Embed function.
+ */
+function slideshowpro_embed($args) {
+  static $id = 0;
+  $id++;
+  // Path to xml.
+  $flash_vars = 'xmlfilepath='. url($args['path'], array('absolute' => TRUE));
+  // Check, whether parameters available.
+  $flash_vars .= '&parameters=';
+  if (isset($args['params'])) {
+    $params = explode(',', $args['params']);
+    foreach ($params as $param) {
+      if ($var = explode(':', $param)) {
+        // If we use titles as captions, ignore showCaptionHeader.
+        $flash_vars .= $var[0] .':'. check_plain($var[1]) .',';
+      }
+    }
+  }
+  // Hide caption header if we are using titles as captions.
+  if (variable_get('slideshowpro_title_as_caption', 0)) {
+    $flash_vars .= 'showCaptionHeader:False,';
+  }
+  // Width and height.
+  if (isset($args['width'])) {
+    $width = ' width="'. $args['width'] .'" ';
+  }
+  if (isset($args['height'])) {
+    $height = ' height="'. $args['height'] .'" ';
+  }
+  
+  return theme('slideshowpro_embed', 
+    '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" 
+      codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" '. $width .' '. $height .' id="ssp-player-'. $id .'" align="middle">
+      <param name="allowScriptAccess" value="sameDomain" />
+      <param name="FlashVars" value="'. $flash_vars .'" />
+      <param name="movie" value="'. base_path() . slideshowpro_path_to_ssp() .'" />
+      <param name="quality" value="high" />
+      <param name="bgcolor" value="#ffffff" />
+      <embed FlashVars="'. $flash_vars .'" src="'. base_path() . slideshowpro_path_to_ssp() .'" quality="high" bgcolor="#ffffff" '. $width .' '. $height .' name="ssp-player-'. $id .'" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" /> 
+    </object>', $id);
+}

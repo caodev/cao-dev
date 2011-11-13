@@ -1,0 +1,26 @@
+<?php
+
+function taggly_install() {
+  switch ($GLOBALS['db_type']) {
+  	
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {tagcloud} (vocab_id int(11),background varchar(50),wmode varchar(20), foreground varchar(50),height varchar(45) NOT NULL, width varchar(45) NOT NULL)");
+      //default values
+      db_query("INSERT INTO {tagcloud}(vocab_id ,background,wmode,foreground,height,width)VALUES ('1', 'ffffff','', '000000', '300', '200')");
+      break;
+
+    case 'pgsql':
+	  db_query("CREATE TABLE {tagcloud} (vocab_id int(11),background varchar(50),wmode varchar(20), foreground varchar(50),height varchar(45) NOT NULL, width varchar(45) NOT NULL)");
+      //default values
+	  db_query("INSERT INTO {tagcloud}(vocab_id ,background,wmode,foreground,height,width)VALUES ('1', 'ffffff','', '000000', '300', '200')");
+      break;
+
+      
+  }
+}
+
+function taggly_uninstall(){
+	db_query('DROP table {tagcloud}');
+}
+

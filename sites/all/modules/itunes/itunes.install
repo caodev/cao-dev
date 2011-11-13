@@ -1,0 +1,113 @@
+<?php
+// $Id: itunes.install,v 1.7 2010/07/16 12:38:37 drewish Exp $
+
+/**
+ * @file
+ * Installation, updates, and desinstallation of the iTunes module.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function itunes_install() {
+  // Migrate old audio_itunes data.
+  if (db_table_exists('audio_itunes_item')) {
+    $ret = array();
+    db_rename_table($ret, 'audio_itunes_item', 'itunes_item');
+
+    // Check if the audio module got around to adding a nid field.
+    if (!db_column_exists('itunes_item', 'nid')) {
+      $nid_field = array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      );
+      db_add_field($ret, 'itunes_item', 'nid', $nid_field);
+
+      // Assign nids from the node table.
+      $ret[] = update_sql("UPDATE {itunes_item} i INNER JOIN {node} n ON i.vid = n.vid SET i.nid = n.nid");
+    }
+  }
+  else {
+    drupal_install_schema('itunes');
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function itunes_uninstall() {
+  drupal_uninstall_schema('itunes');
+  variable_del('itunes_types');
+  variable_del('itunes_enclosure_source');
+  variable_del('itunes_keyword_source');
+  variable_del('itunes_author_source');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function itunes_schema() {
+  $schema['itunes_item'] = array(
+    'description' => t('Audio iTunes item.'),
+    'fields' => array(
+      'vid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'summary' => array(
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => 'true',
+      ),
+      'subtitle' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => 'true',
+        'default' => '',
+      ),
+      'explicit' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => 'true',
+        'default' => 0,
+      ),
+      'block' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => 'true',
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('vid'),
+  );
+  return $schema;
+}
+
+/**
+ * Rename the source variables.
+ */
+function itunes_update_6100() {
+  $ret = array();
+
+  if ($value = variable_get('itunes_filefields', array())) {
+    variable_set('itunes_enclosure_source', $value);
+    variable_del('itunes_filefields');
+  }
+
+  if ($value = variable_get('itunes_vocabularies', array())) {
+    variable_set('itunes_keyword_source', $value);
+    variable_del('itunes_vocabularies');
+  }
+
+  return $ret;
+}

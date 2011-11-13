@@ -1,0 +1,556 @@
+<?php
+/**
+ * @author Bruno Massa
+ * @file
+ * You can associate a geographic address with content and users.
+ */
+
+/**
+ * Each address field can be: displayed, required, hidden or not
+ * used at all
+ */
+define('ADDRESSES_FIELD_NONE',      0);
+define('ADDRESSES_FIELD_SHOW',      1);
+define('ADDRESSES_FIELD_REQUIRED',  2);
+define('ADDRESSES_FIELD_HIDDEN',    3);
+
+/**
+ * Implementation of hook_addressfieldapi().
+ *
+ * Create the base address fields.
+ */
+function addresses_addressesfieldapi($op, $fields = array(), $values = array()) {
+  if ($op == 'fields') {
+    $items = array();
+
+    $items['is_primary'] = array(
+      'type' => 'int',
+      'size' => 'tiny',
+      'title' => t('Primary Address Checkbox'),
+      'description' => t('Mark it as the primary address or not (default is not)'),
+      'default' => 0,
+      'display' => ADDRESSES_FIELD_NONE,
+      'theme' => array(
+        'plain' => t('"False" if the checkbox is not checked, otherwise "True".'),
+        'hcard' => t('An hcard/vcard html representation of the primary checkbox.'),
+      ),
+      'token' => 'addresses_general',
+    );
+
+    $items['aname'] = array(
+      'type' => 'varchar',
+      'length' => 75,
+      'title' => t('Address Name'),
+      'description' => t('The nickname of this address, like "Home", "Office", "Anna\'s apartment."'),
+      'default' => '',
+      'display' => ADDRESSES_FIELD_NONE,
+      'theme' => array(
+        'plain' => t('The address name.'),
+        'hcard' => t('An hcard/vcard html representation of the address name.'),
+      ),
+      'token' => 'addresses_general',
+    );
+
+    $items['country'] = array(
+      'type' => 'varchar',
+      'length' => 2,
+      'title' => t('Country'),
+      'description' => t('The ISO alpha 3 code of each country (its a 2-digit code).'),
+      'default' => variable_get('addresses_country_default', ''),
+      'display' => ADDRESSES_FIELD_SHOW,
+      'theme' => array(
+        'name' => t('The name of the country.'),
+        'code2' => t('The 2-digit country code.'),
+        'code3' => t('The 3-digit country code.'),
+        'name_hcard' => t('An hcard/vcard representation of the country name.'),
+        'code2_hcard' => t('An hcard/vcard representation of the 2-digit country code.'),
+        'code3_hcard' => t('An hcard/vcard representation of the 3-digit country code.'),
+      ),
+      'token' => 'addresses_adr',
+    );
+
+    $items['province'] = array(
+      'type' => 'varchar',
+      'length' => 16,
+      'title' => t('Province'),
+      'description' => t('The name of the state, province, county or territory.'),
+      'default' => '',
+      'display' => ADDRESSES_FIELD_SHOW,
+      'theme' => array(
+        'name' => t('The province name.'),
+        'code' => t('The province code.'),
+        'name_hcard' => t('An hcard/vcard representation of the province name.'),
+        'code_hcard' => t('An hcard/vcard representation of the province code.'),
+      ),
+      'token' => 'addresses_adr',
+    );
+
+    $items['city'] = array(
+      'type' => 'varchar',
+      'length' => 255,
+      'title' => t('City'),
+      'description' => t('The name of the city.'),
+      'default' => '',
+      'display' => ADDRESSES_FIELD_SHOW,
+      'theme' => array(
+        'plain' => t('The city.'),
+        'hcard' => t('An hcard/vcard representation of the city.'),
+      ),
+      'token' => 'addresses_adr',
+    );
+
+    $items['street'] = array(
+      'type' => 'varchar',
+      'length' => 255,
+      'title' => t('Street'),
+      'description' => t('Street, number...'),
+      'default' => '',
+      'display' => ADDRESSES_FIELD_SHOW,
+      'theme' => array(
+        'plain' => t('The street, number, etc.'),
+        'hcard' => t('An hcard/vcard representation of the street.'),
+      ),
+      'token' => 'addresses_adr',
+    );
+
+    $items['additional'] = array(
+      'type' => 'varchar',
+      'length' => 255,
+      'title' => t('Additional'),
+      'description' => t('Additional address information like apartment block, number or address reference.'),
+      'default' => '',
+      'display' => ADDRESSES_FIELD_SHOW,
+      'theme' => array(
+        'plain' => t('Additional address information.'),
+        'hcard' => t('An hcard/vcard representation of the additional address information.'),
+      ),
+      'token' => 'addresses_adr',
+    );
+
+    $items['postal_code'] = array(
+      'type' => 'varchar',
+      'length' => 16,
+      'title' => t('Postal code'),
+      'description' => t('The address postal code (ZIP code for US people).'),
+      'default' => '',
+      'display' => ADDRESSES_FIELD_SHOW,
+      'theme' => array(
+        'plain' => t('The postal code.'),
+        'hcard' => t('An hcard/vcard representation of the postal code.'),
+      ),
+      'token' => 'addresses_adr',
+    );
+
+    return $items;
+  }
+  elseif ($op == 'form') {
+    // Are form field definitions placed in a separate file due to length?
+    module_load_include('settings.inc', 'addresses');
+    return _addresses_addressesfieldapi_form($fields, $values);
+  }
+}
+
+/**
+ * Implementation of FAPI hook_elements().
+ *
+ * Any FAPI callbacks needed for individual widgets can be declared here,
+ * and the element will be passed to those callbacks for processing.
+ *
+ * Drupal will automatically theme the element using a theme with
+ * the same name as the hook_elements key.
+ *
+ * Autocomplete_path is not used by text_widget but other widgets can use it
+ * (see nodereference and userreference).
+ */
+function addresses_elements() {
+  // Get a list of all address-related fields
+  $ftypes = module_invoke_all('addressesfieldapi', 'fields');
+
+  foreach (array_keys($ftypes) as $ftype) {
+    $fields[] = $ftype;
+  }
+
+  return array(
+    'addresses_elements' => array(
+      '#columns' => $fields,
+      '#delta' => 0,
+      '#input' => TRUE,
+      '#process' => array('addresses_elements_process'),
+    )
+  );
+}
+
+/**
+ * Generate the address "field", creating all form fields
+ *
+ * @return
+ *   Array. Form fields
+ */
+function addresses_elements_process($element, $edit, $form_state, $form) {
+  global $language;
+
+  // Add the language definition in the settings so we can properly select words in a given language.
+  drupal_add_js(array('addresses' => array('language' => $language->language)), 'setting');
+
+  // The $form['#field_info'] entry comes from CCK
+  $settings = empty($form['#field_info'][$element['#field_name']])
+    ? variable_get('addresses_user_settings', array())
+    : $form['#field_info'][$element['#field_name']];
+  $fields = $element['#fields'];
+  $values = $element['#default_value'];
+
+  // Reset the required fields based on the general required value
+  if (empty($element['#required'])) {
+    foreach ($fields as $field => $required) {
+      if ($required == ADDRESSES_FIELD_REQUIRED
+          && $form['#id'] == 'content-field-edit-form') {
+        $fields[$field] = ADDRESSES_FIELD_SHOW;
+      }
+    }
+  }
+
+  // Reset unwanted attributes
+  $element['#title'] = '';
+  $element['#description'] = '';
+
+  // If its a existing address, save the Address ID
+  // for further processing
+  if (!empty($values['aid'])) {
+    $element['aid'] = array(
+      '#type' => 'hidden',
+      '#value' => $values['aid']
+    );
+  }
+
+  // Include the main module file
+  module_load_include('inc', 'addresses');
+
+  // Update the $fields array to reflect element visibility settings per the
+  // new global settings options.  It would be cleaner to simply update the
+  // form generation function, but this method will be compatible with extra
+  // contrib fields.
+  foreach (array_keys($fields) as $ftype) {
+    if (!empty($settings[$ftype . '_select'])) {
+      if ($form['form_id']['#value'] == 'content_field_edit_form') {
+        // force optional on content_field_edit_form
+        $fields[$ftype] = ADDRESSES_FIELD_SHOW;
+      }
+      else {
+        $fields[$ftype] = $settings[$ftype . '_select'];
+      }
+    }
+  }
+
+  // Invoke addressfieldapi to allow modules to add their own addresses fields.
+  // Then update these fields with the global settings for each field instance.
+  $extra = module_invoke_all('addressesfieldapi', 'form', $fields, $values);
+  foreach (element_children($extra) as $ename) {
+    if (isset($settings[$ename . '_label'])) {
+      $extra[$ename]['#title'] = t($settings[$ename . '_label']);
+    }
+    if (isset($settings[$ename . '_desc'])) {
+      $extra[$ename]['#description'] = t($settings[$ename . '_desc']);
+    }
+    if ('textfield' == $extra[$ename]['#type'] && isset($settings[$ename . '_size'])) {
+      $extra[$ename]['#size'] = $settings[$ename . '_size'];
+      $extra[$ename]['#attributes'] = array('class' => 'text');
+    }
+  }
+
+  // Add the extra fields to the element and return it.
+  $element = array_merge($element, $extra);
+  return $element;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function addresses_menu() {
+  $items = array();
+
+  $items['admin/settings/address'] = array(
+    'access arguments' => array('administer addresses'),
+    'description' => 'Settings for Address module',
+    'file' => 'addresses.settings.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_addresses_settings'),
+    'title' => 'Addresses',
+  );
+
+  $items['admin/settings/address/format'] = array(
+    'access arguments' => array('administer addresses'),
+    'description' => 'Format addresses',
+    'file' => 'addresses.settings.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_addresses_settings_format', 4),
+    'title' => 'Addresses Format',
+    'type' => MENU_CALLBACK
+  );
+
+  $items['addresses/province_ajax'] = array(
+    'access callback' => TRUE,
+    'file' => 'addresses.settings.inc',
+    'page callback' => '_addresses_province_ajax',
+    'type' => MENU_CALLBACK,
+  );
+
+  /**
+   * Autocomplete menu item
+   *
+   * @deprecated
+   *   This implementation was never functional in 6.x. To be removed in
+   *   Addresses 2.x.
+   */
+  $items['admin/settings/address/autocomplete'] = array(
+    'access callback' => TRUE,
+    'file' => 'addresses.settings.inc',
+    'page callback' => '_addresses_autocomplete',
+    'type' => MENU_CALLBACK
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function addresses_perm() {
+  return array('administer addresses');
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function addresses_theme() {
+  return array(
+    // Shows addresses normally
+    'addresses' => array(
+      'arguments' => array(
+        'afields',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    // Shows individual address fields
+    'addresses_is_primary' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_aname' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_country' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_province' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_city' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_street' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_additional' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    'addresses_postal_code' => array(
+      'arguments' => array(
+        'afields',
+        'format' => 'plain',
+      ),
+      'file' => 'addresses.inc',
+    ),
+    // Shows address form elements
+    'addresses_elements' => array(
+      'arguments' => array('form'),
+      'file' => 'addresses.settings.inc',
+    ),
+    // Shows address weight on settings page
+    'addresses_field_weight' => array(
+      'arguments' => array('form'),
+      'file' => 'addresses.settings.inc',
+    ),
+    // Shows addresses using a single line
+    'addresses_address_singleline' => array(
+      'arguments' => array('addresses'),
+      'file' => 'addresses.inc',
+    ),
+    // Choose the addresses fields
+    'addresses_settings_fields' => array(
+      'arguments' => array('form'),
+      'file' => 'addresses.settings.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_token_list().
+ */
+function addresses_token_list($type = 'all') {
+  if ($type == 'addresses_general' || $type == 'addresses_adr' || $type == 'all') {
+    $fields = module_invoke_all('addressesfieldapi', 'fields');
+
+    foreach ($fields as $field => $field_data) {
+      if (isset($field_data['theme'])) {
+        if (($type == 'addresses_general' || $type == 'all') && $field_data['token'] == 'addresses_general') {
+          $category = 'Addresses: General';
+        }
+        elseif (($type == 'addresses_adr' || $type == 'all') && $field_data['token'] == 'addresses_adr') {
+          $category = 'Addresses: Address';
+        }
+        else {
+          continue;
+        }
+
+        foreach ($field_data['theme'] as $theme => $theme_title) {
+          $tokens[$category]['addresses_'. $field .'_'. $theme] = $theme_title;
+        }
+      }
+    }
+
+    return $tokens;
+  }
+}
+
+/**
+ * Implementation of hook_token_values().
+ */
+function addresses_token_values($type, $object = NULL) {
+  $values = array();
+
+  switch ($type) {
+  case 'addresses_general':
+  case 'addresses_adr':
+    $fields = module_invoke_all('addressesfieldapi', 'fields');
+
+    foreach ($fields as $field => $field_data) {
+      if ($field_data['token'] == $type && isset($field_data['theme'])) {
+        foreach (array_keys($field_data['theme']) as $format) {
+          // Sub-modules such as addresses_phone add a module specification to
+          // avoid clashes between modules.
+          if (!empty($field_data['module'])) {
+            $module = $field_data['module'] . '_';
+          }
+          else {
+            $module = '';
+          }
+          $values['addresses_'. $field .'_'. $format] = theme('addresses_'. $module . $field, $object, $format);
+        }
+      }
+    }
+    break;
+
+  }
+
+  return $values;
+}
+
+/**
+ * Implementation of hook_feeds_node_processor_targets_alter
+ *
+ * This will allow the mapping of feed data to Addresses module field attributes
+ *
+ * @param &$targets
+ *   Array containing the targets to be offered to the user. Add to this array
+ *   to expose additional options. Remove from this array to suppress options.
+ *   Remove with caution.
+ * @param $content_type
+ *   The content type of the target node.
+ */
+function addresses_feeds_node_processor_targets_alter(&$targets, $content_type) {
+  $info = content_types($content_type);
+
+  //retrieve the attributes currently available from the addresses module
+  $attributes = module_invoke_all('addressesfieldapi','fields');
+
+  $fields = array();
+  if (isset($info['fields']) && count($info['fields'])) {
+    foreach ($info['fields'] as $field_name => $field) {
+
+      //if this is an address field
+      if (in_array($field['type'], array('addresses_cck'))) {
+        $name = isset($field['widget']['label']) ? $field['widget']['label'] : $field_name;
+
+        //loop over the attributes available to addresses field
+        foreach ($attributes as $attr_key => $attribute) {
+
+          //if a field is unused based on settings, then we'll note those fields
+          //in the drop down
+          $used = ($field['columns'][$attr_key]['display'] > 0 ? TRUE : FALSE);
+
+          $targets[$field_name .':'. $attr_key] = array(
+            'name' => t('!field_name (!title) !used', array('!field_name' => $name,
+                                                      '!title' => $attribute['title'],
+                                                      '!used' => (!$used ? ' [not used]' : '')
+                                                      )),
+            'description' => t('!title of what my custom node field does.', array('!title' => $attribute['title'])),
+            'callback' => 'addresses_feeds_set_target',
+            //'real_target' => $field_name,
+          );
+
+        }//end - loop
+      }//end - if
+    }//end - foreach
+  }//end - if
+}
+
+/**
+ * Callback from hook_feeds_node_processor_targets_alter defined above
+ *
+ * This handles the actual import process, updating the node with the passed in
+ * $value
+ *
+ * @param $node
+ *   Reference to the node object we are working on.
+ * @param $target
+ *   The selected link CCK field.
+ * @param $value
+ *   The value to assign to the CCK field.
+ */
+function addresses_feeds_set_target($node, $target, $value) {
+  list($field_name, $sub_field) = split(':', $target);
+
+  $field = (isset($node->$field_name) ? $node->$field_name : array());
+  if (is_array($value)) {
+    $i = 0;
+    foreach ($value as $v) {
+      if (!is_array($v) && !is_object($v)) {
+        $field[$i][$sub_field] = $v;
+      }
+      $i++;
+    }
+  } else {
+    $field[0][$sub_field] = $value;
+  }
+
+  $node->$field_name = $field;
+}
+
+// vim: ts=2 sw=2 et syntax=php

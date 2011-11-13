@@ -1,0 +1,119 @@
+<?php
+/**
+ * @author Bruno Massa
+ * @file
+ * Installation / uninstallation routines.
+ */
+
+/**
+ * Implementation of hook_install().
+ *
+ * @warning
+ * Whenever the .install is loaded for installation, all the
+ * .module of all the other modules being installed may not
+ * yet be loaded (if you install all the Addresses module all
+ * at once, for instance.)
+ *
+ * This means we cannot be sure that module_invoke_all() will
+ * work properly.
+ *
+ * Note that moving the addressesfieldapi to the .install wouldn't
+ * work either because all the .install files are not loaded when
+ * this function is being executed.
+ *
+ * Our current solution is to set the addresses_user_reset_schema
+ * variable to 1 and reset the schema's on init (and getting the
+ * schema to make sure the table gets rebuilt.)
+ */
+function addresses_user_install() {
+  // Install the necessary Database tables
+  drupal_install_schema('addresses_user');
+
+  // Ask the system to reset the user schema
+  module_load_include('module', 'addresses_user');
+  addresses_user_new_install();
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function addresses_user_schema() {
+  $schema['addresses_user'] = array(
+    'description' => t('Addresses functionality for users'),
+    'fields' => array(
+      'aid' => array(
+        'type'        => 'serial',
+        'not null'    => TRUE,
+        'description' => t('Address ID'),
+      ),
+      'eid' => array(
+        'type'        => 'int',
+        'unsigned'    => TRUE,
+        'not null'    => TRUE,
+        'description' => t('Element ID can be the User ID from {user}.uid or Node ID from {node}.nid'),
+      )
+    ),
+    'primary key' => array('aid'),
+    'indexes' => array(
+      'eid'   => array('eid'),
+    ),
+  );
+
+  // Get all addresses fields from addressesfieldapi and include them on the schema
+  $fields = module_invoke_all('addressesfieldapi', 'fields');
+  $schema['addresses_user']['fields'] += $fields;
+
+  // Insert new fields on the addresses_user table if the when
+  // new modules are installed. Its placed here in order to be ready
+  // during the install process
+  if (db_table_exists('addresses_user')) {
+    $update = array();
+
+    // Get all addresses fields from addressesfieldapi and include them on the schema
+    $fields_existing = variable_get('addresses_user_fields', array());
+    foreach (array_keys($fields_existing) as $field) {
+      if (!empty($fields[$field])) {
+        unset($fields[$field]);
+      }
+      else {
+        db_drop_field($update, 'addresses_user', $field);
+        unset($fields_existing[$field]);
+      }
+    }
+
+    // If there is any field remaing, add it
+    if (!empty($fields)) {
+      foreach ($fields as $field => $field_data) {
+        db_add_field($update, 'addresses_user', $field, $field_data);
+        $fields_existing[$field] = TRUE;
+      }
+    }
+
+    if (!empty($update)) {
+      variable_set('addresses_user_fields', $fields_existing);
+    }
+  }
+  else {
+    $fields_existing = array();
+    foreach (array_keys($fields) as $field) {
+      $fields_existing[$field] = TRUE;
+    }
+    variable_set('addresses_user_fields', $fields_existing);
+  }
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function addresses_user_uninstall() {
+  // Delete tables
+  drupal_uninstall_schema('addresses_user');
+
+  // Delete global variables
+  variable_del('addresses_user_book');
+  variable_del('addresses_user_fields');
+}
+
+// vim: ts=2 sw=2 et syntax=php

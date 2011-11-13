@@ -1,0 +1,12 @@
+; $Id: jquerytools.info,v 1.1.2.1 2010/02/15 16:30:01 robloach Exp $
+name = jQuery Tools
+description = jQuery Tools is a collection of the most important user-interface components for today's websites.
+core = 6.x
+package = User interface
+
+; Information added by drupal.org packaging script on 2010-07-11
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "jquerytools"
+datestamp = "1278834667"
+

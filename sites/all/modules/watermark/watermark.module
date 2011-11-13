@@ -1,0 +1,540 @@
+<?php
+
+// $Id: watermark.module,v 1.10 2008/06/23 23:20:38 kbahey Exp $
+// Author: Khalid Baheyeldin of http://2bits.com
+// Additional features by schnizZzla for http://BerlinerStrassen.com
+
+define('WATERMARK_ENABLE',                'watermark_enable');
+define('WATERMARK_PATH',                  'watermark_path');
+define('WATERMARK_LOCATION',              'watermark_location');
+define('WATERMARK_SCALING',               'watermark_scaling');
+define('WATERMARK_SCALING_PERCENTAGE',    'watermark_scaling_percentage');
+define('WATERMARK_MIN_WIDTH',             'watermark_min_width');
+define('WATERMARK_EXCLUDE',               'watermark_exclude');
+define('WATERMARK_EXCLUDE_TERMS',         'watermark_exclude_terms');
+define('WATERMARK_WATCHDOG',              'watermark');
+define('WATERMARK',                       'watermark_');
+define('WATERMARK_POS_MIDDLE',            0);
+define('WATERMARK_POS_MIDDLERIGHT',       1);
+define('WATERMARK_POS_MIDDLELEFT',        2);
+define('WATERMARK_POS_TOPMIDDLE',         3);
+define('WATERMARK_POS_TOPLEFT',           4);
+define('WATERMARK_POS_TOPRIGHT',          5);
+define('WATERMARK_POS_BOTTOMMIDDLE',      6);
+define('WATERMARK_POS_BOTTOMRIGHT',       7);
+define('WATERMARK_POS_BOTTOMLEFT',        8);
+
+define('WATERMARK_PERM_MANAGE',           'manage watermarks');
+
+function watermark_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#description':
+      return t('Adds watermark to image.module. Requires image.module');
+  }
+}
+
+function watermark_menu() {
+  $items = array();
+  $items['admin/settings/image_watermark'] = array(
+    'title' => 'Image Watermark',
+    'description' => 'Configure image watermark settings.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('watermark_admin_settings'),
+    'access arguments' => array('administer images'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function watermark_perm() {
+  return array(WATERMARK_PERM_MANAGE);
+}
+
+function watermark_admin_settings() {
+  if (!watermark_check_functions()) {
+    return;
+  }
+
+  $form['watermark'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Watermark'),
+    '#collapsible' => TRUE,
+    '#weight' => -1,
+  );
+
+  $form['watermark'][WATERMARK_ENABLE] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable watermarking of new images?'),
+    '#default_value' => variable_get(WATERMARK_ENABLE, FALSE),
+    '#description' => t('Check this box to enable watermarking of new images.'),
+    );
+
+  $form['watermark'][WATERMARK_PATH] = array(
+    '#type' => 'textfield',
+    '#title' => t('Watermark overlay image'),
+    '#size' => 70,
+    '#maxlength' => 255,
+    '#required' => TRUE,
+    '#default_value' => variable_get(WATERMARK_PATH, ''),
+    '#description' => t('Path of the image that should be used as the watermark image, relative to the Drupal root.  This should be a truecolor (32 bit) PNG file with an alpha channel, but other formats may work.'),
+    );
+
+  $locations = array(
+    WATERMARK_POS_MIDDLE       => t('Middle'),
+    WATERMARK_POS_MIDDLERIGHT  => t('Middle right'),
+    WATERMARK_POS_MIDDLELEFT   => t('Middle left'),
+    WATERMARK_POS_TOPMIDDLE    => t('Top middle'),
+    WATERMARK_POS_TOPLEFT      => t('Top left'),
+    WATERMARK_POS_TOPRIGHT     => t('Top right'),
+    WATERMARK_POS_BOTTOMMIDDLE => t('Bottom middle'),
+    WATERMARK_POS_BOTTOMRIGHT  => t('Bottom right'),
+    WATERMARK_POS_BOTTOMLEFT   => t('Bottom left'),
+  );
+
+  $form['watermark'][WATERMARK_LOCATION] = array(
+    '#type' => 'select',
+    '#title' => t('Location'),
+    '#options' => $locations,
+    '#default_value' => variable_get(WATERMARK_LOCATION, WATERMARK_POS_MIDDLE),
+    '#description' => t('Location on the final image where the watermark will be placed.'),
+  );
+
+  $form['watermark']['scaling'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Watermark scaling'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['watermark']['scaling'][WATERMARK_SCALING] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Scale watermark'),
+    '#description' => t('Use scaling, if you want the watermark to be proportional to the image width. Please note that the watermark is scaled only, when it is too big.'),
+    '#default_value' => variable_get(WATERMARK_SCALING, FALSE),
+  );
+
+  $form['watermark']['scaling'][WATERMARK_SCALING_PERCENTAGE] = array(
+    '#type' => 'textfield',
+    '#title' => t('Percentage'),
+    '#description' => t('Percentage to apply the watermark to the image.'),
+    '#size' => 3,
+    '#default_value' => variable_get(WATERMARK_SCALING_PERCENTAGE, 50),
+  );
+
+  $form['watermark']['scaling'][WATERMARK_MIN_WIDTH] = array(
+    '#type' => 'textfield',
+    '#title' => t('Minimum width'),
+    '#description' => t('The mimimum of the watermark in pixels. Type 0 to turn this option off.'),
+    '#size' => 3,
+    '#default_value' => variable_get(WATERMARK_MIN_WIDTH, 0),
+  );
+
+  $form['watermark']['labels'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Apply watermark to the following images'),
+    '#collapsible' => FALSE,
+    '#description' => t('Check which images you want to apply watermarks for.'),
+  );
+
+  foreach (_image_get_sizes() as $id => $size) {
+    $label_var = WATERMARK . $id;
+    $form['watermark']['labels'][$label_var] = array(
+      '#type' => 'checkbox',
+      '#title' => $size['label'] ." ($id)",
+      '#default_value' => variable_get($label_var, FALSE),
+    );
+  }
+
+  $gallery_enabled = module_exists('image_gallery');
+  $exclude_terms_description = t('Exclude image nodes with specific gallery terms from watermark process.');
+  $exclude_terms_description .= $gallery_enabled ? '' : ' '. t('Note: <strong>This option is disabled</strong> because Image Gallery module must be enabled first.');
+
+  $form['watermark']['toggles'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Toggles'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['watermark']['toggles'][WATERMARK_EXCLUDE_TERMS] = array(
+    '#type' => 'select',
+    '#disabled' => !$gallery_enabled,
+    '#title' => t('Exclude terms'),
+    '#description' => $exclude_terms_description,
+    '#default_value' => variable_get(WATERMARK_EXCLUDE_TERMS, array()),
+    '#options' => _watermark_get_gallery_terms(),
+    '#multiple' => TRUE,
+  );
+
+  return system_settings_form($form);
+}
+
+function watermark_admin_settings_validate($form, &$form_state) {
+  if (!is_numeric($form_state['values'][WATERMARK_SCALING_PERCENTAGE]) || $form_state['values'][WATERMARK_SCALING_PERCENTAGE] <= 0 || $form_state['values'][WATERMARK_SCALING_PERCENTAGE] >= 100) {
+    form_set_error(WATERMARK_SCALING_PERCENTAGE, t('Please enter a number between 1 and 100 for scaling percentage.'));
+  }
+  else if ($form_state['values'][WATERMARK_SCALING_PERCENTAGE] < 10 || $form_state['values'][WATERMARK_MIN_WIDTH] < 50) {
+    // we do not disable scaling for low values, e.g. if the user chooses to scale down to 1%, we just warn
+    drupal_set_message(t('Warning: Scaling is set to @percentage%, minimum width is only @min_width px. This may result in very small or almost invisible watermarks. It is recommended to check twice that an adequate minimum width has been set.',
+                       array('@percentage' => $form_state['values'][WATERMARK_SCALING_PERCENTAGE], '@min_width' => $form_state['values'][WATERMARK_MIN_WIDTH])));
+  }
+
+  if (intval($form_state['values'][WATERMARK_MIN_WIDTH]) < 0) {
+    form_set_error(WATERMARK_MIN_WIDTH, t('Please enter a positive number for minimum width.'));
+  }
+}
+
+function watermark_check_functions() {
+  $errors = array();
+
+  $function_list = array();
+
+  $function_list[] = 'exif_imagetype';
+  $function_list[] = 'imagecopy';
+  $function_list[] = 'imagecopyresampled';
+  $function_list[] = 'imagedestroy';
+  $types = array('gif', 'jpeg', 'png', 'wbmp');
+  foreach ($types as $type) {
+    $function_list[] = 'image'. $type;
+    $function_list[] = 'imagecreatefrom'. $type;
+  }
+
+  foreach ($function_list as $function) {
+    if (!function_exists($function)) {
+      drupal_set_message('Function $function does not exist. Watermarking cannot be done. Please make sure that you are running PHP 4.3 or higher, or that you (or your hosting provider) manually compile the GD library into your PHP installation. You also need PHP to be compiled with --enable-exif.', 'error');
+      $errors[] = 1;
+    }
+  }
+
+  if (!empty($errors)) {
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+function watermark_nodeapi(&$node, $op, $teaser = null, $page = null) {
+  if ($node->type != 'image') {
+    return;
+  }
+
+  if (!variable_get(WATERMARK_ENABLE, FALSE)) {
+    return;
+  }
+
+  // excluding node depends on the toggled options
+  if (_watermark_is_node_excluded($node)) {
+    return;
+  }
+
+  // We hook into node validation to be able to have a watermark on all uploads, also in previews!
+  if ($op == 'validate') {
+    // Was a new file uploaded?
+    $is_new_file = $node->new_file && is_array($node->images);
+    // Has this node already an image?
+    $has_image = !empty($node->images['_original']);
+    // for users with "manage watermarks" permission bypass automatic watermark process
+    if (user_access(WATERMARK_PERM_MANAGE)) {
+      if ($node->wm_apply) {
+        // do we need a watermark, is there any image?
+        if (!$has_image && !$is_new_file) {
+          return;
+        }
+        _watermark_apply($node);
+      }
+    }
+    // normal user, automatic watermark process
+    else if ($is_new_file) {
+      _watermark_apply($node);
+    }
+  }
+}
+
+function watermark_form_alter(&$form, &$form_state, $form_id) {
+  // additional option to toggle watermark process when a user has "manage watermarks" permission
+  if ($form_id == 'image_node_form' && user_access(WATERMARK_PERM_MANAGE)) {
+    $apply_watermark = TRUE;
+
+    if (preg_match('/^\/node\/[0-9]+\/edit$/i', $form['#action'])) {
+      $apply_watermark = FALSE;
+    }
+    else if ($form['#action'] != '/node/add/image') {
+      return;
+    }
+
+    $form['watermark'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Watermark settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['watermark']['wm_apply'] = array(
+      '#title' => t('Apply watermark'),
+      '#type' => 'checkbox',
+      '#description' => t('<strong>Automatic watermark process bypass:</strong> Please decide yourself if a watermark needs to be applied. <strong>Be careful, do not apply watermarks twice!</strong>'),
+      '#default_value' => $apply_watermark,
+    );
+  }
+}
+
+function _watermark_apply($node) {
+  $watermark = variable_get(WATERMARK_PATH, '');
+  $location = variable_get(WATERMARK_LOCATION, 0);
+  $sizes = _image_get_sizes();
+  foreach ($node->images as $size => $filepath) {
+    if (variable_get(WATERMARK . $size, FALSE)) {
+      if (_watermark_process($filepath, $watermark, $location)) {
+        drupal_set_message(t('Watermark applied to image: %file', array('%file' => $sizes[$size]['label'])));
+      }
+      else {
+        drupal_set_message(t('Error adding watermark.'), 'error');
+        watchdog('error', 'Error adding watermark');
+      }
+    }
+  }
+}
+
+function _watermark_process($image_path, $watermark_path, $location) {
+  // init return status
+  $status = FALSE;
+
+  $scaling = variable_get(WATERMARK_SCALING, FALSE);
+
+  if (!$wm_info = _watermark_make_image($watermark_path)) {
+    return FALSE;
+  }
+  $wm = $wm_info['handle'];
+
+  if (!$im_info = _watermark_make_image($image_path)) {
+    return FALSE;
+  }
+  $im = $im_info['handle'];
+
+  if (!$im_info['truecolor']) {
+    // create truecolor image for alpha blending and better resampling
+    $new_im = imagecreatetruecolor($im_info['width'], $im_info['height']);
+    imagecopy($new_im, $im, 0, 0, 0, 0, $im_info['width'], $im_info['height']);
+    imagedestroy($im);
+    $im = $new_im;
+  }
+  imagealphablending($im, TRUE);
+
+  $im_x = $im_info['width'];
+  $im_y = $im_info['height'];
+
+  if ($scaling) {
+    // rescale wm image to desired percentage of dest image WIDTH
+    $percentage = variable_get(WATERMARK_SCALING_PERCENTAGE, 50) / 100;
+    $min_width = intval(variable_get(WATERMARK_MIN_WIDTH, 0));
+    $desired_width = $im_x * $percentage;
+    if ($desired_width < $min_width) {
+      $desired_width = $min_width;
+    }
+    $scale_ratio = $desired_width / $wm_info['width'];
+
+    // new size
+    $wm_x = $wm_info['width'] * $scale_ratio;
+    $wm_y = $wm_info['height'] * $scale_ratio;
+  }
+  else {
+    $wm_x = $wm_info['width'];
+    $wm_y = $wm_info['height'];
+  }
+
+  switch ($location) {
+    case WATERMARK_POS_MIDDLE:
+      //middle
+      $dest_x = ($im_x / 2) - ($wm_x / 2);
+      $dest_y = ($im_y / 2) - ($wm_y / 2);
+      break;
+    case WATERMARK_POS_MIDDLERIGHT:
+      //middle right
+      $dest_x = $im_x - $wm_x;
+      $dest_y = ($im_y / 2) - ($wm_y / 2);
+      break;
+    case WATERMARK_POS_MIDDLELEFT:
+      //middle left
+      $dest_x = 0;
+      $dest_y = ($im_y / 2) - ($wm_y / 2);
+      break;
+    case WATERMARK_POS_TOPMIDDLE:
+      //top middle
+      $dest_x = (($im_x - $wm_x) / 2);
+      $dest_y = 0;
+      break;
+    case WATERMARK_POS_TOPLEFT:
+      //top left
+      $dest_x = 0;
+      $dest_y = 0;
+      break;
+    case WATERMARK_POS_TOPRIGHT:
+      //top right
+      $dest_x = $im_x - $wm_x;
+      $dest_y = 0;
+      break;
+    case WATERMARK_POS_BOTTOMMIDDLE:
+      //bottom middle
+      $dest_x = (($im_x - $wm_x) / 2);
+      $dest_y = $im_y - $wm_y;
+      break;
+    case WATERMARK_POS_BOTTOMRIGHT:
+      //bottom right
+      $dest_x = $im_x - $wm_x;
+      $dest_y = $im_y - $wm_y;
+      break;
+    case WATERMARK_POS_BOTTOMLEFT:
+      //bottom left
+      $dest_x = 0;
+      $dest_y = $im_y - $wm_y;
+      break;
+  }
+
+  // image create function according to original image type
+  $img_create_func = 'image'. $im_info['type'];
+
+  // scaling on - resampling image
+  if ($scaling &&
+      !imagecopyresampled($im, $wm, $dest_x, $dest_y, 0, 0, $wm_x, $wm_y, $wm_info['width'], $wm_info['height'])) {
+      $msg = t('Failed to merge image with watermark.');
+      drupal_set_message($msg, 'error');
+      watchdog(WATERMARK_WATCHDOG, $msg, WATCHDOG_ERROR);
+  }
+  // scaling off
+  else if (!$scaling &&
+           !imagecopy($im, $wm, $dest_x, $dest_y, 0, 0, $wm_x, $wm_y)) {
+    $msg = t('Failed to merge image with watermark.');
+    drupal_set_message($msg, 'error');
+    watchdog(WATERMARK_WATCHDOG, $msg, WATCHDOG_ERROR);
+  }
+  // create an image of the same type!
+  else if (!$img_create_func($im, $image_path)) {
+    $msg = t('Failed to save merged image.');
+    drupal_set_message($msg, 'error');
+    watchdog(WATERMARK_WATCHDOG, $msg, WATCHDOG_ERROR);
+  }
+  else {
+    $status = TRUE;
+  }
+
+  imagedestroy($im);
+  imagedestroy($wm);
+
+  return $status;
+}
+
+function _watermark_make_image($file) {
+
+  if (!file_exists($file)) {
+    drupal_set_message(t('Image file %file not found.', array('%file' => $file ) ), 'error');
+    return FALSE;
+  }
+
+  $type = exif_imagetype($file);
+
+  switch ($type) {
+    case IMAGETYPE_GIF:
+      $type = 'gif';
+      break;
+    case IMAGETYPE_JPEG:
+      $type = 'jpeg';
+      break;
+    case IMAGETYPE_PNG:
+      $type = 'png';
+      break;
+    case IMAGETYPE_WBMP:
+      $type = 'wbmp';
+      break;
+    default:
+      // Unsupported type
+      drupal_set_message(t('Image file %file is an unsupported format type=%type.', array( '%file' => $file, '%type' => $type ) ), 'error');
+      return FALSE;
+  }
+
+  $function = 'imagecreatefrom'. $type;
+  $handle = $function($file);
+
+  if (!$handle) {
+    drupal_set_message(t('Failed to create handle for image file %file via function %function.', array( '%file' => $file, '%function' => $function )), 'error');
+    return FALSE;
+  }
+
+  // create image info
+  $img_info = array(
+    'type' => $type,
+    'truecolor' => imageistruecolor($handle),
+    'colors' => imagecolorstotal($handle),
+    'handle' => $handle,
+    'width'  => imagesx($handle),
+    'height' => imagesy($handle),
+  );
+
+  return $img_info;
+}
+
+function _watermark_get_gallery_terms() {
+  $gallery_terms = array();
+
+  $vid = _watermark_get_gallery_vid();
+  $term_data = db_query('SELECT tid, name FROM {term_data} WHERE vid=%d', $vid);
+  while ($row = db_fetch_array($term_data)) {
+    $gallery_terms[$row['tid']] = $row['name'];
+  }
+
+  return $gallery_terms;
+}
+
+function _watermark_get_excluded_tids() {
+  $excluded_tids = array();
+  foreach (variable_get(WATERMARK_EXCLUDE_TERMS, array()) as $tid => $term) {
+    $excluded_tids[] = $tid;
+  }
+  return $excluded_tids;
+}
+
+function _watermark_get_gallery_vid() {
+
+  // code from image gallery module
+
+  $vid = variable_get('image_gallery_nav_vocabulary', '');
+  if (empty($vid) || !taxonomy_vocabulary_load($vid)) {
+    // Check to see if an image gallery vocabulary exists
+    $vid = db_result(db_query("SELECT vid FROM {vocabulary} WHERE module='image_gallery'"));
+    if (!$vid) {
+
+      // change: we don't want to create any vocabulary here
+      return FALSE;
+    }
+    variable_set('image_gallery_nav_vocabulary', $vid);
+  }
+
+  return $vid;
+}
+
+function _watermark_is_node_excluded($node) {
+  // for now we have only one toggle:
+  // - exclude nodes with specified vocabulary terms from watermark process
+
+  if (!empty($node->taxonomy)) {
+    $excluded_tids = _watermark_get_excluded_tids();
+    $gallery_vid = _watermark_get_gallery_vid();
+
+    foreach ($node->taxonomy as $vid => $tids) {
+      // taxonomy is an nested array when multiple selection
+      // of terms in the gallery vocabulary is allowed
+      if (is_array($tids) && $vid == $gallery_vid) {
+        foreach ($tids as $tid => $status) {
+          if ($status!=0 && in_array($tid, $excluded_tids)) {
+            // at least one term matches excluded terms
+            return TRUE;
+          }
+        }
+      }
+      // it's not a multiple select vocabulary
+      else if (!empty($tids) && $vid == $gallery_vid && in_array($tids, $excluded_tids)) {
+        // excluded term found
+        return TRUE;
+      }
+    }
+  }
+  return FALSE;
+}

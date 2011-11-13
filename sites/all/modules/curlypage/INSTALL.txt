@@ -1,0 +1,80 @@
+/* $Id: INSTALL.txt,v 1.2 2009/11/16 21:25:09 manfer Exp $ */
+
+-- REQUIREMENTS --
+
+* Javascript enabled on web browser
+
+* Flash plugin installed on web browser
+
+
+-- UPGRADING FROM PAGEEAR --
+
+* You can upgrade from any pageear 2.x version following this steps:
+
+    - Maintain your pageear module installed and enabled.
+    
+    - Upload curlypage module to modules directory, in most cases:
+
+        sites/all/modules
+        
+    - Enable curlypage module by navigating to:
+    
+        Administer >> Site building >> Modules
+        
+    - All your pageears would be imported on curlypage installation and
+      pageear module would be disabled.
+    
+    - Uninstall pageear module by navigating to:
+    
+        Administer >> Site building >> Modules >> Uninstall
+        
+    - Delete pageear module folder from your hosting account.
+    
+    - An empty 'pageturn' folder can remain in files directory, in most cases:
+      sites/default/files/pageturn. You can delete it too.
+      
+    - At this point you have properly installed curlypages and uninstalled
+      pageear totally.
+
+    - Configure your curlypages by visiting:
+
+        Administer >> Site building >> Curlypages
+
+    - Set permissions for curlypage by going to:
+
+        Administer >> User management >> Access control
+
+
+-- INSTALLATION --
+
+* Upload curlypage files into modules directory of your choice, in most
+  cases: sites/all/modules.
+
+* Enable curlypage module by navigating to:
+
+  Administer >> Site building >> Modules
+
+* Configure your curlypages by visiting:
+
+  Administer >> Site building >> Curlypages
+
+* Set permissions for curlypage by going to:
+
+  Administer >> User management >> Access control
+
+
+-- UPGRADING --
+
+* If you are upgrading from a previous version, please:
+
+  - disable module.
+  
+  - upload new version files.
+
+  - run Drupal's update.php after updating the module's files.
+    Further information: http://drupal.org/upgrade/running-update-php
+
+  - read notes about changes in
+    CHANGELOG.txt.
+
+  - enable module.

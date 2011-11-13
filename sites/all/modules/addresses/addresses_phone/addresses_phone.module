@@ -1,0 +1,159 @@
+<?php
+/**
+ * @author Bruno Massa
+ * @file
+ * Use phone and fax fields on .
+ */
+
+/**
+ * Implementation of hook_addressfieldapi().
+ *
+ * Its a specific Addresses module hook function, to
+ * allow other modules to add more fields to the addresses
+ */
+function addresses_phone_addressesfieldapi($op, $fields = array(), $values = array()) {
+  if ($op == 'fields') {
+    return array(
+      'phone' => array(
+        'module' => 'phone',
+        'type' => 'varchar',
+        'length' => 24,
+        'title' => t('Phone'),
+        'description' => t('Phone numbers, like cellphone, home, office.'),
+        'default' => '',
+        'display' => ADDRESSES_FIELD_NONE,
+        'theme' => array(
+          'plain' => t('The phone number.'),
+          'hcard' => t('An hcard/vcard html representation of the phone number.'),
+        ),
+        'token' => 'addresses_general',
+      ),
+      'fax' => array(
+        'module' => 'phone',
+        'type' => 'varchar',
+        'length' => 24,
+        'title' => t('Fax'),
+        'description' => t('Fax number.'),
+        'default' => '',
+        'display' => ADDRESSES_FIELD_SHOW,
+        'theme' => array(
+          'plain' => t('The fax number.'),
+          'hcard' => t('An hcard/vcard html representation of the fax number.'),
+        ),
+        'token' => 'addresses_general',
+      ),
+    );
+  }
+  elseif ($op == 'form') {
+    $form = array();
+    $field_weights = variable_get('addresses_field_weight', array());
+
+    // Telephone number
+    if (!empty($fields['phone'])) {
+      $form['phone'] = array(
+        '#type'           => 'textfield',
+        '#title'          => t('Phone'),
+        '#default_value'  => isset($values['phone']) ? $values['phone'] : '',
+        '#size'           => 30,
+        '#maxlength'      => 24,
+        '#attributes'     => NULL,
+        '#required'       => ($fields['phone'] == ADDRESSES_FIELD_REQUIRED),
+        '#weight'         => empty($field_weights['phone']['weight']) ? 0 :
+          $field_weights['phone']['weight'],
+      );
+    }
+
+    // Fax number
+    if (!empty($fields['fax'])) {
+      $form['fax'] = array(
+        '#type'           => 'textfield',
+        '#title'          => t('Fax'),
+        '#default_value'  => isset($values['fax']) ? $values['fax'] : '',
+        '#size'           => 30,
+        '#maxlength'      => 24,
+        '#attributes'     => NULL,
+        '#required'       => ($fields['fax'] == ADDRESSES_FIELD_REQUIRED),
+        '#weight'         => empty($field_weights['fax']['weight']) ? 0 :
+          $field_weights['fax']['weight'],
+      );
+    }
+
+    foreach (array_keys($fields) as $ftype) {
+      if ($fields[$ftype] == ADDRESSES_FIELD_HIDDEN) {
+        $form[$ftype] = array(
+          '#type'         => 'hidden',
+          '#value'        => isset($values[$ftype]) ? $values[$ftype] : '',
+        );
+      }
+    }
+
+    return $form;
+  }
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function addresses_phone_theme() {
+  return array(
+    // Shows address fields
+    'addresses_phone_phone' => array(
+      'arguments' => array(
+        'form',
+        'format' => 'plain',
+      ),
+    ),
+    'addresses_phone_fax' => array(
+      'arguments' => array(
+        'form',
+        'format' => 'plain',
+      ),
+    ),
+  );
+}
+
+/**
+ * Print a formatted phone field.
+ *
+ * @param $afields
+ *   All address field values.
+ * @param $format
+ *   The format to return the field in.
+ * @return
+ *   A formatted phone field.
+ */
+function theme_addresses_phone_phone($afields, $format = 'plain') {
+  $phone = check_plain($afields['phone']);
+  if (!empty($phone)) {
+    switch ($format) {
+    case 'plain':
+      return $phone;
+    case 'hcard':
+      return '<dt>'. t('Phone') .': </dt><dd class="phone">'. $phone .'</dd>';
+    }
+  }
+}
+
+/**
+ * Print a formatted fax field.
+ *
+ * @param $afields
+ *   All address fields values.
+ * @param $format
+ *   The format to return the field in.
+ * @return
+ *   A formatted fax field.
+ */
+function theme_addresses_phone_fax($afields, $format = 'plain') {
+  $fax = check_plain($afields['fax']);
+  if (!empty($fax)) {
+    switch ($format) {
+    case 'plain':
+      return $fax;
+    case 'hcard':
+      return '<dt>'. t('Fax') .': </dt><dd class="fax">'. $fax .'</dd>';
+    }
+  }
+}
+
+// vim: ts=2 sw=2 et syntax=php

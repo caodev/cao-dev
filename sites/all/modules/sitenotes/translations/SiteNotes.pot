@@ -1,0 +1,150 @@
+# $Id: SiteNotes.pot,v 1.1.2.1 2008/04/26 15:22:24 nancyw Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  sitenotes.module,v 1.9 2007/07/28 18:12:04 nancyw
+#  sitenotes.install,v 1.9 2007/08/04 15:03:31 nancyw
+#  sitenotes.info,v 1.4 2007/06/19 15:07:50 nancyw
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2008-02-14 12:03-0500\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: sitenotes.module:17
+msgid "Site Note"
+msgstr ""
+
+#: sitenotes.module:19
+msgid "Create site notes for admin user(s)."
+msgstr ""
+
+#: sitenotes.module:79
+msgid "The site designer can create site notes for later reference. Usually only super users can read them, unless other roles are given persmissions."
+msgstr ""
+
+#: sitenotes.module:83
+msgid "<h3>Remember: you should insert <b>&lt;!--Break--&gt;</b> after the text you want to show in the teaser.</h3>"
+msgstr ""
+
+#: sitenotes.module:115
+msgid "Weight"
+msgstr ""
+
+#: sitenotes.module:118
+msgid "Optional. The heavier items will sink and the lighter items will be positioned nearer the top."
+msgstr ""
+
+#: sitenotes.module:134
+msgid "Site notes"
+msgstr ""
+
+#: sitenotes.module:139
+msgid "Site notes settings"
+msgstr ""
+
+#: sitenotes.module:140
+msgid "Control the Site Notes module."
+msgstr ""
+
+#: sitenotes.module:147
+msgid "Site notes display"
+msgstr ""
+
+#: sitenotes.module:148
+msgid "Show all site notes"
+msgstr ""
+
+#: sitenotes.module:163
+msgid "Allow search for authorized users?"
+msgstr ""
+
+#: sitenotes.module:164
+msgid "Indexes Site Notes for searching. Only users with 'access site notes' permission will be able to see the results."
+msgstr ""
+
+#: sitenotes.module:170
+msgid "Update"
+msgstr ""
+
+#: sitenotes.module:193;399
+msgid "Add a new Site Note"
+msgstr ""
+
+#: sitenotes.module:304;365
+msgid "Recent Site Notes"
+msgstr ""
+
+#: sitenotes.module:314
+msgid "All"
+msgstr ""
+
+#: sitenotes.module:317
+msgid "Show author?"
+msgstr ""
+
+#: sitenotes.module:320
+msgid "Show the author's user id?"
+msgstr ""
+
+#: sitenotes.module:324
+msgid "Show when?"
+msgstr ""
+
+#: sitenotes.module:327
+msgid "Show the creation/update date?"
+msgstr ""
+
+#: sitenotes.module:331
+msgid "How recent?"
+msgstr ""
+
+#: sitenotes.module:334
+msgid "How long since it was created/updated?"
+msgstr ""
+
+#: sitenotes.module:338
+msgid "How many?"
+msgstr ""
+
+#: sitenotes.module:341
+msgid "How many do you want shown?"
+msgstr ""
+
+#: sitenotes.module:387
+msgid "View content."
+msgstr ""
+
+#: sitenotes.module:392
+msgid "View user profile."
+msgstr ""
+
+#: sitenotes.module:32
+msgid "access site notes"
+msgstr ""
+
+#: sitenotes.module:0
+msgid "sitenotes"
+msgstr ""
+
+#: sitenotes.install:8;47
+msgid "SiteNotes"
+msgstr ""
+
+#: sitenotes.info:0
+msgid "Sitenotes"
+msgstr ""
+
+#: sitenotes.info:0
+msgid "Enables creating site notes for administrators."
+msgstr ""
+

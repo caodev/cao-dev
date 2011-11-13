@@ -1,0 +1,167 @@
+# $Id: es.po,v 1.1.2.5.2.1 2010/06/01 15:57:45 manfer Exp $
+#
+# Spanish translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  curlypage_scheduler.module,v 1.1.2.10.2.1 2010/04/23 16:00:54 manfer
+#  curlypage_scheduler.info,v 1.1.2.1 2010/01/07 21:48:07 manfer
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2010-06-01 17:11+0200\n"
+"PO-Revision-Date: 2010-06-01 17:11+0200\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Spanish <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: curlypage_scheduler.module:118
+msgid "Save"
+msgstr "Guardar"
+
+#: curlypage_scheduler.module:122;133
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: curlypage_scheduler.module:133
+msgid "Are you sure you want to delete the curlypage schedule?"
+msgstr "Está seguro que desea borrar el programa?"
+
+#: curlypage_scheduler.module:133
+msgid "Delete"
+msgstr "Eliminar"
+
+#: curlypage_scheduler.module:143
+msgid "The schedule has been removed."
+msgstr "El programa ha sido borrado."
+
+#: curlypage_scheduler.module:160
+msgid "Curlypage scheduling settings"
+msgstr "Opciones de programación del curlypage"
+
+#: curlypage_scheduler.module:259
+msgid "Format: %time. The date format is YYYY-MM-DD. Leave blank if you don't need an enable schedule here."
+msgstr ""
+"Formato: %time. El formato de la fecha es YYYY-MM-DD (Y:año, M:mes, "
+"D:día). Déjelo en blanco si no desea fecha de activación para este "
+"programa."
+
+#: curlypage_scheduler.module:260
+msgid "Format: %time. The date format is YYYY-MM-DD. Leave blank if you don't need a disable schedule here."
+msgstr ""
+"Formato: %time. El formato de la fecha es YYYY-MM-DD (Y:año, M:mes, "
+"D:día). Déjelo en blanco si no desea fecha de desactivación para "
+"este programa."
+
+#: curlypage_scheduler.module:261
+msgid "The schedule will not be repeated any more when this time is passed. Format: %time. The date format is YYYY-MM-DD. Leave blank if you don't need and until time."
+msgstr ""
+"El programa no se repetirá más cuando haya pasado esta fecha. El "
+"formato de la fecha es YYYY-MM-DD (Y:año, M:mes, D:día). Déjelo en "
+"blanco si no desea configurar una hora de finalización para la "
+"repetición del programa."
+
+#: curlypage_scheduler.module:262
+msgid "Check this if you want to repeat this schedule"
+msgstr "Marque esta casilla si desea repetir este programa"
+
+#: curlypage_scheduler.module:269;269
+msgid "Schedule"
+msgstr "Programa"
+
+#: curlypage_scheduler.module:283;530;539
+msgid "Enable on"
+msgstr "Activar en"
+
+#: curlypage_scheduler.module:293;531
+msgid "Disable on"
+msgstr "Desactivar en"
+
+#: curlypage_scheduler.module:303;532
+msgid "Repeat"
+msgstr "Repetir"
+
+#: curlypage_scheduler.module:311
+msgid "days"
+msgstr "días"
+
+#: curlypage_scheduler.module:320
+msgid "hours"
+msgstr "horas"
+
+#: curlypage_scheduler.module:329
+msgid "until"
+msgstr "hasta"
+
+#: curlypage_scheduler.module:379;405;446
+msgid " does not match the expected format of %time"
+msgstr " no tiene el formato esperado, ejemplo: %time"
+
+#: curlypage_scheduler.module:423
+msgid "Days must be a number between 0 and 365"
+msgstr "Los días deben ser un número entre 0 y 365"
+
+#: curlypage_scheduler.module:428
+msgid "Hours must be a number between 0 and 23"
+msgstr "Las horas debe ser un número entre 0 y 23"
+
+#: curlypage_scheduler.module:433
+msgid "Repeat every 0 days and 0 hours makes no sense."
+msgstr "Repetir cada 0 días y 0 horas no tiene sentido."
+
+#: curlypage_scheduler.module:507
+msgid "The schedule has been saved."
+msgstr "El programa ha sido guardado."
+
+#: curlypage_scheduler.module:529 curlypage_scheduler.info:0
+msgid "Curlypage"
+msgstr "Curlypage"
+
+#: curlypage_scheduler.module:533
+msgid "Until"
+msgstr "Hasta"
+
+#: curlypage_scheduler.module:534
+msgid "Operations"
+msgstr "Operaciones"
+
+#: curlypage_scheduler.module:559
+msgid "edit"
+msgstr "editar"
+
+#: curlypage_scheduler.module:560
+msgid "delete"
+msgstr "eliminar"
+
+#: curlypage_scheduler.module:576
+msgid "There are no scheduled curlypages."
+msgstr "No hay curlypages programados."
+
+#: curlypage_scheduler.module:15
+msgid "Scheduled"
+msgstr "Programa"
+
+#: curlypage_scheduler.module:19
+msgid "Display a list of scheduled curlypages"
+msgstr "Muestra una lista de curlypages programados"
+
+#: curlypage_scheduler.module:22
+msgid "Edit schedule"
+msgstr "Editar programa"
+
+#: curlypage_scheduler.module:29
+msgid "Delete schedule"
+msgstr "Borrar programa"
+
+#: curlypage_scheduler.info:0
+msgid "Curlypage scheduler"
+msgstr "Curlypage scheduler"
+
+#: curlypage_scheduler.info:0
+msgid "Adds scheduling options to curlypages."
+msgstr "Añade opciones de programación a los curlypages."
+
